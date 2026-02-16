@@ -1,9 +1,62 @@
+# Python
 venv/
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Environment
 .env
+.env.local
+.env.*.local
+
+# Output
 output/
 *.mp4
+*.avi
+*.mov
+
+# Test & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+coverage.xml
+*.cover
+
+# Terraform
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 .DS_Store
+
+# Logs
+*.log
 nohup.out
+logs/
+
+# Temporary
 /tmp/
+*.tmp
+
+# CI/CD
+.github/workflows/*.log
+
+# Examples output
+examples/*.json
+examples/*.mp4

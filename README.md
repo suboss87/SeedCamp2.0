@@ -86,46 +86,35 @@ Blended (20/80 mix): $0.089/video
 
 ## 🚀 Quick Start
 
-### Option 1: Docker Compose (Recommended)
+### 5-Minute Setup
 
 ```bash
-# Clone the repo
+# Clone and setup
 git clone https://github.com/suboss87/adcamp.git
 cd adcamp
+make install
 
-# Set your API key
-export ARK_API_KEY=your-api-key-here
+# Configure API key
+cp .env.example .env
+# Edit .env and add your ModelArk API key
 
-# Start services
-docker-compose up -d
-
-# Access
+# Start development servers
+make dev
 # API: http://localhost:8000
 # Dashboard: http://localhost:8501
-# API Docs: http://localhost:8000/docs
 ```
 
-### Option 2: Local Development
+### Deployment Options
 
-```bash
-# Setup
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
-# Edit .env and add your BytePlus ModelArk API key
+| Platform | Setup Time | Free Tier | Best For | Guide |
+|----------|------------|-----------|----------|-------|
+| **Docker Compose** | 5 min | ✅ | Local dev | [Guide](deploy/docker/) |
+| **Railway** | 10 min | ❌ ($5/mo) | Demos | [Guide](deploy/railway/) |
+| **GCP Cloud Run** | 20 min | ✅ | Production | [Guide](deploy/gcp/) |
+| **AWS ECS** | 30 min | ✅ (12mo) | AWS ecosystem | [Guide](deploy/aws/) |
+| **BytePlus VKE** | 45 min | ❌ | BytePlus-native | [Guide](deploy/byteplus/) |
 
-# Run backend
-uvicorn app.main:app --reload --port 8000
-
-# Run dashboard (separate terminal)
-source venv/bin/activate
-streamlit run dashboard/app.py --server.port 8501
-```
-
-### Option 3: BytePlus VKE (Production)
-
-See **[DEPLOYMENT.md](./DEPLOYMENT.md)** for complete BytePlus VKE Kubernetes deployment guide.
+**Full comparison**: See [deploy/README.md](deploy/README.md)
 
 ## 📡 API Reference
 
@@ -248,20 +237,44 @@ Savings vs alternatives:
 
 ## 📚 Documentation
 
-- **[DEPLOYMENT.md](./DEPLOYMENT.md)** — Production deployment guide (VKE, Docker, local)
-- **[docs/logical-architecture.md](./docs/logical-architecture.md)** — System design
-- **[docs/physical-architecture.md](./docs/physical-architecture.md)** — Infrastructure layout
-- **API Docs** — http://localhost:8000/docs (Swagger UI)
+### Getting Started
+- **[Quick Start](docs/getting-started.md)** — 5-minute setup guide
+- **[Examples](examples/)** — Python code examples
+- **[Makefile](Makefile)** — Common commands (`make help`)
+
+### Guides
+- **[Development](docs/guides/development.md)** — Local dev setup
+- **[Testing](docs/guides/testing.md)** — Test suite guide
+- **[Monitoring](docs/guides/monitoring.md)** — Observability setup
+- **[Cost Optimization](docs/guides/cost-optimization.md)** — Reduce spend
+
+### Architecture
+- **[Overview](docs/architecture/overview.md)** — High-level design
+- **[Logical](docs/architecture/logical.md)** — Component design
+- **[Physical](docs/architecture/physical.md)** — Infrastructure
+
+### Deployment
+- **[Deployment Overview](deploy/README.md)** — Platform comparison
+- **[Docker](deploy/docker/)** — Local development
+- **[GCP Cloud Run](deploy/gcp/)** — Serverless deployment
+- **[AWS ECS](deploy/aws/)** — Container orchestration
+- **[BytePlus VKE](deploy/byteplus/)** — Kubernetes on BytePlus
+- **[Terraform](deploy/gcp/terraform/)** — Infrastructure as Code
+
+### API Reference
+- **Swagger UI**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please:
+Contributions are welcome! See **[CONTRIBUTING.md](CONTRIBUTING.md)** for guidelines.
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+Quick start for contributors:
+```bash
+make install    # Setup environment
+make test       # Run tests
+make lint       # Check code style
+```
 
 ## 📄 License
 
