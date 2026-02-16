@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adcamp-dashboard
+  namespace: default
+  labels:
+    app: adcamp
+    component: dashboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: adcamp
+      component: dashboard
+  template:
+    metadata:
+      labels:
+        app: adcamp
+        component: dashboard
+    spec:
+      containers:
+      - name: dashboard
+        image: adcamp:latest  # Replace with your container registry URL
+        imagePullPolicy: Always
+        command: ["streamlit", "run", "dashboard/app.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
+        ports:
+        - containerPort: 8501
+          name: http
+        env:
+        - name: API_BASE_URL
+          value: "http://adcamp-api"
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
