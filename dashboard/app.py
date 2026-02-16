@@ -26,6 +26,21 @@ API_BASE = os.getenv(
 BYTEPLUS_BLUE = "#0066FF"
 
 # ═══════════════════════════════════════════════════════════════════════════════
+#  HELPER FUNCTIONS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def _get_step_icon(status):
+    """Get icon for step status."""
+    if status == 'running':
+        return "⏳"
+    elif status == 'complete':
+        return "✅"
+    elif status == 'failed':
+        return "❌"
+    else:
+        return "⚪"
+
+# ═══════════════════════════════════════════════════════════════════════════════
 #  PAGE CONFIG & STYLING
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -430,18 +445,6 @@ with tab1:
                 st.error("❌ Request timeout. Please try again.")
             except Exception as e:
                 st.error(f"❌ Error: {str(e)}")
-
-
-def _get_step_icon(status):
-    """Get icon for step status."""
-    if status == 'running':
-        return "⏳"
-    elif status == 'complete':
-        return "✅"
-    elif status == 'failed':
-        return "❌"
-    else:
-        return "⚪"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
