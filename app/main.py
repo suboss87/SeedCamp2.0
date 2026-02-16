@@ -19,6 +19,7 @@ from app.models.schemas import (
 )
 from app.services import cost_tracker, model_router, script_writer, video_gen
 from app import monitoring
+from app.utils.retry import validate_api_key, InvalidAPIKeyError
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -67,6 +68,36 @@ app.add_middleware(
 )
 
 app.mount("/output", StaticFiles(directory=str(settings.output_dir)), name="output")
+
+
+# ─── Startup Events ───────────────────────────────────────────────────────────────
+
+@app.on_event("startup")
+async def startup_event():
+    """Validate configuration on startup."""
+    logger.info("Starting AdCamp D2C Video Ad Pipeline...")
+    
+    # Validate API key
+    if not settings.ark_api_key:
+        logger.error("ARK_API_KEY environment variable is not set!")
+        raise InvalidAPIKeyError("ARK_API_KEY is required but not configured")
+    
+    logger.info("Validating ModelArk API key...")
+    try:
+        await validate_api_key(settings.ark_api_key, settings.ark_base_url)
+        logger.info("✅ ModelArk API key validated successfully")
+    except InvalidAPIKeyError as e:
+        logger.error(f"❌ Invalid ModelArk API key: {e}")
+        logger.error("Please check your ARK_API_KEY environment variable")
+        raise
+    except Exception as e:
+        logger.warning(f"⚠️  Could not validate API key (continuing anyway): {e}")
+    
+    logger.info("Configured models:")
+    logger.info(f"  Script: {settings.script_model}")
+    logger.info(f"  Video Pro: {settings.video_model_pro} ($1.20/M)")
+    logger.info(f"  Video Fast: {settings.video_model_fast} ($0.70/M)")
+    logger.info("Pipeline ready 🚀")
 
 
 # ─── Health ───────────────────────────────────────────────────────────────────────

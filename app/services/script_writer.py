@@ -10,6 +10,7 @@ from openai import AsyncOpenAI
 
 from app.config import settings
 from app.models.schemas import AdScript
+from app.utils.retry import retry_with_backoff
 
 logger = logging.getLogger(__name__)
 
@@ -38,10 +39,13 @@ Rules:
 """
 
 
+@retry_with_backoff(max_retries=3, initial_delay=1.0)
 async def generate_script(brief: str) -> tuple[AdScript, int, int]:
     """
     Generate ad script from campaign brief using Seed 1.8.
     Returns (AdScript, input_tokens, output_tokens) for cost tracking.
+    
+    Automatically retries on transient failures (network, 5xx, rate limits).
     """
     response = await _client.chat.completions.create(
         model=settings.script_model,

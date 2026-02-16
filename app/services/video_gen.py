@@ -11,6 +11,7 @@ import httpx
 
 from app.config import settings
 from app.models.schemas import VideoTaskStatus
+from app.utils.retry import retry_with_backoff, parse_modelark_error
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +30,7 @@ _RATIO_MAP = {
 }
 
 
+@retry_with_backoff(max_retries=3, initial_delay=2.0)
 async def create_video_task(
     prompt: str,
     model_id: str,
@@ -42,6 +44,8 @@ async def create_video_task(
     POST /api/v3/contents/generations/tasks
     model_id comes from the Smart Router.
     Returns the task_id for polling.
+    
+    Automatically retries on transient failures (network, 5xx, rate limits).
     """
     content = []
     if image_url:
@@ -57,31 +61,48 @@ async def create_video_task(
         "watermark": False,
     }
 
-    async with httpx.AsyncClient(timeout=60) as client:
-        resp = await client.post(
-            f"{_BASE}/contents/generations/tasks",
-            headers=_HEADERS,
-            json=payload,
-        )
-        resp.raise_for_status()
-        data = resp.json()
+    try:
+        async with httpx.AsyncClient(timeout=90) as client:  # Increased timeout for large videos
+            resp = await client.post(
+                f"{_BASE}/contents/generations/tasks",
+                headers=_HEADERS,
+                json=payload,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+    except httpx.HTTPStatusError as e:
+        # Parse ModelArk-specific error for better logging
+        error = parse_modelark_error(e.response)
+        logger.error(f"Failed to create video task: {error}")
+        raise
 
     task_id = data.get("id", "")
+    if not task_id:
+        raise ValueError(f"No task ID returned from ModelArk API: {data}")
+    
     logger.info("Created video task %s with model %s", task_id, model_id)
     return task_id
 
 
+@retry_with_backoff(max_retries=2, initial_delay=1.0)
 async def get_video_status(task_id: str, model_used: str = "") -> VideoTaskStatus:
     """Query the status of a video generation task via
     GET /api/v3/contents/generations/tasks/{task_id}
+    
+    Automatically retries on transient failures.
     """
-    async with httpx.AsyncClient(timeout=30) as client:
-        resp = await client.get(
-            f"{_BASE}/contents/generations/tasks/{task_id}",
-            headers=_HEADERS,
-        )
-        resp.raise_for_status()
-        data = resp.json()
+    try:
+        async with httpx.AsyncClient(timeout=30) as client:
+            resp = await client.get(
+                f"{_BASE}/contents/generations/tasks/{task_id}",
+                headers=_HEADERS,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+    except httpx.HTTPStatusError as e:
+        error = parse_modelark_error(e.response)
+        logger.error(f"Failed to get video status for {task_id}: {error}")
+        raise
 
     status = data.get("status", "Unknown")
     video_url = None
