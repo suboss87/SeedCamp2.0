@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: adcamp-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter
+    region: singapore
+    healthCheckPath: /health
+    envVars:
+      - key: ARK_API_KEY
+        sync: false
+      - key: ARK_BASE_URL
+        value: https://ark.ap-southeast.bytepluses.com/api/v3
+      - key: OUTPUT_DIR
+        value: /app/output
+    autoDeploy: true
