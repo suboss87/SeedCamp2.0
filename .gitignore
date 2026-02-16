@@ -1,0 +1,9 @@
+venv/
+__pycache__/
+*.pyc
+.env
+output/
+*.mp4
+.DS_Store
+nohup.out
+/tmp/
