@@ -76,15 +76,6 @@ class VideoTaskStatus(BaseModel):
     error: Optional[str] = None
 
 
-# ---- Platform Variant ----
-
-class PlatformVariant(BaseModel):
-    platform: Platform
-    file_path: str
-    aspect_ratio: str
-    resolution: str
-
-
 # ---- Cost ----
 
 class CostBreakdown(BaseModel):
@@ -107,7 +98,6 @@ class GenerateResponse(BaseModel):
     status: str
     script: AdScript
     video: VideoTaskStatus
-    platform_variants: list[PlatformVariant] = []
     cost: CostBreakdown
 
 

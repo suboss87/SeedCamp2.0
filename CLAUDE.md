@@ -27,7 +27,7 @@ black app/ dashboard/                     # Auto-format
 ruff check app/ --fix                     # Auto-fix lint
 
 # Docker
-make docker-build                         # Build: deploy/docker/Dockerfile
+make docker-build                         # Build: root Dockerfile
 make docker-up                            # docker-compose up
 make docker-down                          # docker-compose down
 
@@ -37,14 +37,13 @@ export GCP_PROJECT_ID=adcamp-487609 && make deploy-gcp
 
 ## Architecture
 
-### 6-Step Pipeline (app/main.py orchestrates)
+### 5-Step Pipeline (app/main.py orchestrates)
 
 1. **Input** — `GenerateRequest` (brief, image URL, SKU tier, platforms, duration)
 2. **Script Gen** — `app/services/script_writer.py` calls Seed 1.8 via OpenAI-compatible API, returns `(AdScript, input_tokens, output_tokens)`
-3. **Smart Router** — `app/services/model_router.py` pure function: `route(sku_tier) -> (model_id, cost_per_m)`
+3. **Smart Router** — `app/services/model_router.py` dict-based routing: `route(sku_tier) -> (model_id, cost_per_m)`
 4. **Video Gen** — `app/services/video_gen.py` async task creation + polling via ModelArk REST API
-5. **Post-Process** — `app/services/post_process.py` FFmpeg aspect ratio conversion (not yet wired into endpoints)
-6. **Output** — Platform-ready MP4 URLs
+5. **Output** — Platform-ready MP4 URLs
 
 ### Key Patterns
 
@@ -64,6 +63,8 @@ export GCP_PROJECT_ID=adcamp-487609 && make deploy-gcp
 | Endpoint | Method | Purpose |
 |---|---|---|
 | `/api/generate` | POST | Full pipeline (steps 1-4), returns task_id |
+| `/api/generate-stream` | POST | Full pipeline with SSE progress streaming |
+| `/api/upload-image` | POST | Upload product image to GCS, returns public URL |
 | `/api/status/{task_id}` | GET | Poll video generation status |
 | `/api/wait/{task_id}` | GET | Block until video ready |
 | `/api/cost-summary` | GET | Aggregate cost tracking |
@@ -73,7 +74,7 @@ export GCP_PROJECT_ID=adcamp-487609 && make deploy-gcp
 
 ### Deployment Layout
 
-`deploy/` is organized by platform: `docker/`, `gcp/` (Cloud Run + Terraform), `aws/` (ECS Fargate + Terraform), `byteplus/` (VKE K8s manifests), `monitoring/` (Prometheus + Grafana). The root `Dockerfile` and `deploy/docker/Dockerfile` both exist — root is for Cloud Run, deploy/docker is for local compose.
+`deploy/` is organized by platform: `docker/` (docker-compose references root `Dockerfile`), `gcp/` (Cloud Run + Terraform), `aws/` (ECS Fargate + Terraform), `byteplus/` (VKE K8s manifests), `monitoring/` (Prometheus + Grafana).
 
 ## Critical Constraints
 
@@ -82,7 +83,6 @@ export GCP_PROJECT_ID=adcamp-487609 && make deploy-gcp
 - **Video polling timeout**: 300s default (`settings.poll_timeout`), 5s interval
 - **CORS is wide open** (`allow_origins=["*"]`) — intentional for current stage
 - **Metrics not persisted** — in-memory only, resets on container restart
-- **Post-processing not wired** — FFmpeg service exists in code but `/api/generate` does not call it
 - **Dashboard needs `API_URL` env var** — defaults to localhost, must be set for deployed environments
 
 ## Commit Convention

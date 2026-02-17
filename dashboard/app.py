@@ -29,16 +29,11 @@ BYTEPLUS_BLUE = "#0066FF"
 #  HELPER FUNCTIONS
 # ═══════════════════════════════════════════════════════════════════════════════
 
+_STEP_ICONS = {"running": "⏳", "complete": "✅", "failed": "❌"}
+
+
 def _get_step_icon(status):
-    """Get icon for step status."""
-    if status == 'running':
-        return "⏳"
-    elif status == 'complete':
-        return "✅"
-    elif status == 'failed':
-        return "❌"
-    else:
-        return "⚪"
+    return _STEP_ICONS.get(status, "⚪")
 
 # ═══════════════════════════════════════════════════════════════════════════════
 #  PAGE CONFIG & STYLING
@@ -265,19 +260,11 @@ with tab1:
             help="Describe your campaign vision, target audience, mood, and key message"
         )
         
-        col_a, col_b = st.columns(2)
-        with col_a:
-            sku_id = st.text_input(
-                "SKU ID",
-                value="SKU-001",
-                placeholder="e.g., SHOE-RUN-2024-001"
-            )
-        with col_b:
-            campaign_name = st.text_input(
-                "Campaign Name",
-                placeholder="e.g., Summer Sprint 2024",
-                help="Internal reference name"
-            )
+        sku_id = st.text_input(
+            "SKU ID",
+            value="SKU-001",
+            placeholder="e.g., SHOE-RUN-2024-001"
+        )
     
     with col_right:
         st.markdown("### 🖼️ Product Image")
@@ -319,13 +306,20 @@ with tab1:
     
     # ─── GENERATION FLOW WITH SSE ───
     if generate_btn and brief:
-        # Prepare image (convert to URL or base64 if uploaded)
+        # Upload image to GCS via API if provided
         image_url = None
         if uploaded_file:
-            # For now, we'll skip image upload and use URL only
-            # In production, you'd upload to S3/GCS and get URL
-            st.warning("🚧 Image upload to be implemented - using text-only generation for now")
-            image_url = None
+            with st.spinner("📤 Uploading product image..."):
+                try:
+                    uploaded_file.seek(0)
+                    files = {"file": (uploaded_file.name, uploaded_file.getvalue(), uploaded_file.type)}
+                    upload_resp = requests.post(f"{API_BASE}/api/upload-image", files=files, timeout=30)
+                    upload_resp.raise_for_status()
+                    image_url = upload_resp.json().get("url")
+                    st.success(f"✓ Image uploaded successfully")
+                except Exception as e:
+                    st.warning(f"⚠️ Image upload failed: {e}. Continuing without image.")
+                    image_url = None
         
         payload = {
             "brief": brief,

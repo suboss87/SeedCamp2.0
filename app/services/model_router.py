@@ -13,18 +13,16 @@ from app.models.schemas import SKUTier
 logger = logging.getLogger(__name__)
 
 
+_ROUTES = {
+    SKUTier.hero: lambda: (settings.video_model_pro, settings.cost_per_m_seedance_pro),
+    SKUTier.catalog: lambda: (settings.video_model_fast, settings.cost_per_m_seedance_fast),
+}
+
+
 def route(sku_tier: SKUTier) -> tuple[str, float]:
-    """
-    Select the video generation model based on SKU tier.
+    """Select the video generation model based on SKU tier.
     Returns (model_id, cost_per_million_tokens).
     """
-    if sku_tier == SKUTier.hero:
-        model_id = settings.video_model_pro
-        cost_per_m = settings.cost_per_m_seedance_pro
-        logger.info("Routing HERO SKU → %s ($%.2f/M tokens)", model_id, cost_per_m)
-    else:
-        model_id = settings.video_model_fast
-        cost_per_m = settings.cost_per_m_seedance_fast
-        logger.info("Routing CATALOG SKU → %s ($%.2f/M tokens)", model_id, cost_per_m)
-
+    model_id, cost_per_m = _ROUTES[sku_tier]()
+    logger.info("Routing %s SKU → %s ($%.2f/M tokens)", sku_tier.value.upper(), model_id, cost_per_m)
     return model_id, cost_per_m

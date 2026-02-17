@@ -2,19 +2,20 @@
 Monitoring and Observability
 Prometheus metrics, health checks, and observability utilities.
 """
+import time
 from typing import Dict, Any
 from datetime import datetime
 
+_start_time = time.time()
+
 # In-memory metrics store (use Redis/Prometheus in production)
+# Cost and per-tier video counts are tracked by cost_tracker (single source of truth)
 _metrics = {
     "videos_generated_total": 0,
     "videos_failed_total": 0,
     "api_requests_total": 0,
     "script_generation_duration_seconds": [],
     "video_generation_duration_seconds": [],
-    "total_cost_usd": 0.0,
-    "hero_videos": 0,
-    "catalog_videos": 0,
 }
 
 
@@ -33,41 +34,27 @@ def record_duration(metric: str, duration_seconds: float):
             _metrics[metric] = _metrics[metric][-1000:]
 
 
-def add_cost(cost_usd: float):
-    """Add to total cost."""
-    _metrics["total_cost_usd"] += cost_usd
+def _avg(metric_key: str) -> float:
+    """Average of a list metric, or 0 if empty."""
+    vals = _metrics[metric_key]
+    return sum(vals) / len(vals) if vals else 0
 
 
 def get_metrics() -> Dict[str, Any]:
     """Get current metrics snapshot."""
-    # Calculate averages for duration metrics
-    script_avg = (
-        sum(_metrics["script_generation_duration_seconds"])
-        / len(_metrics["script_generation_duration_seconds"])
-        if _metrics["script_generation_duration_seconds"]
-        else 0
-    )
-    video_avg = (
-        sum(_metrics["video_generation_duration_seconds"])
-        / len(_metrics["video_generation_duration_seconds"])
-        if _metrics["video_generation_duration_seconds"]
-        else 0
-    )
+    from app.services import cost_tracker
+    cost_summary = cost_tracker.get_summary()
 
     return {
         "videos_generated_total": _metrics["videos_generated_total"],
         "videos_failed_total": _metrics["videos_failed_total"],
         "api_requests_total": _metrics["api_requests_total"],
-        "script_generation_avg_seconds": round(script_avg, 2),
-        "video_generation_avg_seconds": round(video_avg, 2),
-        "total_cost_usd": round(_metrics["total_cost_usd"], 4),
-        "avg_cost_per_video": (
-            round(_metrics["total_cost_usd"] / _metrics["videos_generated_total"], 4)
-            if _metrics["videos_generated_total"] > 0
-            else 0
-        ),
-        "hero_videos": _metrics["hero_videos"],
-        "catalog_videos": _metrics["catalog_videos"],
+        "script_generation_avg_seconds": round(_avg("script_generation_duration_seconds"), 2),
+        "video_generation_avg_seconds": round(_avg("video_generation_duration_seconds"), 2),
+        "total_cost_usd": cost_summary.total_cost_usd,
+        "avg_cost_per_video": cost_summary.avg_cost_per_video,
+        "hero_videos": cost_summary.hero_videos,
+        "catalog_videos": cost_summary.catalog_videos,
     }
 
 
@@ -77,7 +64,7 @@ def get_health_status() -> Dict[str, Any]:
         "status": "healthy",
         "timestamp": datetime.utcnow().isoformat(),
         "metrics": get_metrics(),
-        "uptime_seconds": "N/A",  # Would need startup time tracking
+        "uptime_seconds": round(time.time() - _start_time, 1),
     }
 
 
