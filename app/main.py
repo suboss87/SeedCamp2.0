@@ -32,29 +32,27 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname
 logger = logging.getLogger(__name__)
 
 app = FastAPI(
-    title="AdCamp: D2C Video Ad Pipeline",
+    title="AdCamp: AI Content Generation Pipeline",
     description="""
-    Enterprise-ready AI video generation pipeline for e-commerce at scale.
-    
-    ## Features
-    - **Smart Model Routing**: Hero SKUs → Seedance Pro | Catalog → Pro Fast
-    - **Multi-Platform**: TikTok (9:16), Instagram (1:1), YouTube (16:9)
-    - **Cost-Optimized**: $0.08/video average (50% under target)
-    - **Observable**: Prometheus metrics, health checks, cost tracking
-    
-    ## Models Used
-    - **Seed 1.8**: Script generation ($0.25/$2.00 per M tokens)
-    - **Seedance 1.5 Pro**: Hero videos ($1.20/M tokens)
-    - **Seedance 1.0 Pro Fast**: Catalog videos ($0.70/M tokens)
-    
-    ## Rate Limits
-    - API calls: Limited by BytePlus ModelArk API quotas
-    - Video generation: 2-10 concurrent tasks (recommended)
-    
-    ## Cost Implications
-    - Script generation: ~$0.002/video
-    - Video generation: $0.076-0.132/video (depends on SKU tier)
-    - Total: $0.078-0.134/video
+    Reference architecture for cost-optimized AI content generation at scale,
+    powered by BytePlus ModelArk.
+
+    ## Architecture Patterns
+    - **Tiered Model Routing**: Route workloads to premium or cost-optimized models based on business value
+    - **Async Task Pipeline**: Submit → poll → result for long-running AI generation
+    - **Token-Aware Cost Tracking**: Real-time cost attribution per request
+    - **Batch Orchestration**: Semaphore-controlled concurrent generation
+    - **Resilient API Integration**: Retry with backoff, rate-limit honoring, error classification
+
+    ## Implementation: Video Generation
+    - **Seed 1.8**: Script/copy generation (OpenAI-compatible)
+    - **Seedance 1.5 Pro**: Premium-tier video ($1.20/M tokens)
+    - **Seedance 1.0 Pro Fast**: Standard-tier video ($0.70/M tokens)
+    - **Multi-format output**: TikTok (9:16), Instagram (1:1), YouTube (16:9)
+
+    ## Adapt for Your Use Case
+    Replace the video generation step with any AI model — image generation,
+    audio synthesis, document creation — the pipeline patterns remain the same.
     """,
     version="1.0.0",
     contact={
