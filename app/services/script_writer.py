@@ -1,6 +1,6 @@
 """
 Script Writer — Seed 1.8
-Step 2 of the D2C Pipeline: converts campaign brief into
+Step 2 of the Pipeline: converts campaign brief into
 ad copy, scene descriptions, and optimized Seedance video prompts.
 """
 import json
@@ -20,7 +20,7 @@ _client = AsyncOpenAI(
 )
 
 SYSTEM_PROMPT = """\
-You are an expert D2C video ad creative director.
+You are an expert video ad creative director.
 Given a product campaign brief, produce JSON with exactly these keys:
 
 {

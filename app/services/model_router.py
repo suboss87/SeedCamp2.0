@@ -1,5 +1,5 @@
 """
-Smart Model Router — Step 3 of the D2C Pipeline
+Smart Model Router — Step 3 of the Pipeline
 Routes each SKU to the optimal Seedance model tier based on business value.
 
 Hero SKUs (Top 20%)  → Seedance 1.5 Pro     ($1.20/M tokens, cinematic)

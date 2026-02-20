@@ -4,7 +4,7 @@ This file provides guidance to WARP (warp.dev) when working with code in this re
 
 ## Project Overview
 
-**AdCamp** is an enterprise-ready AI video generation pipeline for D2C e-commerce, built on BytePlus ModelArk APIs. It generates platform-optimized product videos at scale with intelligent cost optimization through smart model routing.
+**AdCamp** is a reference architecture for cost-optimized AI video generation at scale, built on BytePlus ModelArk APIs. It generates platform-optimized videos with intelligent cost optimization through smart model routing — applicable across e-commerce, real estate, automotive, media, and any industry with inventory at varying business value.
 
 ### Key Architecture Concept: Smart Model Routing
 

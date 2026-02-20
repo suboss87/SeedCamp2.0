@@ -1,4 +1,4 @@
-# D2C Video Ad Pipeline — Logical Architecture
+# AdCamp Video Generation Pipeline — Logical Architecture
 
 ## Overview
 
@@ -8,7 +8,7 @@ The logical architecture describes the **business logic flow** — what happens 
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                        D2C VIDEO AD PIPELINE                        │
+│                    VIDEO GENERATION PIPELINE                         │
 │                       (Logical Architecture)                        │
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                     │

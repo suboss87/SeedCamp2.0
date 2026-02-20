@@ -20,7 +20,7 @@ class Platform(str, Enum):
 # ---- Requests ----
 
 class GenerateRequest(BaseModel):
-    """D2C Video Ad Pipeline input."""
+    """Video Generation Pipeline input."""
     brief: str = Field(..., description="Campaign brief, e.g. 'Summer collection, beach vibes, energetic'")
     product_image_url: Optional[str] = Field(None, description="Public URL of the product image")
     sku_tier: SKUTier = SKUTier.catalog

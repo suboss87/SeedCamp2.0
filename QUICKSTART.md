@@ -129,7 +129,7 @@ Expected response:
 ```json
 {
   "status": "ok",
-  "pipeline": "D2C Video Ad Pipeline",
+  "pipeline": "AdCamp Video Generation Pipeline",
   "models": {
     "script": "seed-1-8-251228",
     "video_pro": "seedance-1-5-pro-251215",

@@ -1,6 +1,6 @@
 """
 Video Generation — Seedance 1.5 Pro / 1.0 Pro Fast
-Step 4 of the D2C Pipeline: asynchronous video generation with polling.
+Step 4 of the Pipeline: asynchronous video generation with polling.
 Model is selected by the Smart Router (step 3).
 """
 import asyncio

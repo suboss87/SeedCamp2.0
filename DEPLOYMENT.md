@@ -1,6 +1,6 @@
 # AdCamp Deployment Guide
 
-This guide covers deploying the D2C Video Ad Pipeline to production using **BytePlus VKE (Vital Kubernetes Engine)** and other cloud platforms.
+This guide covers deploying the AdCamp Video Generation Pipeline to production using **BytePlus VKE (Vital Kubernetes Engine)** and other cloud platforms.
 
 ## Table of Contents
 - [BytePlus VKE Deployment (Recommended)](#byteplus-vke-deployment-recommended)

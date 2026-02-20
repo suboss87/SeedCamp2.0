@@ -1,7 +1,7 @@
 """
-D2C Video Ad Pipeline — FastAPI Application
-AI-Powered Product Video Generation at Scale with ModelArk.
-Matches the 5-step architecture from the Solution Brief.
+AdCamp — FastAPI Application
+AI-Powered Video Generation at Scale with BytePlus ModelArk.
+Implements the 5-step pipeline: Input → Script Gen → Smart Router → Video Gen → Output.
 """
 import asyncio
 import json
@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 app = FastAPI(
     title="AdCamp: AI Content Generation Pipeline",
     description="""
-    Reference architecture for cost-optimized AI content generation at scale,
+    Reference architecture for cost-optimized AI video generation at scale,
     powered by BytePlus ModelArk.
 
     ## Architecture Patterns
@@ -44,15 +44,14 @@ app = FastAPI(
     - **Batch Orchestration**: Semaphore-controlled concurrent generation
     - **Resilient API Integration**: Retry with backoff, rate-limit honoring, error classification
 
-    ## Implementation: Video Generation
+    ## Models
     - **Seed 1.8**: Script/copy generation (OpenAI-compatible)
-    - **Seedance 1.5 Pro**: Premium-tier video ($1.20/M tokens)
-    - **Seedance 1.0 Pro Fast**: Standard-tier video ($0.70/M tokens)
-    - **Multi-format output**: TikTok (9:16), Instagram (1:1), YouTube (16:9)
+    - **Seedance Pro**: Premium-tier video ($1.20/M tokens)
+    - **Seedance Pro Fast**: Standard-tier video ($0.70/M tokens)
 
     ## Adapt for Your Use Case
-    Replace the video generation step with any AI model — image generation,
-    audio synthesis, document creation — the pipeline patterns remain the same.
+    Replace tiers, model IDs, and the video generation step to match your
+    industry and AI provider — the pipeline patterns remain the same.
     """,
     version="1.0.0",
     contact={
@@ -109,7 +108,7 @@ def _track_success_metrics(cost_usd: float, sku_tier: SKUTier):
 @app.on_event("startup")
 async def startup_event():
     """Validate configuration and initialize services on startup."""
-    logger.info("Starting AdCamp D2C Video Ad Pipeline...")
+    logger.info("Starting AdCamp Video Generation Pipeline...")
 
     # Initialize Firestore
     try:
@@ -150,7 +149,7 @@ async def startup_event():
 async def health():
     return {
         "status": "ok",
-        "pipeline": "D2C Video Ad Pipeline",
+        "pipeline": "AdCamp Video Generation Pipeline",
         "models": {
             "script": settings.script_model,
             "video_pro": settings.video_model_pro,
@@ -210,11 +209,11 @@ async def upload_image(file: UploadFile = File(...)):
 @app.post("/api/generate", response_model=GenerateResponse)
 async def generate_ad(req: GenerateRequest):
     """
-    D2C Video Ad Pipeline:
+    Video Generation Pipeline:
     1. INPUT:        Campaign brief + product image + SKU tier
-    2. SEED 1.8:     Script generation (ad copy + Seedance prompt)
-    3. MODEL ROUTER: Hero → Seedance Pro | Catalog → Pro Fast
-    4. SEEDANCE:     Video generation (async)
+    2. SCRIPT GEN:   Seed 1.8 generates copy + Seedance prompt
+    3. SMART ROUTER: Hero → Seedance Pro | Catalog → Pro Fast
+    4. VIDEO GEN:    Async video generation with polling
     """
     monitoring.increment_counter("api_requests_total")
 
@@ -277,7 +276,7 @@ async def get_cost_summary():
 @app.post("/api/generate-stream")
 async def generate_ad_stream(req: GenerateRequest):
     """
-    D2C Video Ad Pipeline with Server-Sent Events (SSE) for live progress.
+    Video Generation Pipeline with Server-Sent Events (SSE) for live progress.
     Streams progress updates to the frontend in real-time.
     """
     async def event_generator():

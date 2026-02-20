@@ -1,4 +1,4 @@
-# D2C Video Ad Pipeline — Physical Architecture
+# AdCamp Video Generation Pipeline — Physical Architecture
 
 ## Overview
 

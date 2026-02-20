@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**AdCamp** — Enterprise AI video generation pipeline for D2C e-commerce. Generates platform-optimized product videos using BytePlus ModelArk's Seed and Seedance models. The core differentiator is **smart model routing**: Hero SKUs (top 20%) route to premium Seedance Pro, Catalog SKUs (80%) route to cost-optimized Pro Fast, achieving $0.08/video average.
+**AdCamp** — Reference architecture for cost-optimized AI video generation at scale, built on BytePlus ModelArk's Seed and Seedance models. The core differentiator is **smart model routing**: Hero items (top 20%) route to premium Seedance Pro, Catalog items (80%) route to cost-optimized Pro Fast. Applicable across any industry with inventory at varying business value (e-commerce, real estate, automotive, media).
 
 ## Common Commands
 

@@ -22,7 +22,7 @@ _client = AsyncOpenAI(
 )
 
 SYSTEM_PROMPT = """\
-You are an expert D2C advertising creative director. Given a campaign theme \
+You are an expert advertising creative director. Given a campaign theme \
 and product details, write a focused advertising brief (2-4 sentences) that:
 
 1. Captures the campaign mood/theme
