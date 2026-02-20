@@ -1,16 +1,22 @@
 """
-AdCamp - AI Video Ad Generation Dashboard
-Premium multi-page shell with st.navigation()
+AdCamp — AI Video Ad Generation Dashboard
+Single-page layout: sidebar analytics + two tabs + campaign history
 """
 import streamlit as st
 
 from config import (
     ACCENT, ACCENT_LIGHT,
-    BORDER, BORDER_SUBTLE,
+    BORDER,
     SUCCESS, SUCCESS_LIGHT, ERROR, ERROR_LIGHT,
-    TEXT_PRIMARY, TEXT_SECONDARY, TEXT_TERTIARY,
+    TEXT_SECONDARY, TEXT_TERTIARY,
     SHADOW_SM, SHADOW_MD,
     API_BASE,
+)
+from sections import (
+    render_sidebar_analytics,
+    render_quick_video,
+    render_campaign_batch,
+    render_campaign_history,
 )
 
 # =============================================================================
@@ -43,26 +49,6 @@ st.markdown(f"""
     .block-container {{
         padding: 2.5rem 2rem 2rem 2rem;
         max-width: 980px;
-    }}
-
-    /* ─── Sidebar nav items ─── */
-    [data-testid="stSidebarNav"] a {{
-        font-size: 0.875rem !important;
-        font-weight: 500 !important;
-        color: {TEXT_SECONDARY} !important;
-        padding: 0.5rem 1rem !important;
-        border-radius: 8px !important;
-        margin: 1px 0.5rem !important;
-        transition: all 0.15s ease !important;
-    }}
-    [data-testid="stSidebarNav"] a:hover {{
-        background: {BORDER_SUBTLE} !important;
-        color: {TEXT_PRIMARY} !important;
-    }}
-    [data-testid="stSidebarNav"] a[aria-selected="true"] {{
-        background: {ACCENT_LIGHT} !important;
-        color: {ACCENT} !important;
-        font-weight: 600 !important;
     }}
 
     /* ─── Cards (shadow-on-hover) ─── */
@@ -131,29 +117,43 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # =============================================================================
-#  NAVIGATION
+#  SESSION STATE DEFAULTS
 # =============================================================================
 
-from pages.campaigns import page as campaigns_page
-from pages.campaign_builder import page as builder_page
-from pages.campaign_results import page as results_page
-from pages.quick_test import page as quick_test_page
-from pages.analytics import page as analytics_page
-
-pages = {
-    "Campaigns": [
-        st.Page(campaigns_page, title="All Campaigns", icon=":material/campaign:", url_path="campaigns"),
-        st.Page(builder_page, title="New Campaign", icon=":material/add_circle:", url_path="new-campaign"),
-        st.Page(results_page, title="Results", icon=":material/play_circle:", url_path="results"),
-    ],
-    "Tools": [
-        st.Page(quick_test_page, title="Quick Test", icon=":material/science:", url_path="quick-test"),
-        st.Page(analytics_page, title="Analytics", icon=":material/analytics:", url_path="analytics"),
-    ],
+_defaults = {
+    "active_campaign_id": None,
+    "polling_campaign_id": None,
+    "_refresh_campaigns": False,
+    "_refresh_analytics": False,
 }
+for key, value in _defaults.items():
+    if key not in st.session_state:
+        st.session_state[key] = value
 
-nav = st.navigation(pages)
-nav.run()
+# =============================================================================
+#  SIDEBAR: Analytics
+# =============================================================================
+
+render_sidebar_analytics()
+
+# =============================================================================
+#  MAIN: Tabs
+# =============================================================================
+
+tab_video, tab_campaign = st.tabs(["Quick Video", "Campaign Batch"])
+
+with tab_video:
+    render_quick_video()
+
+with tab_campaign:
+    render_campaign_batch()
+
+# =============================================================================
+#  CAMPAIGN HISTORY (below tabs)
+# =============================================================================
+
+st.divider()
+render_campaign_history()
 
 # =============================================================================
 #  FOOTER
