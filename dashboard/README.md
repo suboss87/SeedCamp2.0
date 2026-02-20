@@ -173,7 +173,7 @@ While optimized for desktop (wide layout), the design gracefully degrades:
 ### Metric Cards
 ```html
 <div class="metric-card">
-    <div class="metric-value">$0.08</div>
+    <div class="metric-value">$0.09</div>
     <div class="metric-label">Total Cost</div>
 </div>
 ```

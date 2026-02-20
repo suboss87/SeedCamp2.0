@@ -49,20 +49,10 @@ The logical architecture describes the **business logic flow** — what happens 
 │                          └────────┬───────────┘                     │
 │                                   ▼                                 │
 │                       ┌──────────────────────┐                      │
-│                       │  5. POST-PROCESSING  │                      │
-│                       │     (FFmpeg)         │                      │
-│                       │                      │                      │
-│                       │  ┌────┐ ┌────┐ ┌────┐│                      │
-│                       │  │9:16│ │1:1 │ │16:9││                      │
-│                       │  │TT  │ │IG  │ │YT  ││                      │
-│                       │  └────┘ └────┘ └────┘│                      │
-│                       └──────────┬───────────┘                      │
-│                                  ▼                                  │
-│                       ┌──────────────────────┐                      │
-│                       │  6. OUTPUT & COST    │                      │
-│                       │  Platform-ready MP4s │                      │
+│                       │  5. OUTPUT & COST    │                      │
+│                       │  Platform-ready MP4  │                      │
 │                       │  + Cost per video    │                      │
-│                       │  Target: $0.16/video │                      │
+│                       │  ~$0.09/video blend  │                      │
 │                       └──────────────────────┘                      │
 └─────────────────────────────────────────────────────────────────────┘
 ```
@@ -75,8 +65,7 @@ The logical architecture describes the **business logic flow** — what happens 
 | 2. Script Writer | Campaign brief (text) | Ad copy, scene description, video prompt, camera direction | Seed 1.8 |
 | 3. Model Router | SKU tier (hero / catalog) | Model ID + cost rate | Business logic |
 | 4. Video Gen | Video prompt + optional image | Raw MP4 video (720p/1080p, 2-12s) | Seedance Pro or Pro Fast |
-| 5. Post-Process | Raw MP4 | Platform-specific variants (9:16, 1:1, 16:9) | FFmpeg |
-| 6. Output | All assets | Platform-ready files + cost breakdown | Cost Tracker |
+| 5. Output | Video URL + cost data | Platform-ready MP4 + cost breakdown | Cost Tracker |
 
 ## Smart Model Routing Logic
 

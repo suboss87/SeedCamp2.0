@@ -1,7 +1,6 @@
 """
 Cost Tracker
-Tracks token usage and calculates cost per video.
-Proves the $0.16/video target from the Solution Brief V2.
+Tracks token usage and calculates cost per video generation.
 """
 import logging
 from typing import Optional

@@ -267,7 +267,7 @@ async def wait_for_result(task_id: str):
 
 @app.get("/api/cost-summary", response_model=CostSummary)
 async def get_cost_summary():
-    """Aggregate cost tracking — proves the $0.27/video target."""
+    """Aggregate cost tracking across all generated videos."""
     return cost_tracker.get_summary()
 
 
@@ -282,22 +282,22 @@ async def generate_ad_stream(req: GenerateRequest):
     async def event_generator():
         try:
             # Steps 1-4: Run pipeline
-            yield f"data: {json.dumps({'step': 1, 'status': 'started', 'message': '🚀 Starting pipeline...', 'progress': 5})}\n\n"
+            yield f"data: {json.dumps({'step': 1, 'status': 'started', 'message': 'Starting pipeline...', 'progress': 5})}\n\n"
             await asyncio.sleep(0.5)
 
-            yield f"data: {json.dumps({'step': 2, 'status': 'running', 'message': '📝 Generating ad script with Seed 1.8...', 'progress': 15})}\n\n"
+            yield f"data: {json.dumps({'step': 2, 'status': 'running', 'message': 'Generating ad script with Seed 1.8...', 'progress': 15})}\n\n"
             result = await _run_pipeline(req)
             script = result["script"]
             task_id = result["task_id"]
             model_id = result["model_id"]
 
             model_name = "Seedance 1.5 Pro" if "1-5" in model_id else "Seedance 1.0 Pro Fast"
-            yield f"data: {json.dumps({'step': 2, 'status': 'complete', 'message': f'✅ Script generated', 'progress': 35, 'data': {'script': script.dict(), 'tokens': {'input': result['in_tokens'], 'output': result['out_tokens']}}})}\n\n"
-            yield f"data: {json.dumps({'step': 3, 'status': 'complete', 'message': f'✅ Routed to {model_name}', 'progress': 45, 'data': {'model': model_id, 'cost_per_m': result['cost_per_m']}})}\n\n"
-            yield f"data: {json.dumps({'step': 4, 'status': 'complete', 'message': '✅ Video task created', 'progress': 55, 'data': {'task_id': task_id}})}\n\n"
+            yield f"data: {json.dumps({'step': 2, 'status': 'complete', 'message': 'Script generated', 'progress': 35, 'data': {'script': script.model_dump(), 'tokens': {'input': result['in_tokens'], 'output': result['out_tokens']}}})}\n\n"
+            yield f"data: {json.dumps({'step': 3, 'status': 'complete', 'message': f'Routed to {model_name}', 'progress': 45, 'data': {'model': model_id, 'cost_per_m': result['cost_per_m']}})}\n\n"
+            yield f"data: {json.dumps({'step': 4, 'status': 'complete', 'message': 'Video task created', 'progress': 55, 'data': {'task_id': task_id}})}\n\n"
 
             # Step 5: Poll for video completion
-            yield f"data: {json.dumps({'step': 5, 'status': 'running', 'message': '⏳ Generating video (this may take 30-60s)...', 'progress': 60})}\n\n"
+            yield f"data: {json.dumps({'step': 5, 'status': 'running', 'message': 'Generating video (this may take 30-60s)...', 'progress': 60})}\n\n"
 
             max_wait = settings.poll_timeout
             poll_interval = settings.poll_interval
@@ -310,28 +310,28 @@ async def generate_ad_stream(req: GenerateRequest):
                     _track_success_metrics(result["cost"].total_cost_usd, req.sku_tier)
                     data_final = {
                         'step': 5, 'status': 'complete',
-                        'message': '✅ Video generated successfully!',
+                        'message': 'Video generated successfully',
                         'progress': 100,
-                        'data': {'video_url': status.video_url, 'cost': result["cost"].dict(), 'script': script.dict()}
+                        'data': {'video_url': status.video_url, 'cost': result["cost"].model_dump(), 'script': script.model_dump()}
                     }
                     yield f"data: {json.dumps(data_final)}\n\n"
                     break
 
                 elif status.status == "Failed":
                     monitoring.increment_counter("videos_failed_total")
-                    yield f"data: {json.dumps({'step': 5, 'status': 'failed', 'message': f'❌ Generation failed: {status.error}', 'progress': 0})}\n\n"
+                    yield f"data: {json.dumps({'step': 5, 'status': 'failed', 'message': f'Generation failed: {status.error}', 'progress': 0})}\n\n"
                     break
 
                 elapsed += poll_interval
                 progress_pct = min(60 + (elapsed / max_wait) * 35, 95)
-                yield f"data: {json.dumps({'step': 5, 'status': 'running', 'message': f'⏳ Generating... {elapsed}s elapsed', 'progress': int(progress_pct)})}\n\n"
+                yield f"data: {json.dumps({'step': 5, 'status': 'running', 'message': f'Generating... {elapsed}s elapsed', 'progress': int(progress_pct)})}\n\n"
                 await asyncio.sleep(poll_interval)
             else:
-                yield f"data: {json.dumps({'step': 5, 'status': 'timeout', 'message': f'⚠️ Timeout after {max_wait}s. Task ID: {task_id}', 'progress': 0, 'data': {'task_id': task_id}})}\n\n"
+                yield f"data: {json.dumps({'step': 5, 'status': 'timeout', 'message': f'Timeout after {max_wait}s. Task ID: {task_id}', 'progress': 0, 'data': {'task_id': task_id}})}\n\n"
 
         except Exception as e:
             monitoring.increment_counter("videos_failed_total")
             logger.exception("Streaming pipeline failed")
-            yield f"data: {json.dumps({'status': 'error', 'message': f'❌ Error: {str(e)}', 'progress': 0})}\n\n"
+            yield f"data: {json.dumps({'status': 'error', 'message': f'Error: {str(e)}', 'progress': 0})}\n\n"
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")

@@ -30,11 +30,11 @@ The physical architecture describes **what runs where** — processes, ports, pr
 │  │  │  LOCAL FILE SYSTEM  │◄─────────────────────┤            │    │
 │  │  │  output/            │   Write MP4s         │            │    │
 │  │  │  • SKU_tiktok.mp4   │                      │            │    │
-│  │  │  • SKU_instagram.mp4│              ┌───────┴────────┐   │    │
-│  │  │  • SKU_youtube.mp4  │              │  FFMPEG        │   │    │
-│  │  └─────────────────────┘              │  (subprocess)  │   │    │
-│  │                                       │  Scale + Crop  │   │    │
-│  │  ┌─────────────────────┐              └────────────────┘   │    │
+│  │  │  • SKU_instagram.mp4│                      │            │    │
+│  │  │  • SKU_youtube.mp4  │                      │            │    │
+│  │  └─────────────────────┘                      │            │    │
+│  │                                                │            │    │
+│  │  ┌─────────────────────┐                      │            │    │
 │  │  │  .env               │                                   │    │
 │  │  │  ARK_API_KEY=***    │                                   │    │
 │  │  └─────────────────────┘                                   │    │
@@ -81,7 +81,7 @@ The physical architecture describes **what runs where** — processes, ports, pr
 | Port | 8000 |
 | Protocol | HTTP REST API |
 | Role | Pipeline orchestration, model routing, cost calculation |
-| Dependencies | `openai` (Seed 1.8), `httpx` (Seedance API), `asyncio` (FFmpeg) |
+| Dependencies | `openai` (Seed 1.8), `httpx` (Seedance API), `asyncio` (polling) |
 
 ### External API — BytePlus ModelArk
 | Property | Value |
@@ -90,13 +90,6 @@ The physical architecture describes **what runs where** — processes, ports, pr
 | Auth | Bearer token (`ARK_API_KEY`) |
 | Region | ap-southeast |
 | Protocol | HTTPS REST |
-
-### Post-Processing — FFmpeg
-| Property | Value |
-|----------|-------|
-| Execution | Local subprocess (`asyncio.create_subprocess_exec`) |
-| Fallback | Copies original file if FFmpeg not installed |
-| Operations | Scale, crop, re-encode to H.264/AAC |
 
 ### Storage — Local File System
 | Property | Value |
@@ -136,11 +129,11 @@ Browser ──HTTP──▶ Streamlit (:8501) ──HTTP──▶ FastAPI (:8000
                                                  │
                                     ┌────────────┼────────────┐
                                     │            │            │
-                                 HTTPS        HTTPS        Local
-                                    │            │            │
-                                    ▼            ▼            ▼
-                               Seed 1.8    Seedance     FFmpeg
-                               (sync)     (async)    (subprocess)
+                                 HTTPS        HTTPS
+                                    │            │
+                                    ▼            ▼
+                               Seed 1.8    Seedance
+                               (sync)     (async)
 ```
 
 ## Production Scaling Notes

@@ -37,7 +37,7 @@ async def main():
         print("\nUploading product catalog...")
         with open(CSV_PATH, "rb") as f:
             resp = await client.post(
-                f"{API_URL}/api/campaigns/{campaign_id}/products/csv",
+                f"{API_URL}/api/campaigns/{campaign_id}/products",
                 files={"file": ("products.csv", f, "text/csv")},
             )
         resp.raise_for_status()

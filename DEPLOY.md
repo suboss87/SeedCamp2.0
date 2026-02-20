@@ -179,7 +179,7 @@ gcloud run services update-traffic adcamp-api \
 | Secret Manager | $0.40 |
 | **Total** | **~$12-22/month** |
 
-**Plus** ModelArk API costs: ~$0.08/video
+**Plus** ModelArk API costs: ~$0.09/video (blended average)
 
 ### Optimize Costs
 

@@ -12,16 +12,15 @@ The pipeline's core differentiator is **automatic tier-based routing**:
 - **Hero SKUs** (top 20% products) → `Seedance 1.5 Pro` ($1.20/M tokens, premium quality)
 - **Catalog SKUs** (80% inventory) → `Seedance 1.0 Pro Fast` ($0.70/M tokens, cost-optimized)
 
-This achieves **$0.08/video** average cost (50% under target), enabling 34,500+ videos/year for ~$2,760.
+This achieves **~$0.09/video** blended cost (20/80 premium/standard split), enabling 34,500+ videos/year for ~$3,105.
 
-### Pipeline Flow (6 Steps)
+### Pipeline Flow (5 Steps)
 
 1. **Input**: Campaign brief + optional product image + SKU tier
-2. **Script Generation**: `Seed 1.8` generates ad copy, scene description, and video prompt (~5s, $0.002)
+2. **Script Generation**: `Seed 1.8` generates ad copy, scene description, and video prompt (~5s, ~$0.001)
 3. **Smart Router**: Routes to appropriate Seedance model based on SKU tier
-4. **Video Generation**: Async task creation via ModelArk API (~30s, $0.076-0.132)
-5. **Post-Processing**: FFmpeg generates platform variants (TikTok 9:16, Instagram 1:1, YouTube 16:9)
-6. **Output**: Platform-ready MP4 files
+4. **Video Generation**: Async task creation via ModelArk API (~30s, $0.08-0.13)
+5. **Output**: Platform-ready MP4 URLs + cost breakdown
 
 ## Development Commands
 
@@ -47,7 +46,7 @@ ruff check app/ --fix    # Auto-fix linting issues
 
 ### Docker
 ```bash
-make docker-build       # Build image (multi-stage, includes FFmpeg)
+make docker-build       # Build image (multi-stage)
 make docker-up          # Start services via docker-compose
 make docker-down        # Stop services
 ```
@@ -128,10 +127,6 @@ aws logs tail /ecs/adcamp-api --follow --region ap-southeast-1
    - Combines script tokens (Seed 1.8) + estimated video tokens
    - Returns `CostSummary` with per-component breakdown
 
-5. **`post_process.py`** - FFmpeg platform variants
-   - Converts single video to multiple aspect ratios
-   - Uses subprocess to call FFmpeg (must be in PATH/Docker image)
-
 ### Retry Logic (`app/utils/retry.py`)
 
 **Critical for production**: All ModelArk API calls wrapped in `@retry_with_backoff`.
@@ -182,7 +177,7 @@ Metrics are **not persisted** across restarts (extend to Redis/Prometheus for pr
 
 ### Platform Organization (`deploy/`)
 
-- **`deploy/docker/`**: Dockerfile (API + FFmpeg), docker-compose.yml, Dockerfile.dashboard (Streamlit)
+- **`deploy/docker/`**: Dockerfile (API), docker-compose.yml, Dockerfile.dashboard (Streamlit)
 - **`deploy/gcp/`**: Cloud Run configs, Terraform templates, deployment scripts
 - **`deploy/aws/`**: ECS Fargate + Terraform (VPC, ALB, Secrets Manager)
 - **`deploy/byteplus/`**: VKE Kubernetes manifests (namespace, deployment, service, ingress)
@@ -193,7 +188,7 @@ Metrics are **not persisted** across restarts (extend to Redis/Prometheus for pr
 
 **Multi-stage build** (`deploy/docker/Dockerfile`):
 1. **Builder stage**: Compile Python dependencies
-2. **Runtime stage**: Copy deps + FFmpeg + app code
+2. **Runtime stage**: Copy deps + app code
 3. **Key**: Uses `ENV PORT=${PORT}` for Cloud Run compatibility (defaults to 8000, Cloud Run overrides to 8080)
 4. **CMD**: `uvicorn app.main:app --host 0.0.0.0 --port ${PORT}`
 
@@ -254,8 +249,7 @@ Metrics are **not persisted** across restarts (extend to Redis/Prometheus for pr
 3. **Image size**: ModelArk requires min 300px height (267px will fail with cryptic error)
 4. **Metrics persistence**: In-memory only, resets on container restart
 5. **No video download**: Videos returned as URLs (hosted by ModelArk), not stored locally
-6. **Post-processing**: Currently not implemented in API endpoints (only in services layer)
-7. **Dashboard API URL**: Must be set via `API_URL` env var (defaults to localhost)
+6. **Dashboard API URL**: Must be set via `API_URL` env var (defaults to localhost)
 
 ## BytePlus ModelArk Specifics
 

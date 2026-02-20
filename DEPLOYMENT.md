@@ -189,7 +189,7 @@ For quick local or VM deployment using Docker Compose:
 ### Prerequisites
 
 - Python 3.10+
-- FFmpeg (for video post-processing)
+- FFmpeg (optional, for video post-processing if extended)
 - BytePlus ModelArk API key
 
 ### Setup
@@ -282,7 +282,7 @@ For different environments, create separate config files:
    - Suitable for non-critical workloads
 
 4. **Monitor ModelArk API costs**:
-   - Target: $0.16/video (current: ~$0.08/video)
+   - Blended average: ~$0.09/video (20/80 premium/standard split)
    - Use Catalog SKUs (Pro Fast) for 80% of videos
    - Reserve Hero SKUs (Pro) for top 20% products
 

@@ -17,7 +17,7 @@ Every industry scaling AI video hits this: real estate firms generating tours fo
 
 **AdCamp is that system.** Fork it, change 4 files for your industry, and you have a pipeline that routes each item to the right Seedance model based on its business value — with cost tracking, batch processing, and failure handling built in.
 
-**The result**: ~$0.33/video blended cost (vs $0.49 all-premium). At 10,000 items, that's ~$45K/year in AI costs — replacing what would cost millions in manual video production.
+**The result**: ~$0.09/video blended cost (vs $0.13 all-premium). At 10,000 items, that's ~$12K/year in AI costs — replacing what would cost millions in manual video production.
 
 ## Who Should Fork This
 
@@ -54,7 +54,7 @@ This reference architecture demonstrates five production-grade patterns that tra
 Route workloads to different models based on business value — premium quality for high-value items, cost-optimized for the long tail.
 
 ```python
-# app/services/model_router.py — 29 lines, pure function
+# app/services/model_router.py — 28 lines, pure function
 _ROUTES = {
     SKUTier.hero:    lambda: (settings.video_model_pro,  settings.cost_per_m_seedance_pro),
     SKUTier.catalog: lambda: (settings.video_model_fast, settings.cost_per_m_seedance_fast),
@@ -126,28 +126,26 @@ The tiered routing pattern applies wherever you have inventory with varying busi
 
 This reference architecture is implemented as a complete video generation pipeline using BytePlus ModelArk's Seed and Seedance models.
 
-<!-- TODO: Replace with redrawn pipeline diagram showing: Input → Script Gen (Seed 1.8) → Smart Router → Seedance Pro/Fast → Output -->
-
 ### Pipeline Flow
 
-| Step | Component | What It Does | Model | Cost (5s, 720p, audio) |
+| Step | Component | What It Does | Model | Cost (5s, 720p) |
 |------|-----------|-------------|-------|------|
 | 1 | **Input** | Campaign brief + product image + tier | — | — |
-| 2 | **Script Gen** | AI generates ad copy + video prompt | Seed 1.8 | ~$0.002 |
+| 2 | **Script Gen** | AI generates ad copy + video prompt | Seed 1.8 | ~$0.001 |
 | 3 | **Smart Router** | Routes premium vs standard tier | — | — |
-| 4 | **Video Gen** | Async video generation with polling | Seedance Pro/Fast | $0.29-0.49 |
+| 4 | **Video Gen** | Async video generation with polling | Seedance Pro/Fast | $0.08-0.13 |
 | 5 | **Output** | Platform-ready MP4 (TikTok, IG, YouTube) | — | — |
 
 ### Model Economics
 
 ```
-Premium Tier  ──▶  Seedance 1.5 Pro     ($1.20/M tokens) ──▶  ~$0.49/video
-Standard Tier ──▶  Seedance 1.0 Pro Fast ($0.70/M tokens) ──▶  ~$0.29/video
+Premium Tier  ──▶  Seedance 1.5 Pro     ($1.20/M tokens) ──▶  ~$0.13/video
+Standard Tier ──▶  Seedance 1.0 Pro Fast ($0.70/M tokens) ──▶  ~$0.08/video
 
-Blended (20/80 split): ~$0.33/video
+Blended (20/80 split): ~$0.09/video
 ```
 
-> Token formula: `(Width x Height x FPS x Duration) / 1024 x Coefficient` — [BytePlus pricing docs](https://docs.byteplus.com/en/docs/ModelArk/1544106)
+> Token estimation: `(Width x Height x FPS x Duration) / 1024` — see `app/services/pipeline.py`. Actual BytePlus billing may differ; check [BytePlus pricing docs](https://docs.byteplus.com/en/docs/ModelArk/1544106) for current rates.
 
 > **Seedance 2.0 Note**: BytePlus is rolling out Seedance 2.0 with per-second billing (replacing per-token for video). This architecture adapts easily — update model IDs and cost constants in `app/config.py`. The routing, pipeline, and cost-tracking patterns remain unchanged.
 
@@ -155,9 +153,9 @@ Blended (20/80 split): ~$0.33/video
 
 | Scale | Items | Videos/Year | Annual Cost | vs Manual Production |
 |-------|-------|-------------|-------------|---------------------|
-| Small | 500 | ~6,900 | ~$2,277 | 99.5% savings |
-| Medium | 2,500 | ~34,500 | ~$11,385 | 99.3% savings |
-| Large | 10,000 | ~138,000 | ~$45,540 | 99.1% savings |
+| Small | 500 | ~6,900 | ~$621 | 99.9% savings |
+| Medium | 2,500 | ~34,500 | ~$3,105 | 99.8% savings |
+| Large | 10,000 | ~138,000 | ~$12,420 | 99.8% savings |
 
 *3 platforms x 30% monthly refresh x 12 months + 25% buffer. Enterprise pricing from BytePlus can reduce costs further.*
 
@@ -213,7 +211,7 @@ The Streamlit dashboard provides campaign management, A/B model comparison, and 
 | `/api/status/{task_id}` | GET | Poll generation status |
 | `/api/wait/{task_id}` | GET | Block until ready |
 | `/api/campaigns/` | POST | Create a campaign |
-| `/api/campaigns/{id}/products/csv` | POST | Upload product catalog (CSV) |
+| `/api/campaigns/{id}/products` | POST | Upload product catalog (CSV) |
 | `/api/campaigns/{id}/generate` | POST | Start batch generation |
 | `/api/cost-summary` | GET | Aggregate cost tracking |
 | `/health` | GET | Health + model config |
