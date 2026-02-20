@@ -48,9 +48,9 @@ def step_indicator(status: str) -> str:
     return _STEP_INDICATORS.get(status, "&#8211;")
 
 
-# Cost labels & targets
-COST_LABELS = {"catalog": "$0.08 / video", "hero": "$0.13 / video"}
-COST_TARGET_PER_VIDEO = 0.16
+# Cost labels & targets (standard pricing: 5s, 720p, audio)
+COST_LABELS = {"catalog": "~$0.29 / video", "hero": "~$0.49 / video"}
+COST_TARGET_PER_VIDEO = 0.33
 
 # Native Streamlit status badges (replaces status_badge_html)
 STATUS_COLORS = {
