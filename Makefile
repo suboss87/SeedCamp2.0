@@ -33,7 +33,7 @@ help:
 install:
 	@echo "📦 Installing dependencies..."
 	python3 -m venv venv
-	. venv/bin/activate && pip install -r requirements.txt
+	. venv/bin/activate && pip install -r requirements-dev.txt
 	@echo "✅ Installation complete"
 
 dev:
