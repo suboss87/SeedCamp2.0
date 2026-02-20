@@ -11,8 +11,8 @@ from PIL import Image
 
 from config import (
     API_BASE,
-    COST_LABELS,
     COST_TARGET_PER_VIDEO,
+    estimate_video_cost,
     status_badge,
     step_indicator,
 )
@@ -331,8 +331,8 @@ def render_quick_video():
                 default=["tiktok"], format_func=str.capitalize,
             )
         with cfg6:
-            cost_label = COST_LABELS.get(sku_tier, "$0.08 / video")
-            st.caption(f"Estimated cost: **{cost_label}**")
+            est = estimate_video_cost(sku_tier, duration, resolution)
+            st.caption(f"Estimated cost: **~${est:.2f} / video**")
 
     # ── Product Image ───────────────────────────────────────────────
     with st.expander("Product Image (optional)"):
@@ -411,15 +411,19 @@ def render_quick_video():
                     st.warning("No alternative values available")
                     ab_enabled = False
 
-            # Cost preview
-            if ab_enabled and ab_field == "sku_tier":
-                cost_a = COST_LABELS.get(sku_tier, "?")
-                cost_b = COST_LABELS.get(ab_variant_b, "?")
-                st.caption(f"A: **{cost_a}** vs B: **{cost_b}**")
-            elif ab_enabled:
-                fmt_a = fmt(current_val) if ab_field != "platforms" else ", ".join(current_val)
-                fmt_b = fmt(ab_variant_b)
-                st.caption(f"Two videos generated sequentially. A: **{fmt_a}** | B: **{fmt_b}**")
+            # Cost preview — dynamic for all A/B dimensions
+            if ab_enabled:
+                tier_a, dur_a, res_a = sku_tier, duration, resolution
+                tier_b, dur_b, res_b = sku_tier, duration, resolution
+                if ab_field == "sku_tier":
+                    tier_b = ab_variant_b
+                elif ab_field == "duration":
+                    dur_b = ab_variant_b
+                elif ab_field == "resolution":
+                    res_b = ab_variant_b
+                est_a = estimate_video_cost(tier_a, dur_a, res_a)
+                est_b = estimate_video_cost(tier_b, dur_b, res_b)
+                st.caption(f"A: **~${est_a:.2f}** vs B: **~${est_b:.2f}**")
 
     # ── Generate ────────────────────────────────────────────────────
     btn_label = "Generate A/B Comparison" if ab_enabled else "Generate Video"

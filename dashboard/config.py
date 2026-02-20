@@ -48,8 +48,28 @@ def step_indicator(status: str) -> str:
     return _STEP_INDICATORS.get(status, "&#8211;")
 
 
-# Cost labels & targets (standard pricing: 5s, 720p, audio)
-COST_LABELS = {"catalog": "~$0.29 / video", "hero": "~$0.49 / video"}
+# Cost estimation (dynamic — reacts to tier, duration, resolution)
+# Resolution → pixel dimensions (matches app/services/pipeline.py:20)
+_RES_MAP = {"480p": (854, 480), "720p": (1280, 720), "1080p": (1920, 1080)}
+# Cost per million tokens by tier (matches app/config.py:21-22)
+_COST_PER_M = {"catalog": 0.70, "hero": 1.20}
+# Fixed estimate for script generation cost (~Seed 1.8)
+_SCRIPT_COST_EST = 0.002
+
+
+def estimate_video_cost(tier: str, duration: int, resolution: str) -> float:
+    """Estimate total cost using BytePlus token formula.
+    Formula: (W × H × FPS × Duration) / 1024 → tokens
+    Cost:    tokens / 1,000,000 × cost_per_M + script_estimate
+    """
+    w, h = _RES_MAP.get(resolution, (1280, 720))
+    fps = 24
+    video_tokens = (w * h * fps * duration) / 1024
+    cost_per_m = _COST_PER_M.get(tier, 0.70)
+    video_cost = (video_tokens / 1_000_000) * cost_per_m
+    return round(video_cost + _SCRIPT_COST_EST, 4)
+
+
 COST_TARGET_PER_VIDEO = 0.33
 
 # Native Streamlit status badges (replaces status_badge_html)
