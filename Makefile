@@ -58,7 +58,7 @@ lint:
 # Docker targets
 docker-build:
 	@echo "🐳 Building Docker image..."
-	docker build -t adcamp:latest -f deploy/docker/Dockerfile .
+	docker build -t adcamp:latest .
 	@echo "✅ Docker image built: adcamp:latest"
 
 docker-up:

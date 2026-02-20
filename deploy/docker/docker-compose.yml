@@ -3,7 +3,7 @@ version: '3.8'
 services:
   api:
     build:
-      context: .
+      context: ../..
       dockerfile: Dockerfile
     container_name: adcamp-api
     ports:
@@ -24,8 +24,8 @@ services:
 
   dashboard:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile.dashboard
     container_name: adcamp-dashboard
     command: ["streamlit", "run", "dashboard/app.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
     ports:

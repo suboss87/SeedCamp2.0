@@ -22,6 +22,15 @@ _HEADERS = {
 }
 
 
+# Normalize ModelArk status strings to canonical form
+_STATUS_MAP = {
+    "succeeded": "Succeeded",
+    "failed": "Failed",
+    "processing": "Running",
+    "queued": "Running",
+    "running": "Running",
+}
+
 # Aspect-ratio map for platforms
 _RATIO_MAP = {
     "tiktok": "9:16",
@@ -38,6 +47,7 @@ async def create_video_task(
     duration: int = 5,
     resolution: str = "720p",
     ratio: str = "16:9",
+    sound: bool = True,
 ) -> str:
     """
     Create an async video generation task via
@@ -59,6 +69,7 @@ async def create_video_task(
         "ratio": ratio,
         "duration": duration,
         "watermark": False,
+        "sound": sound,
     }
 
     try:
@@ -104,12 +115,12 @@ async def get_video_status(task_id: str, model_used: str = "") -> VideoTaskStatu
         logger.error(f"Failed to get video status for {task_id}: {error}")
         raise
 
-    status = data.get("status", "Unknown")
+    raw_status = data.get("status", "Unknown")
+    status = _STATUS_MAP.get(raw_status, raw_status)
     video_url = None
     error = None
 
-    if status == "succeeded":
-        # Response: {"content": {"video_url": "..."}}
+    if status == "Succeeded":
         content = data.get("content", {})
         if isinstance(content, dict):
             video_url = content.get("video_url")
@@ -118,12 +129,8 @@ async def get_video_status(task_id: str, model_used: str = "") -> VideoTaskStatu
                 if isinstance(item, dict) and "video_url" in item:
                     video_url = item["video_url"]
                     break
-        status = "Succeeded"  # normalise for our schema
-    elif status == "failed":
+    elif status == "Failed":
         error = data.get("error", {}).get("message", "Unknown error")
-        status = "Failed"
-    elif status in ("processing", "queued", "running"):
-        status = "Running"
 
     return VideoTaskStatus(
         task_id=task_id,

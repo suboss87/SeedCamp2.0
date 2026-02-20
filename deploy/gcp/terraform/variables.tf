@@ -18,13 +18,13 @@ variable "ark_api_key" {
 variable "api_image" {
   description = "Docker image for the API service"
   type        = string
-  default     = "gcr.io/adcamp-487609/adcamp:latest"
+  default     = "gcr.io/your-gcp-project-id/adcamp:latest"
 }
 
 variable "dashboard_image" {
   description = "Docker image for the dashboard service"
   type        = string
-  default     = "gcr.io/adcamp-487609/adcamp-dashboard:latest"
+  default     = "gcr.io/your-gcp-project-id/adcamp-dashboard:latest"
 }
 
 variable "api_cpu" {

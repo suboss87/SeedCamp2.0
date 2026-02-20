@@ -35,8 +35,7 @@ jobs:
 
       - name: Run tests
         run: |
-          # Add pytest when tests are available
-          echo "No tests configured yet"
+          pytest tests/ -v --tb=short
 
   build:
     name: Build Docker Image

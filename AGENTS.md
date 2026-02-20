@@ -70,14 +70,14 @@ docker-compose down     # Stop monitoring stack
 #### GCP Cloud Run
 ```bash
 # Using Make (requires GCP_PROJECT_ID env var)
-export GCP_PROJECT_ID=adcamp-487609
+export GCP_PROJECT_ID=your-gcp-project-id
 make deploy-gcp
 
 # Build dashboard separately
-gcloud builds submit --config=cloudbuild-dashboard.yaml . --project=adcamp-487609
+gcloud builds submit --config=cloudbuild-dashboard.yaml . --project=your-gcp-project-id
 
 # Check deployment logs
-gcloud logging read "resource.type=cloud_run_revision" --limit 50 --project=adcamp-487609
+gcloud logging read "resource.type=cloud_run_revision" --limit 50 --project=your-gcp-project-id
 
 # Or use Terraform
 cd deploy/gcp/terraform
@@ -199,11 +199,11 @@ Metrics are **not persisted** across restarts (extend to Redis/Prometheus for pr
 
 ### Current Deployment
 
-- **Project**: `adcamp-487609` (GCP)
+- **Project**: `your-gcp-project-id` (GCP)
 - **API**: https://adcamp-api-qhfkhbdd4a-as.a.run.app
 - **Dashboard**: https://adcamp-dashboard-qhfkhbdd4a-as.a.run.app
 - **Secret**: `adcamp-ark-api-key` in GCP Secret Manager
-- **Images**: `gcr.io/adcamp-487609/adcamp:latest`, `gcr.io/adcamp-487609/adcamp-dashboard:latest`
+- **Images**: `gcr.io/your-gcp-project-id/adcamp:latest`, `gcr.io/your-gcp-project-id/adcamp-dashboard:latest`
 - **Latest Features**: SSE streaming, image upload, BytePlus branding
 
 ## Common Patterns & Conventions

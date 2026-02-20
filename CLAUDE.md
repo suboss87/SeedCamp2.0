@@ -27,24 +27,23 @@ black app/ dashboard/                     # Auto-format
 ruff check app/ --fix                     # Auto-fix lint
 
 # Docker
-make docker-build                         # Build: deploy/docker/Dockerfile
+make docker-build                         # Build: root Dockerfile
 make docker-up                            # docker-compose up
 make docker-down                          # docker-compose down
 
 # Deploy GCP Cloud Run
-export GCP_PROJECT_ID=adcamp-487609 && make deploy-gcp
+export GCP_PROJECT_ID=your-gcp-project-id && make deploy-gcp
 ```
 
 ## Architecture
 
-### 6-Step Pipeline (app/main.py orchestrates)
+### 5-Step Pipeline (app/main.py orchestrates)
 
 1. **Input** — `GenerateRequest` (brief, image URL, SKU tier, platforms, duration)
 2. **Script Gen** — `app/services/script_writer.py` calls Seed 1.8 via OpenAI-compatible API, returns `(AdScript, input_tokens, output_tokens)`
-3. **Smart Router** — `app/services/model_router.py` pure function: `route(sku_tier) -> (model_id, cost_per_m)`
+3. **Smart Router** — `app/services/model_router.py` dict-based routing: `route(sku_tier) -> (model_id, cost_per_m)`
 4. **Video Gen** — `app/services/video_gen.py` async task creation + polling via ModelArk REST API
-5. **Post-Process** — `app/services/post_process.py` FFmpeg aspect ratio conversion (not yet wired into endpoints)
-6. **Output** — Platform-ready MP4 URLs
+5. **Output** — Platform-ready MP4 URLs
 
 ### Key Patterns
 
@@ -64,6 +63,8 @@ export GCP_PROJECT_ID=adcamp-487609 && make deploy-gcp
 | Endpoint | Method | Purpose |
 |---|---|---|
 | `/api/generate` | POST | Full pipeline (steps 1-4), returns task_id |
+| `/api/generate-stream` | POST | Full pipeline with SSE progress streaming |
+| `/api/upload-image` | POST | Upload product image to GCS, returns public URL |
 | `/api/status/{task_id}` | GET | Poll video generation status |
 | `/api/wait/{task_id}` | GET | Block until video ready |
 | `/api/cost-summary` | GET | Aggregate cost tracking |
@@ -73,7 +74,7 @@ export GCP_PROJECT_ID=adcamp-487609 && make deploy-gcp
 
 ### Deployment Layout
 
-`deploy/` is organized by platform: `docker/`, `gcp/` (Cloud Run + Terraform), `aws/` (ECS Fargate + Terraform), `byteplus/` (VKE K8s manifests), `monitoring/` (Prometheus + Grafana). The root `Dockerfile` and `deploy/docker/Dockerfile` both exist — root is for Cloud Run, deploy/docker is for local compose.
+`deploy/` is organized by platform: `docker/` (docker-compose references root `Dockerfile`), `gcp/` (Cloud Run + Terraform), `aws/` (ECS Fargate + Terraform), `byteplus/` (VKE K8s manifests), `monitoring/` (Prometheus + Grafana).
 
 ## Critical Constraints
 
@@ -82,7 +83,6 @@ export GCP_PROJECT_ID=adcamp-487609 && make deploy-gcp
 - **Video polling timeout**: 300s default (`settings.poll_timeout`), 5s interval
 - **CORS is wide open** (`allow_origins=["*"]`) — intentional for current stage
 - **Metrics not persisted** — in-memory only, resets on container restart
-- **Post-processing not wired** — FFmpeg service exists in code but `/api/generate` does not call it
 - **Dashboard needs `API_URL` env var** — defaults to localhost, must be set for deployed environments
 
 ## Commit Convention
@@ -101,3 +101,66 @@ chore: update dependencies
 Required: `ARK_API_KEY`
 
 Optional (with defaults in `app/config.py`): `ARK_BASE_URL`, `script_model`, `video_model_pro`, `video_model_fast`, cost constants, `video_duration`, `video_resolution`, `poll_interval`, `poll_timeout`
+
+---
+
+## Workflow Orchestration
+
+### 1. Plan First
+
+- Enter plan mode for any non-trivial task with three or more steps or architectural decisions
+- If something goes sideways, stop and re-plan immediately — do not keep pushing
+- Use plan mode for verification steps, not just building
+- Write detailed specifications upfront to reduce ambiguity
+
+### 2. Subagent Strategy
+
+- Use subagents liberally to keep the main context window clean
+- Offload research, exploration, and parallel analysis to subagents
+- For complex problems, allocate more compute through subagents
+- One task per subagent for focused execution
+
+### 3. Self-Improvement Loop
+
+- After any correction from the user, update `tasks/lessons.md` with the pattern
+- Write rules that prevent the same mistake from recurring
+- Ruthlessly iterate on these lessons until the mistake rate drops
+- Review lessons at session start for the relevant project
+
+### 4. Verification Before Done
+
+- Never mark a task complete without proving it works
+- Compare behavior between main and your changes when relevant
+- Ask yourself: would a staff engineer approve this?
+- Run tests, check logs, and demonstrate correctness
+
+### 5. Demand Elegance (Balanced)
+
+- For non-trivial changes, pause and ask if there is a more elegant way
+- If a fix feels hacky, implement the elegant solution based on everything you now know
+- Skip this for simple and obvious fixes — do not over-engineer
+- Challenge your own work before presenting it
+
+### 6. Autonomous Bug Fixing
+
+- When given a bug report, fix it without asking for hand-holding
+- Identify logs, errors, and failing tests, then resolve them
+- Require zero context switching from the user
+- Fix failing CI tests without being told how
+
+## Task Management
+
+All task tracking lives in `tasks/`:
+
+1. **Plan First** — write the plan to `tasks/todo.md` with checkable items
+2. **Verify Plan** — check in before starting implementation
+3. **Track Progress** — mark items complete as you go
+4. **Explain Changes** — provide a high-level summary at each step
+5. **Document Results** — add a review section to `tasks/todo.md`
+6. **Capture Lessons** — update `tasks/lessons.md` after corrections
+
+## Core Principles
+
+- **Simplicity First** — make every change as simple as possible, impact minimal code
+- **No Laziness** — find root causes, avoid temporary fixes, maintain senior developer standards
+- **Minimal Impact** — changes should only touch what is necessary, avoid introducing bugs

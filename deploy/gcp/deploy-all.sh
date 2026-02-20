@@ -41,7 +41,7 @@ gcloud config set project $PROJECT_ID
 
 # Build API image
 echo -e "${BLUE}[2/6] Building API Docker image...${NC}"
-docker build -t gcr.io/$PROJECT_ID/adcamp:latest -f deploy/docker/Dockerfile .
+docker build -t gcr.io/$PROJECT_ID/adcamp:latest -f Dockerfile .
 
 # Build Dashboard image
 echo -e "${BLUE}[3/6] Building Dashboard Docker image...${NC}"

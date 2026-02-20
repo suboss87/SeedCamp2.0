@@ -20,7 +20,8 @@ resource "google_project_service" "required_apis" {
     "cloudbuild.googleapis.com",
     "run.googleapis.com",
     "secretmanager.googleapis.com",
-    "containerregistry.googleapis.com"
+    "containerregistry.googleapis.com",
+    "firestore.googleapis.com"
   ])
   
   service            = each.value
@@ -53,6 +54,23 @@ resource "google_secret_manager_secret_iam_member" "secret_accessor" {
 # Get project data
 data "google_project" "project" {
   project_id = var.project_id
+}
+
+# Firestore Database (Native mode)
+resource "google_firestore_database" "adcamp" {
+  project     = var.project_id
+  name        = "(default)"
+  location_id = var.region
+  type        = "FIRESTORE_NATIVE"
+
+  depends_on = [google_project_service.required_apis]
+}
+
+# IAM binding for Cloud Run SA to access Firestore
+resource "google_project_iam_member" "firestore_user" {
+  project = var.project_id
+  role    = "roles/datastore.user"
+  member  = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
 }
 
 # Cloud Run Service - API

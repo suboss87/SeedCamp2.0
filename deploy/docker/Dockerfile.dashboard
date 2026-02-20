@@ -1,21 +1,19 @@
-# Streamlit Dashboard Dockerfile for Cloud Run
 FROM python:3.10-slim
 
 WORKDIR /app
 
-# Install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Dashboard-only dependencies (lightweight)
+RUN pip install --no-cache-dir streamlit==1.41.1 requests Pillow==11.1.0
 
-# Copy dashboard code
+# Copy only dashboard code
 COPY dashboard/ ./dashboard/
 
-# Set PORT environment variable (Cloud Run uses 8080)
-ENV PORT=8080
+EXPOSE 8501
 
-# Streamlit configuration
-RUN mkdir -p ~/.streamlit && \
-    echo "[server]\nport = ${PORT}\naddress = \"0.0.0.0\"\nheadless = true\nenableCORS = false\nenableXsrfProtection = false\n\n[browser]\ngatherUsageStats = false" > ~/.streamlit/config.toml
+HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8501/')"
 
-# Run Streamlit
-CMD streamlit run dashboard/app.py --server.port=${PORT} --server.address=0.0.0.0 --server.headless=true --server.enableCORS=false --server.enableXsrfProtection=false
+CMD ["streamlit", "run", "dashboard/app.py", \
+     "--server.port", "8501", \
+     "--server.address", "0.0.0.0", \
+     "--server.headless", "true"]

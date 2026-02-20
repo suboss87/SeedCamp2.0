@@ -1,13 +1,13 @@
 # GCP Configuration
-project_id = "adcamp-487609"
+project_id = "your-gcp-project-id"
 region     = "asia-southeast1"
 
 # BytePlus ModelArk API Key (replace with your actual key)
 ark_api_key = "your-modelark-api-key-here"
 
 # Docker Images (update after building new images)
-api_image       = "gcr.io/adcamp-487609/adcamp:latest"
-dashboard_image = "gcr.io/adcamp-487609/adcamp-dashboard:latest"
+api_image       = "gcr.io/your-gcp-project-id/adcamp:latest"
+dashboard_image = "gcr.io/your-gcp-project-id/adcamp-dashboard:latest"
 
 # API Service Configuration
 api_cpu           = "2"

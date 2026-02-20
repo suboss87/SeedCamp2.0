@@ -1,0 +1,6 @@
+sku_id,product_name,description,image_url,sku_tier,category
+SHOE-001,AirMax Runner Pro,Lightweight running shoe with responsive cushioning and breathable mesh upper. Perfect for urban runners.,,catalog,Footwear
+SHOE-002,CloudStep Elite,Premium leather sneaker with memory foam insoles. Handcrafted Italian design for the style-conscious.,https://example.com/cloudstep.jpg,hero,Footwear
+BAG-001,Urban Commuter Pack,Water-resistant 25L backpack with padded laptop sleeve and hidden anti-theft pocket.,,catalog,Accessories
+WATCH-001,Chronos Titanium,Swiss-movement titanium watch with sapphire crystal. 100m water resistance. Limited edition.,https://example.com/chronos.jpg,hero,Watches
+SKIN-001,GlowSerum Vitamin C,30ml concentrated vitamin C serum with hyaluronic acid. Brightens and hydrates in 14 days.,,catalog,Skincare

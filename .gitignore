@@ -65,3 +65,6 @@ examples/*.mp4
 deploy/monitoring/prometheus-data/
 deploy/monitoring/grafana-data/
 deploy/monitoring/alertmanager-data/
+
+# Internal session notes
+tasks/

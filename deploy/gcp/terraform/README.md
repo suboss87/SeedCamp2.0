@@ -15,7 +15,7 @@ This directory contains Terraform configuration for deploying AdCamp to Google C
 
 ```bash
 gcloud auth application-default login
-gcloud config set project adcamp-487609
+gcloud config set project your-gcp-project-id
 ```
 
 ### 2. Configure Variables
@@ -161,7 +161,7 @@ gsutil versioning set on gs://adcamp-terraform-state
 
 Grant required roles:
 ```bash
-gcloud projects add-iam-policy-binding adcamp-487609 \
+gcloud projects add-iam-policy-binding your-gcp-project-id \
   --member="user:YOUR_EMAIL" \
   --role="roles/run.admin"
 ```
@@ -181,7 +181,7 @@ gcloud services enable \
 If the secret already exists from manual deployment:
 ```bash
 # Import existing secret
-terraform import google_secret_manager_secret.ark_api_key projects/adcamp-487609/secrets/adcamp-ark-api-key
+terraform import google_secret_manager_secret.ark_api_key projects/your-gcp-project-id/secrets/adcamp-ark-api-key
 
 # Or delete and recreate
 gcloud secrets delete adcamp-ark-api-key

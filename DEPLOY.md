@@ -15,7 +15,7 @@ Quick guide for deploying AdCamp to GCP Cloud Run with the modernized dashboard.
 
 ```bash
 # Set your project ID
-export GCP_PROJECT_ID=adcamp-487609
+export GCP_PROJECT_ID=your-gcp-project-id
 
 # Deploy everything (API + Dashboard)
 make deploy-gcp
@@ -58,22 +58,22 @@ After deployment completes, you'll see:
 ╚════════════════════════════════════════════════════╝
 
 Access your services:
-  🚀 API:       https://adcamp-api-309502792454.asia-southeast1.run.app
-  📊 Dashboard: https://adcamp-dashboard-309502792454.asia-southeast1.run.app
-  📖 API Docs:  https://adcamp-api-309502792454.asia-southeast1.run.app/docs
+  🚀 API:       https://adcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app
+  📊 Dashboard: https://adcamp-dashboard-YOUR_PROJECT_HASH.asia-southeast1.run.app
+  📖 API Docs:  https://adcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app/docs
 ```
 
 ### Test Your Deployment
 
 ```bash
 # Test API health
-curl https://adcamp-api-309502792454.asia-southeast1.run.app/health
+curl https://adcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app/health
 
 # Open dashboard in browser
-open https://adcamp-dashboard-309502792454.asia-southeast1.run.app
+open https://adcamp-dashboard-YOUR_PROJECT_HASH.asia-southeast1.run.app
 
 # View API documentation
-open https://adcamp-api-309502792454.asia-southeast1.run.app/docs
+open https://adcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app/docs
 ```
 
 ## 🔧 Configuration
@@ -84,7 +84,7 @@ The modernized dashboard automatically connects to your production API:
 
 ```python
 # Default (production)
-API_URL = "https://adcamp-api-309502792454.asia-southeast1.run.app"
+API_URL = "https://adcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app"
 
 # Override via environment variable
 API_URL = os.getenv("API_URL", "https://adcamp-api-...")
@@ -115,7 +115,7 @@ echo -n "new-api-key" | gcloud secrets versions add adcamp-ark-api-key --data-fi
 ## 📈 Monitoring
 
 ### Cloud Run Console
-- **Dashboard**: https://console.cloud.google.com/run?project=adcamp-487609
+- **Dashboard**: https://console.cloud.google.com/run?project=your-gcp-project-id
 - View metrics: requests/second, latency, errors
 - Monitor costs and resource usage
 
@@ -254,7 +254,7 @@ gcloud run services describe adcamp-dashboard --region asia-southeast1 --format=
 # Update if needed
 gcloud run services update adcamp-dashboard \
   --region asia-southeast1 \
-  --set-env-vars "API_URL=https://adcamp-api-309502792454.asia-southeast1.run.app"
+  --set-env-vars "API_URL=https://adcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app"
 ```
 
 ### API Returns 500 Errors
@@ -276,7 +276,7 @@ gcloud logging read "resource.type=cloud_run_revision AND resource.labels.servic
 gcloud builds list --limit 5
 
 # Check IAM permissions
-gcloud projects get-iam-policy adcamp-487609
+gcloud projects get-iam-policy your-gcp-project-id
 
 # Ensure APIs are enabled
 gcloud services list --enabled
@@ -292,7 +292,7 @@ Your AdCamp deployment is now live with:
 - ✅ Auto-scaling (0-10 instances)
 
 **Current Deployment**:
-- API: https://adcamp-api-309502792454.asia-southeast1.run.app
-- Dashboard: https://adcamp-dashboard-309502792454.asia-southeast1.run.app
+- API: https://adcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app
+- Dashboard: https://adcamp-dashboard-YOUR_PROJECT_HASH.asia-southeast1.run.app
 
 Start generating videos! 🎬

@@ -1,5 +1,0 @@
-steps:
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/adcamp-487609/adcamp-dashboard:latest', '-f', 'Dockerfile.dashboard', '.']
-images:
-  - 'gcr.io/adcamp-487609/adcamp-dashboard:latest'

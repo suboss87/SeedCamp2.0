@@ -1,14 +1,14 @@
 """
 D2C Video Ad Pipeline — FastAPI Application
 AI-Powered Product Video Generation at Scale with ModelArk.
-Matches the 6-step architecture from the Solution Brief.
+Matches the 5-step architecture from the Solution Brief.
 """
 import asyncio
 import json
 import logging
 import time
 
-from fastapi import FastAPI, HTTPException, Response
+from fastapi import FastAPI, HTTPException, Response, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
@@ -18,10 +18,14 @@ from app.models.schemas import (
     CostSummary,
     GenerateRequest,
     GenerateResponse,
+    SKUTier,
     VideoTaskStatus,
 )
-from app.services import cost_tracker, model_router, script_writer, video_gen
+from app.services import cost_tracker, video_gen
+from app.services import firestore_client
+from app.services.pipeline import run_pipeline
 from app import monitoring
+from app.routes.campaigns import router as campaigns_router
 from app.utils.retry import validate_api_key, InvalidAPIKeyError
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
@@ -63,6 +67,7 @@ app = FastAPI(
     },
 )
 
+# CORS: wide-open for demo/reference use. Restrict allow_origins in production.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -72,13 +77,48 @@ app.add_middleware(
 
 app.mount("/output", StaticFiles(directory=str(settings.output_dir)), name="output")
 
+# Register campaign routes
+app.include_router(campaigns_router)
+
+# Lazy import for GCS (used by /api/upload-image)
+from google.cloud import storage
+
+
+# ─── Shared Pipeline Helpers ─────────────────────────────────────────────────────
+
+async def _run_pipeline(req: GenerateRequest) -> dict:
+    """Thin wrapper: unpack GenerateRequest and call the extracted pipeline."""
+    return await run_pipeline(
+        brief=req.brief,
+        sku_tier=req.sku_tier,
+        sku_id=req.sku_id,
+        product_image_url=req.product_image_url,
+        platforms=[p.value for p in req.platforms] if req.platforms else ["tiktok"],
+        duration=req.duration,
+        resolution=req.resolution,
+    )
+
+
+def _track_success_metrics(cost_usd: float, sku_tier: SKUTier):
+    """Track generation success metrics.
+    Cost and per-tier counts are tracked automatically by cost_tracker.
+    """
+    monitoring.increment_counter("videos_generated_total")
+
 
 # ─── Startup Events ───────────────────────────────────────────────────────────────
 
 @app.on_event("startup")
 async def startup_event():
-    """Validate configuration on startup."""
+    """Validate configuration and initialize services on startup."""
     logger.info("Starting AdCamp D2C Video Ad Pipeline...")
+
+    # Initialize Firestore
+    try:
+        firestore_client.init()
+        logger.info("Firestore initialized")
+    except Exception as e:
+        logger.warning("Firestore init failed (continuing without persistence): %s", e)
     
     # Validate API key
     if not settings.ark_api_key:
@@ -96,10 +136,10 @@ async def startup_event():
     except Exception as e:
         logger.warning(f"⚠️  Could not validate API key (continuing anyway): {e}")
     
-    logger.info("Configured models:")
-    logger.info(f"  Script: {settings.script_model}")
-    logger.info(f"  Video Pro: {settings.video_model_pro} ($1.20/M)")
-    logger.info(f"  Video Fast: {settings.video_model_fast} ($0.70/M)")
+    logger.debug("Configured models:")
+    logger.debug(f"  Script: {settings.script_model}")
+    logger.debug(f"  Video Pro: {settings.video_model_pro} ($1.20/M)")
+    logger.debug(f"  Video Fast: {settings.video_model_fast} ($0.70/M)")
     logger.info("Pipeline ready 🚀")
 
 
@@ -132,6 +172,38 @@ async def health_detailed():
     return monitoring.get_health_status()
 
 
+# ─── Image Upload Endpoint ───────────────────────────────────────────────────────
+
+@app.post("/api/upload-image")
+async def upload_image(file: UploadFile = File(...)):
+    """Upload an image to GCS and return a public URL.
+    Expects content-type image/jpeg or image/png.
+    """
+    try:
+        content = await file.read()
+        if len(content) == 0:
+            raise HTTPException(status_code=400, detail="Empty file")
+        if file.content_type not in ("image/jpeg", "image/png", "image/jpg"):
+            raise HTTPException(status_code=400, detail="Only JPG/PNG supported")
+
+        # Upload to GCS
+        client = storage.Client()
+        bucket = client.bucket(settings.gcs_bucket)
+        # Create a unique object name
+        ts = int(time.time())
+        blob_name = f"uploads/{ts}-{file.filename.replace(' ', '_')}"
+        blob = bucket.blob(blob_name)
+        blob.upload_from_string(content, content_type=file.content_type)
+        # Make public
+        blob.make_public()
+        return {"url": blob.public_url}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception("Image upload failed")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ─── Full Pipeline (Steps 1-4) ──────────────────────────────────────────────────
 
 @app.post("/api/generate", response_model=GenerateResponse)
@@ -144,76 +216,29 @@ async def generate_ad(req: GenerateRequest):
     4. SEEDANCE:     Video generation (async)
     """
     monitoring.increment_counter("api_requests_total")
-    start_time = time.time()
-    
+
     try:
-        # Step 2: Script generation via Seed 1.8
-        logger.info("Step 2: Seed 1.8 — Generating ad script for SKU %s...", req.sku_id)
-        script_start = time.time()
-        script, in_tokens, out_tokens = await script_writer.generate_script(req.brief)
-        monitoring.record_duration("script_generation_duration_seconds", time.time() - script_start)
-
-        # Step 3: Smart Model Router
-        logger.info("Step 3: Routing SKU %s (tier=%s)...", req.sku_id, req.sku_tier.value)
-        model_id, cost_per_m = model_router.route(req.sku_tier)
-
-        # Step 4: Video generation via Seedance
-        primary_platform = req.platforms[0].value if req.platforms else "tiktok"
-        ratio = video_gen._RATIO_MAP.get(primary_platform, "16:9")
-        logger.info("Step 4: Seedance — Creating video task with %s (ratio=%s)...", model_id, ratio)
-        video_start = time.time()
-        task_id = await video_gen.create_video_task(
-            prompt=script.video_prompt,
-            model_id=model_id,
-            image_url=req.product_image_url,
-            duration=req.duration,
-            resolution=req.resolution,
-            ratio=ratio,
-        )
-        monitoring.record_duration("video_generation_duration_seconds", time.time() - video_start)
-
-        # Calculate cost (video tokens estimated from duration + resolution)
-        # Actual tokens come from the API response when video completes
-        est_video_tokens = _estimate_video_tokens(req.duration, req.resolution)
-        cost = cost_tracker.calculate_cost(
-            script_input_tokens=in_tokens,
-            script_output_tokens=out_tokens,
-            video_tokens=est_video_tokens,
-            model_used=model_id,
-            cost_per_m=cost_per_m,
-            sku_tier=req.sku_tier,
-        )
-        
-        # Track metrics
-        monitoring.increment_counter("videos_generated_total")
-        monitoring.add_cost(cost.total_cost_usd)
-        if req.sku_tier.value == "hero":
-            monitoring.increment_counter("hero_videos")
-        else:
-            monitoring.increment_counter("catalog_videos")
+        result = await _run_pipeline(req)
+        _track_success_metrics(result["cost"].total_cost_usd, req.sku_tier)
 
         return GenerateResponse(
-            task_id=task_id,
+            task_id=result["task_id"],
             sku_id=req.sku_id,
             sku_tier=req.sku_tier,
             status="Processing",
-            script=script,
-            video=VideoTaskStatus(task_id=task_id, status="Processing", model_used=model_id),
-            cost=cost,
+            script=result["script"],
+            video=VideoTaskStatus(
+                task_id=result["task_id"],
+                status="Processing",
+                model_used=result["model_id"],
+            ),
+            cost=result["cost"],
         )
 
     except Exception as e:
         monitoring.increment_counter("videos_failed_total")
         logger.exception("Pipeline failed for SKU %s", req.sku_id)
         raise HTTPException(status_code=500, detail=str(e))
-
-
-def _estimate_video_tokens(duration: int, resolution: str) -> int:
-    """Estimate video tokens: (W * H * FPS * Duration) / 1024."""
-    res_map = {"480p": (854, 480), "720p": (1280, 720), "1080p": (1920, 1080)}
-    w, h = res_map.get(resolution, (1280, 720))
-    fps = 24
-    return int((w * h * fps * duration) / 1024)
 
 
 # ─── Video Status ─────────────────────────────────────────────────────────────────
@@ -256,117 +281,57 @@ async def generate_ad_stream(req: GenerateRequest):
     """
     async def event_generator():
         try:
-            # Step 1: Initialize
+            # Steps 1-4: Run pipeline
             yield f"data: {json.dumps({'step': 1, 'status': 'started', 'message': '🚀 Starting pipeline...', 'progress': 5})}\n\n"
             await asyncio.sleep(0.5)
-            
-            # Step 2: Script Generation
+
             yield f"data: {json.dumps({'step': 2, 'status': 'running', 'message': '📝 Generating ad script with Seed 1.8...', 'progress': 15})}\n\n"
-            script_start = time.time()
-            script, in_tokens, out_tokens = await script_writer.generate_script(req.brief)
-            script_duration = time.time() - script_start
-            
-            data_step2 = {
-                'step': 2, 'status': 'complete', 
-                'message': f'✅ Script generated in {script_duration:.1f}s', 
-                'progress': 35, 
-                'data': {'script': script.dict(), 'tokens': {'input': in_tokens, 'output': out_tokens}}
-            }
-            yield f"data: {json.dumps(data_step2)}\n\n"
-            await asyncio.sleep(0.3)
-            
-            # Step 3: Model Routing
-            yield f"data: {json.dumps({'step': 3, 'status': 'running', 'message': f'🎯 Routing to {req.sku_tier.value} tier model...', 'progress': 40})}\n\n"
-            model_id, cost_per_m = model_router.route(req.sku_tier)
+            result = await _run_pipeline(req)
+            script = result["script"]
+            task_id = result["task_id"]
+            model_id = result["model_id"]
+
             model_name = "Seedance 1.5 Pro" if "1-5" in model_id else "Seedance 1.0 Pro Fast"
-            
-            data_step3 = {
-                'step': 3, 'status': 'complete', 
-                'message': f'✅ Routed to {model_name}', 
-                'progress': 45, 
-                'data': {'model': model_id, 'cost_per_m': cost_per_m}
-            }
-            yield f"data: {json.dumps(data_step3)}\n\n"
-            await asyncio.sleep(0.3)
-            
-            # Step 4: Video Task Creation
-            yield f"data: {json.dumps({'step': 4, 'status': 'running', 'message': '🎬 Creating video generation task...', 'progress': 50})}\n\n"
-            primary_platform = req.platforms[0].value if req.platforms else "tiktok"
-            ratio = video_gen._RATIO_MAP.get(primary_platform, "16:9")
-            
-            task_id = await video_gen.create_video_task(
-                prompt=script.video_prompt,
-                model_id=model_id,
-                image_url=req.product_image_url,
-                duration=req.duration,
-                resolution=req.resolution,
-                ratio=ratio,
-            )
-            
+            yield f"data: {json.dumps({'step': 2, 'status': 'complete', 'message': f'✅ Script generated', 'progress': 35, 'data': {'script': script.dict(), 'tokens': {'input': result['in_tokens'], 'output': result['out_tokens']}}})}\n\n"
+            yield f"data: {json.dumps({'step': 3, 'status': 'complete', 'message': f'✅ Routed to {model_name}', 'progress': 45, 'data': {'model': model_id, 'cost_per_m': result['cost_per_m']}})}\n\n"
             yield f"data: {json.dumps({'step': 4, 'status': 'complete', 'message': '✅ Video task created', 'progress': 55, 'data': {'task_id': task_id}})}\n\n"
-            await asyncio.sleep(0.3)
-            
-            # Step 5: Video Generation (with polling)
+
+            # Step 5: Poll for video completion
             yield f"data: {json.dumps({'step': 5, 'status': 'running', 'message': '⏳ Generating video (this may take 30-60s)...', 'progress': 60})}\n\n"
-            
-            # Poll for completion
-            max_wait = 300  # 5 minutes
-            poll_interval = 5
+
+            max_wait = settings.poll_timeout
+            poll_interval = settings.poll_interval
             elapsed = 0
-            
+
             while elapsed < max_wait:
                 status = await video_gen.get_video_status(task_id)
-                
+
                 if status.status == "Succeeded":
-                    # Calculate final cost
-                    est_video_tokens = _estimate_video_tokens(req.duration, req.resolution)
-                    cost = cost_tracker.calculate_cost(
-                        script_input_tokens=in_tokens,
-                        script_output_tokens=out_tokens,
-                        video_tokens=est_video_tokens,
-                        model_used=model_id,
-                        cost_per_m=cost_per_m,
-                        sku_tier=req.sku_tier,
-                    )
-                    
-                    # Track metrics
-                    monitoring.increment_counter("videos_generated_total")
-                    monitoring.add_cost(cost.total_cost_usd)
-                    if req.sku_tier.value == "hero":
-                        monitoring.increment_counter("hero_videos")
-                    else:
-                        monitoring.increment_counter("catalog_videos")
-                    
+                    _track_success_metrics(result["cost"].total_cost_usd, req.sku_tier)
                     data_final = {
-                        'step': 5, 'status': 'complete', 
-                        'message': '✅ Video generated successfully!', 
-                        'progress': 100, 
-                        'data': {'video_url': status.video_url, 'cost': cost.dict(), 'script': script.dict()}
+                        'step': 5, 'status': 'complete',
+                        'message': '✅ Video generated successfully!',
+                        'progress': 100,
+                        'data': {'video_url': status.video_url, 'cost': result["cost"].dict(), 'script': script.dict()}
                     }
                     yield f"data: {json.dumps(data_final)}\n\n"
                     break
-                    
+
                 elif status.status == "Failed":
                     monitoring.increment_counter("videos_failed_total")
-                    data_failed = {'step': 5, 'status': 'failed', 'message': f'❌ Generation failed: {status.error}', 'progress': 0}
-                    yield f"data: {json.dumps(data_failed)}\n\n"
+                    yield f"data: {json.dumps({'step': 5, 'status': 'failed', 'message': f'❌ Generation failed: {status.error}', 'progress': 0})}\n\n"
                     break
-                
-                # Update progress during polling
+
                 elapsed += poll_interval
                 progress_pct = min(60 + (elapsed / max_wait) * 35, 95)
-                data_progress = {'step': 5, 'status': 'running', 'message': f'⏳ Generating... {elapsed}s elapsed', 'progress': int(progress_pct)}
-                yield f"data: {json.dumps(data_progress)}\n\n"
+                yield f"data: {json.dumps({'step': 5, 'status': 'running', 'message': f'⏳ Generating... {elapsed}s elapsed', 'progress': int(progress_pct)})}\n\n"
                 await asyncio.sleep(poll_interval)
             else:
-                # Timeout
-                data_timeout = {'step': 5, 'status': 'timeout', 'message': f'⚠️ Timeout after {max_wait}s. Task ID: {task_id}', 'progress': 0, 'data': {'task_id': task_id}}
-                yield f"data: {json.dumps(data_timeout)}\n\n"
-            
+                yield f"data: {json.dumps({'step': 5, 'status': 'timeout', 'message': f'⚠️ Timeout after {max_wait}s. Task ID: {task_id}', 'progress': 0, 'data': {'task_id': task_id}})}\n\n"
+
         except Exception as e:
             monitoring.increment_counter("videos_failed_total")
             logger.exception("Streaming pipeline failed")
-            data_error = {'status': 'error', 'message': f'❌ Error: {str(e)}', 'progress': 0}
-            yield f"data: {json.dumps(data_error)}\n\n"
-    
+            yield f"data: {json.dumps({'status': 'error', 'message': f'❌ Error: {str(e)}', 'progress': 0})}\n\n"
+
     return StreamingResponse(event_generator(), media_type="text/event-stream")

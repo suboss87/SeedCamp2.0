@@ -21,7 +21,7 @@ spec:
         - containerPort: 8501
         env:
         - name: API_URL
-          value: https://adcamp-api-309502792454.asia-southeast1.run.app
+          value: https://adcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app
         resources:
           limits:
             cpu: '1'

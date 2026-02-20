@@ -9,6 +9,8 @@ from typing import Callable, Any
 
 import httpx
 
+from app.config import settings
+
 logger = logging.getLogger(__name__)
 
 
@@ -144,7 +146,7 @@ async def validate_api_key(api_key: str, base_url: str) -> bool:
     
     # Use chat completions endpoint with minimal tokens to test auth
     test_payload = {
-        "model": "seed-1-8-251228",
+        "model": settings.script_model,
         "messages": [{"role": "user", "content": "test"}],
         "max_tokens": 1,
     }

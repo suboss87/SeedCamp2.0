@@ -8,3 +8,5 @@ pydantic-settings==2.7.1
 streamlit==1.41.1
 openai==1.59.9
 Pillow==11.1.0
+google-cloud-storage==2.19.0
+google-cloud-firestore>=2.16.0

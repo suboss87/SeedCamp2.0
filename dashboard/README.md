@@ -272,7 +272,7 @@ The dashboard is configured to use the production API by default:
 
 ```bash
 # Set your GCP project
-export GCP_PROJECT_ID=adcamp-487609
+export GCP_PROJECT_ID=your-gcp-project-id
 
 # Deploy both API and Dashboard
 make deploy-gcp
@@ -282,12 +282,12 @@ make deploy-gcp
 ```
 
 The dashboard will automatically connect to:
-- **Production API**: https://adcamp-api-309502792454.asia-southeast1.run.app
-- **Dashboard URL**: https://adcamp-dashboard-309502792454.asia-southeast1.run.app
+- **Production API**: https://adcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app
+- **Dashboard URL**: https://adcamp-dashboard-YOUR_PROJECT_HASH.asia-southeast1.run.app
 
 **Environment Variables**:
 - `API_URL`: Set to override the default production API (optional)
-  - Default: `https://adcamp-api-309502792454.asia-southeast1.run.app`
+  - Default: `https://adcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app`
   - Local dev: `http://localhost:8000`
 
 ## 🔗 Integration Points

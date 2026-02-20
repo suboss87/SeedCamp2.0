@@ -24,11 +24,18 @@ class Settings(BaseSettings):
     # --- Video defaults ---
     video_duration: int = 8  # seconds (2-12)
     video_resolution: str = "720p"
+    video_sound: bool = True
     poll_interval: int = 5
     poll_timeout: int = 300
 
+    # --- Batch / Brief generation ---
+    batch_concurrency_default: int = 3
+    brief_temperature: float = 0.8
+    brief_max_tokens: int = 256
+
     # --- Storage ---
     output_dir: Path = Path("output")
+    gcs_bucket: str = "adcamp-uploads-487609"
 
     model_config = {"env_file": ".env", "extra": "ignore"}
 
