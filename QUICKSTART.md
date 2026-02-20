@@ -196,8 +196,8 @@ When done:
 | **BytePlus VKE** | Pay-as-go | Auto | 60 min |
 
 **ModelArk API costs** (same across all):
-- $0.078/video average
-- 34,500 videos/year = ~$2,760/year
+- ~$0.09/video blended average
+- 34,500 videos/year = ~$3,105/year
 
 ---
 
