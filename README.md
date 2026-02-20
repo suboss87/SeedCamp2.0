@@ -1,31 +1,31 @@
-# AdCamp: Reference Architecture for Cost-Optimized AI Content Generation
+# AdCamp: Reference Architecture for Cost-Optimized AI Video Generation
 
 [![BytePlus ModelArk](https://img.shields.io/badge/Powered%20by-BytePlus%20ModelArk-blue)](https://www.byteplus.com/en/product/modelark)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Tests](https://img.shields.io/badge/tests-42%20passing-brightgreen)]()
 
-> **Built by [Subash Natarajan](https://www.linkedin.com/in/subashn/)** — Reusable architecture patterns for cost-optimized AI generation at scale.
+> **Built by [Subash Natarajan](https://www.linkedin.com/in/subashn/)** — The implementation blueprint for cost-optimized AI video generation at scale on [BytePlus ModelArk](https://www.byteplus.com/en/product/modelark).
 
 ---
 
 ## Why This Was Built
 
-[BytePlus ModelArk](https://www.byteplus.com/en/product/modelark) gives you powerful AI models — **Seedance Pro** for cinematic quality and **Pro Fast** at 72% lower cost with 3x speed. But the models alone don't solve the real enterprise problem: **how do you use both intelligently across thousands of products?**
+[BytePlus ModelArk](https://www.byteplus.com/en/product/modelark) gives you powerful AI video models — **Seedance Pro** for cinematic quality and **Pro Fast** at 72% lower cost with 3x speed. But having great models doesn't answer the real enterprise question: **how do you use both intelligently across thousands of items?**
 
-Your hero products (the top 20% driving revenue) deserve the best model. The other 80% need good-enough video, fast and cheap. Without automation, someone is manually deciding which products get what — or worse, every product gets the expensive model.
+Every industry scaling AI video hits this: real estate firms generating tours for 50K listings. Retailers creating product videos for 10K SKUs. Auto dealers producing walkthroughs for 500K vehicles. The high-value items deserve your best model. The rest need fast, cheap, good-enough video. Without a system to route automatically, you either **overpay** (everything through Pro) or **underdeliver** (everything through Fast).
 
-**AdCamp is the implementation blueprint.** It shows how to build a pipeline that automatically routes each product to the right model based on its business value, tracks every dollar spent, batches thousands of items concurrently, and handles API failures gracefully.
+**AdCamp is that system.** Fork it, change 4 files for your industry, and you have a pipeline that routes each item to the right Seedance model based on its business value — with cost tracking, batch processing, and failure handling built in.
 
-**The result**: ~$0.33/video blended cost (vs $0.49 all-premium). Studio-quality content in seconds, not weeks. At 10,000 SKUs, that's ~$45K/year in AI costs — replacing what would cost millions in manual video production.
+**The result**: ~$0.33/video blended cost (vs $0.49 all-premium). At 10,000 items, that's ~$45K/year in AI costs — replacing what would cost millions in manual video production.
 
 ## Who Should Fork This
 
 | You are... | You need... | AdCamp gives you... |
 |------------|-------------|---------------------|
-| **E-commerce / D2C team** scaling product videos | Cost control across thousands of SKUs | Tiered routing + batch processing, ready to run |
-| **AI engineer** integrating ModelArk (or any AI API) | Retry, polling, cost tracking patterns | 5 production-grade patterns to drop into your pipeline |
-| **Solutions architect** evaluating AI video at scale | Proof that tiered routing works with real numbers | Working demo with cost breakdowns per tier |
+| **Any team** scaling AI video (e-commerce, real estate, automotive, media) | Cost control across thousands of items | Tiered routing + batch processing, ready to adapt |
+| **AI/backend engineer** integrating ModelArk or any video AI API | Retry, polling, cost tracking patterns | 5 production-grade patterns to drop into your pipeline |
+| **Solutions architect** evaluating AI video generation at scale | Proof that tiered routing works with real numbers | Working demo with cost breakdowns per tier |
 
 ## Architecture
 
@@ -108,7 +108,7 @@ The tiered routing pattern applies wherever you have inventory with varying busi
 
 | Industry | Premium Tier (best model) | Standard Tier (fast model) | Scale |
 |---|---|---|---|
-| **E-commerce / D2C** | Hero products (top 20% revenue) | Catalog inventory (long tail) | 1K-100K SKUs |
+| **E-commerce** | Hero products (top 20% revenue) | Catalog inventory (long tail) | 1K-100K SKUs |
 | **Real estate** | Luxury listings ($1M+ properties) | Standard rental/sale listings | 500-50K listings |
 | **Automotive** | Featured/certified vehicles | Bulk dealer inventory | 1K-500K vehicles |
 | **Travel & hospitality** | Premium destinations, suites | Standard hotel rooms | 10K-1M listings |
