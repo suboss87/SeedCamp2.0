@@ -192,5 +192,5 @@ Adapt these for GitLab CI, CircleCI, Jenkins, or your preferred CI/CD platform.
 1. Start with [Docker Compose](./docker/) for local development
 2. Deploy to [Railway](./railway/) or [Render](./render/) for staging
 3. Graduate to [GCP Cloud Run](./gcp/) or [AWS ECS](./aws/) for production
-4. Implement monitoring and observability (see [docs/guides/monitoring.md](../docs/guides/monitoring.md))
+4. Implement monitoring and observability (see [monitoring/](./monitoring/))
 5. Set up CI/CD for automated deployments

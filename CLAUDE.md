@@ -122,7 +122,7 @@ Optional (with defaults in `app/config.py`): `ARK_BASE_URL`, `script_model`, `vi
 
 ### 3. Self-Improvement Loop
 
-- After any correction from the user, update `tasks/lessons.md` with the pattern
+- After any correction from the user, update auto-memory with the pattern
 - Write rules that prevent the same mistake from recurring
 - Ruthlessly iterate on these lessons until the mistake rate drops
 - Review lessons at session start for the relevant project
@@ -150,14 +150,13 @@ Optional (with defaults in `app/config.py`): `ARK_BASE_URL`, `script_model`, `vi
 
 ## Task Management
 
-All task tracking lives in `tasks/`:
+Use Claude Code's built-in task tools (TaskCreate, TaskUpdate, TaskList) for tracking:
 
-1. **Plan First** — write the plan to `tasks/todo.md` with checkable items
+1. **Plan First** — enter plan mode and outline checkable items
 2. **Verify Plan** — check in before starting implementation
 3. **Track Progress** — mark items complete as you go
 4. **Explain Changes** — provide a high-level summary at each step
-5. **Document Results** — add a review section to `tasks/todo.md`
-6. **Capture Lessons** — update `tasks/lessons.md` after corrections
+5. **Capture Lessons** — update auto-memory after corrections
 
 ## Core Principles
 

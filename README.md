@@ -251,9 +251,9 @@ adcamp/
 │       └── retry.py            # ⭐ @retry_with_backoff (Pattern 5)
 ├── dashboard/                  # Streamlit UI (tabs, A/B comparison)
 ├── deploy/                     # Docker, GCP, AWS, K8s, monitoring
-├── examples/                   # Runnable scripts
+├── docs/                       # Guides, changelog, examples
 ├── tests/                      # Unit tests (42 passing)
-└── docs/                       # Architecture docs + guides
+└── .github/                    # CONTRIBUTING, SECURITY, workflows
 ```
 
 ## Adapting for Your Use Case

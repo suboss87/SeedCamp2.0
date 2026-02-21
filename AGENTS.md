@@ -279,10 +279,11 @@ headers = {
 
 ## Repository Organization Note
 
-This repo follows **Google/Kubernetes/Terraform standards**:
-- Platform-separated deployment configs in `deploy/`
-- Layered documentation in `docs/` (architecture, guides, API)
-- Working examples in `docs/examples/`
-- Test structure in `tests/` (unit, integration, fixtures)
+This repo follows **Google/Kubernetes/Terraform standards** with max 4 project folders at root:
+- `app/` — Backend (FastAPI pipeline)
+- `dashboard/` — Frontend (Streamlit UI)
+- `deploy/` — Infrastructure (Docker, GCP, AWS, K8s, monitoring, env templates)
+- `docs/` — Documentation (guides, changelog, examples, architecture)
+- `tests/` — Unit tests (Python convention)
+- `.github/` — Community files (CONTRIBUTING.md, SECURITY.md) + workflows
 - Single-entry Makefile for all common tasks
-- Community files: CONTRIBUTING.md, SECURITY.md, CHANGELOG.md
