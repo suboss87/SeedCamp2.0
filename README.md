@@ -312,14 +312,14 @@ The five architecture patterns are production-grade in design. The infrastructur
 
 - **[DEPLOY.md](docs/DEPLOY.md)** — GCP Cloud Run deployment guide
 - **[AGENTS.md](AGENTS.md)** — Full architecture reference for AI coding agents
-- **[CONTRIBUTING.md](CONTRIBUTING.md)** — Contribution guidelines
+- **[CONTRIBUTING.md](.github/CONTRIBUTING.md)** — Contribution guidelines
 - **[examples/](docs/examples/)** — Runnable Python scripts
 - **API Docs** — http://localhost:8000/docs (Swagger) / http://localhost:8000/redoc
 - **Community** — [awesome-seedance](https://github.com/ZeroLu/awesome-seedance) (prompts, tutorials, and resources for Seedance models)
 
 ## Contributing
 
-Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md).
+Contributions welcome! See [CONTRIBUTING.md](.github/CONTRIBUTING.md).
 
 ```bash
 make install    # Setup environment
