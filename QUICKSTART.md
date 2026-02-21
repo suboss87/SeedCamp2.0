@@ -4,7 +4,7 @@ This guide gets AdCamp running in production **TODAY** using platforms that work
 
 ---
 
-## 🚀 **Option 1: Railway (Recommended)**
+## Option 1: Railway (Recommended)
 
 **Cost**: $5/month | **Time**: 10 minutes | **Best for**: Fast deployment, great DX
 
@@ -42,7 +42,7 @@ That's it! Your API is live at `https://adcamp-production.up.railway.app`
 
 ---
 
-## 🌐 **Option 2: Render**
+## Option 2: Render
 
 **Cost**: Free tier available | **Time**: 15 minutes | **Best for**: Zero cost testing
 
@@ -72,7 +72,7 @@ Your API will be live at `https://adcamp-api.onrender.com`
 
 ---
 
-## 🐳 **Option 3: Docker Compose (Local Production Test)**
+## Option 3: Docker Compose (Local Production Test)
 
 **Cost**: Free | **Time**: 5 minutes | **Best for**: Testing before cloud deploy
 
@@ -100,7 +100,7 @@ curl -X POST http://localhost:8000/api/generate \
 
 ---
 
-## ☁️ **Option 4: BytePlus VKE (Full BytePlus Stack)**
+## Option 4: BytePlus VKE (Full BytePlus Stack)
 
 **Cost**: Pay-as-you-go | **Time**: 60 minutes | **Best for**: BytePlus-native deployment
 
@@ -118,7 +118,7 @@ See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete VKE guide.
 
 ---
 
-## ✅ **Testing Your Deployment**
+## Testing Your Deployment
 
 ### 1. Health Check
 ```bash
@@ -177,7 +177,7 @@ When done:
 
 ---
 
-## 📊 **Monitoring**
+## Monitoring
 
 - **Metrics**: `https://your-url/metrics` (Prometheus format)
 - **Health**: `https://your-url/health/detailed`
@@ -186,7 +186,7 @@ When done:
 
 ---
 
-## 💰 **Cost Comparison**
+## Cost Comparison
 
 | Platform | Monthly Cost | Scaling | Setup Time |
 |----------|-------------|---------|------------|
@@ -201,7 +201,7 @@ When done:
 
 ---
 
-## 🎯 **Recommended Path**
+## Recommended Path
 
 1. **Today**: Deploy to Railway/Render for immediate production
 2. **This week**: Test with real traffic
@@ -209,7 +209,7 @@ When done:
 
 ---
 
-## 🆘 **Troubleshooting**
+## Troubleshooting
 
 ### "Invalid API key"
 - Check `ARK_API_KEY` is set correctly
@@ -225,13 +225,13 @@ When done:
 
 ---
 
-## 🔗 **Next Steps**
+## Next Steps
 
-- ✅ Deploy to Railway/Render (production)
-- ✅ Test with real videos
-- ✅ Monitor metrics and costs
-- ⏭️ Scale up if needed
-- ⏭️ Add custom domain
-- ⏭️ Set up CI/CD
+- Deploy to Railway/Render (production)
+- Test with real videos
+- Monitor metrics and costs
+- Scale up if needed
+- Add custom domain
+- Set up CI/CD
 
 **Questions?** [GitHub Issues](https://github.com/suboss87/adcamp/issues)

@@ -17,11 +17,6 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-# Install FFmpeg for video post-processing
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ffmpeg \
-    && rm -rf /var/lib/apt/lists/*
-
 # Copy Python dependencies from builder
 COPY --from=builder /root/.local /root/.local
 ENV PATH=/root/.local/bin:$PATH

@@ -68,3 +68,8 @@ deploy/monitoring/alertmanager-data/
 
 # Internal session notes
 tasks/
+
+# Miscellaneous
+*.jpg
+*.jpeg
+*.png
