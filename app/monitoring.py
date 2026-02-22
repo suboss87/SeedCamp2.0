@@ -2,6 +2,7 @@
 Monitoring and Observability
 Prometheus metrics, health checks, and observability utilities.
 """
+
 import time
 from typing import Dict, Any
 from datetime import datetime
@@ -43,14 +44,19 @@ def _avg(metric_key: str) -> float:
 def get_metrics() -> Dict[str, Any]:
     """Get current metrics snapshot."""
     from app.services import cost_tracker
+
     cost_summary = cost_tracker.get_summary()
 
     return {
         "videos_generated_total": _metrics["videos_generated_total"],
         "videos_failed_total": _metrics["videos_failed_total"],
         "api_requests_total": _metrics["api_requests_total"],
-        "script_generation_avg_seconds": round(_avg("script_generation_duration_seconds"), 2),
-        "video_generation_avg_seconds": round(_avg("video_generation_duration_seconds"), 2),
+        "script_generation_avg_seconds": round(
+            _avg("script_generation_duration_seconds"), 2
+        ),
+        "video_generation_avg_seconds": round(
+            _avg("video_generation_duration_seconds"), 2
+        ),
         "total_cost_usd": cost_summary.total_cost_usd,
         "avg_cost_per_video": cost_summary.avg_cost_per_video,
         "hero_videos": cost_summary.hero_videos,

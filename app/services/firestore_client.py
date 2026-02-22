@@ -3,6 +3,7 @@ Firestore Client — Persistence Layer
 CRUD operations for campaigns, products, and video results.
 Uses AsyncClient for consistency with the async codebase.
 """
+
 import logging
 from datetime import datetime
 from typing import Optional
@@ -35,11 +36,14 @@ def init():
 
 def _get_db() -> AsyncClient:
     if _db is None:
-        raise RuntimeError("Firestore not initialized — call firestore_client.init() on startup")
+        raise RuntimeError(
+            "Firestore not initialized — call firestore_client.init() on startup"
+        )
     return _db
 
 
 # ─── Campaigns ───────────────────────────────────────────────────────────────────
+
 
 async def create_campaign(data: CampaignCreate) -> Campaign:
     db = _get_db()
@@ -82,10 +86,12 @@ async def list_campaigns(limit: int = 20, offset: int = 0) -> list[Campaign]:
 
 async def update_campaign_status(campaign_id: str, status: CampaignStatus):
     db = _get_db()
-    await db.collection("campaigns").document(campaign_id).update({
-        "status": status.value,
-        "updated_at": datetime.utcnow(),
-    })
+    await db.collection("campaigns").document(campaign_id).update(
+        {
+            "status": status.value,
+            "updated_at": datetime.utcnow(),
+        }
+    )
 
 
 async def delete_campaign(campaign_id: str):
@@ -96,7 +102,9 @@ async def delete_campaign(campaign_id: str):
     async for doc in products_query.stream():
         await doc.reference.delete()
     # Delete video results
-    results_query = db.collection("video_results").where("campaign_id", "==", campaign_id)
+    results_query = db.collection("video_results").where(
+        "campaign_id", "==", campaign_id
+    )
     async for doc in results_query.stream():
         await doc.reference.delete()
     # Delete campaign
@@ -105,6 +113,7 @@ async def delete_campaign(campaign_id: str):
 
 
 # ─── Products ────────────────────────────────────────────────────────────────────
+
 
 async def create_product(campaign_id: str, data: ProductCreate) -> Product:
     db = _get_db()
@@ -124,7 +133,9 @@ async def create_product(campaign_id: str, data: ProductCreate) -> Product:
     return product
 
 
-async def create_products_batch(campaign_id: str, products: list[ProductCreate]) -> list[Product]:
+async def create_products_batch(
+    campaign_id: str, products: list[ProductCreate]
+) -> list[Product]:
     """Create multiple products and update campaign product count."""
     db = _get_db()
     created = []
@@ -148,10 +159,13 @@ async def create_products_batch(campaign_id: str, products: list[ProductCreate])
 
     # Update campaign product count
     campaign_ref = db.collection("campaigns").document(campaign_id)
-    batch.update(campaign_ref, {
-        "total_products": firestore.Increment(len(products)),
-        "updated_at": datetime.utcnow(),
-    })
+    batch.update(
+        campaign_ref,
+        {
+            "total_products": firestore.Increment(len(products)),
+            "updated_at": datetime.utcnow(),
+        },
+    )
 
     await batch.commit()
     logger.info("Created %d products for campaign %s", len(created), campaign_id)
@@ -165,7 +179,9 @@ async def list_products(campaign_id: str) -> list[Product]:
     return [Product(**doc.to_dict()) for doc in docs]
 
 
-async def update_product_status(product_id: str, status: ProductStatus, brief: str = None):
+async def update_product_status(
+    product_id: str, status: ProductStatus, brief: str = None
+):
     db = _get_db()
     updates: dict = {"status": status.value}
     if brief is not None:
@@ -174,6 +190,7 @@ async def update_product_status(product_id: str, status: ProductStatus, brief: s
 
 
 # ─── Video Results ────────────────────────────────────────────────────────────────
+
 
 async def save_video_result(result: VideoResult):
     db = _get_db()
@@ -195,20 +212,25 @@ async def list_video_results(campaign_id: str) -> list[VideoResult]:
 
 # ─── Campaign Counter Updates (atomic) ───────────────────────────────────────────
 
+
 async def increment_campaign_completed(campaign_id: str, cost_usd: float):
     """Atomically increment completed video count and total cost."""
     db = _get_db()
-    await db.collection("campaigns").document(campaign_id).update({
-        "completed_videos": firestore.Increment(1),
-        "total_cost_usd": firestore.Increment(cost_usd),
-        "updated_at": datetime.utcnow(),
-    })
+    await db.collection("campaigns").document(campaign_id).update(
+        {
+            "completed_videos": firestore.Increment(1),
+            "total_cost_usd": firestore.Increment(cost_usd),
+            "updated_at": datetime.utcnow(),
+        }
+    )
 
 
 async def increment_campaign_failed(campaign_id: str):
     """Atomically increment failed video count."""
     db = _get_db()
-    await db.collection("campaigns").document(campaign_id).update({
-        "failed_videos": firestore.Increment(1),
-        "updated_at": datetime.utcnow(),
-    })
+    await db.collection("campaigns").document(campaign_id).update(
+        {
+            "failed_videos": firestore.Increment(1),
+            "updated_at": datetime.utcnow(),
+        }
+    )

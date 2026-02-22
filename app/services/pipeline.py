@@ -3,12 +3,12 @@ Pipeline — Core video generation logic
 Extracted from main.py so it can be called by both single-video
 endpoints and the batch generator.
 """
+
 import logging
 import time
 from typing import Optional
 
-from app.config import settings
-from app.models.schemas import AdScript, SKUTier
+from app.models.schemas import SKUTier
 from app.services import cost_tracker, model_router, script_writer, video_gen
 from app import monitoring
 
@@ -43,7 +43,9 @@ async def run_pipeline(
     logger.info("Step 2: Seed 1.8 — Generating ad script for SKU %s...", sku_id)
     script_start = time.time()
     script, in_tokens, out_tokens = await script_writer.generate_script(brief)
-    monitoring.record_duration("script_generation_duration_seconds", time.time() - script_start)
+    monitoring.record_duration(
+        "script_generation_duration_seconds", time.time() - script_start
+    )
 
     # Step 3: Smart Model Router
     logger.info("Step 3: Routing SKU %s (tier=%s)...", sku_id, sku_tier.value)
@@ -52,7 +54,9 @@ async def run_pipeline(
     # Step 4: Video generation via Seedance
     primary_platform = platforms[0] if platforms else "tiktok"
     ratio = video_gen._RATIO_MAP.get(primary_platform, "16:9")
-    logger.info("Step 4: Seedance — Creating video task with %s (ratio=%s)...", model_id, ratio)
+    logger.info(
+        "Step 4: Seedance — Creating video task with %s (ratio=%s)...", model_id, ratio
+    )
     video_start = time.time()
     task_id = await video_gen.create_video_task(
         prompt=script.video_prompt,
@@ -62,7 +66,9 @@ async def run_pipeline(
         resolution=resolution,
         ratio=ratio,
     )
-    monitoring.record_duration("video_generation_duration_seconds", time.time() - video_start)
+    monitoring.record_duration(
+        "video_generation_duration_seconds", time.time() - video_start
+    )
 
     # Calculate cost
     est_video_tokens = _estimate_video_tokens(duration, resolution)

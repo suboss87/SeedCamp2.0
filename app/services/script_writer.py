@@ -3,6 +3,7 @@ Script Writer — Seed 1.8
 Step 2 of the Pipeline: converts campaign brief into
 ad copy, scene descriptions, and optimized Seedance video prompts.
 """
+
 import json
 import logging
 
@@ -44,7 +45,7 @@ async def generate_script(brief: str) -> tuple[AdScript, int, int]:
     """
     Generate ad script from campaign brief using Seed 1.8.
     Returns (AdScript, input_tokens, output_tokens) for cost tracking.
-    
+
     Automatically retries on transient failures (network, 5xx, rate limits).
     """
     response = await _client.chat.completions.create(

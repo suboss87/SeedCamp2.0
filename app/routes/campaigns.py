@@ -2,6 +2,7 @@
 Campaign API Routes
 CRUD operations, CSV upload, batch generation, progress polling, results.
 """
+
 import logging
 
 from fastapi import APIRouter, HTTPException, UploadFile, File
@@ -24,6 +25,7 @@ router = APIRouter(prefix="/api/campaigns", tags=["campaigns"])
 
 
 # ─── Campaign CRUD ───────────────────────────────────────────────────────────────
+
 
 @router.post("", response_model=Campaign)
 async def create_campaign(data: CampaignCreate):
@@ -59,6 +61,7 @@ async def delete_campaign(campaign_id: str):
 
 # ─── Products (CSV Upload + List) ────────────────────────────────────────────────
 
+
 @router.post("/{campaign_id}/products", response_model=CSVUploadResult)
 async def upload_products_csv(campaign_id: str, file: UploadFile = File(...)):
     """Upload a CSV of products for a campaign.
@@ -79,10 +82,13 @@ async def upload_products_csv(campaign_id: str, file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail="CSV must be UTF-8 encoded")
 
     from app.services.csv_parser import parse_csv
+
     products, errors = parse_csv(text)
 
     if not products and errors:
-        raise HTTPException(status_code=400, detail=f"CSV parsing failed: {'; '.join(errors)}")
+        raise HTTPException(
+            status_code=400, detail=f"CSV parsing failed: {'; '.join(errors)}"
+        )
 
     created = await db.create_products_batch(campaign_id, products)
 
@@ -104,8 +110,11 @@ async def list_products(campaign_id: str):
 
 # ─── Batch Generation ────────────────────────────────────────────────────────────
 
+
 @router.post("/{campaign_id}/generate")
-async def start_batch_generation(campaign_id: str, req: BatchGenerateRequest = BatchGenerateRequest()):
+async def start_batch_generation(
+    campaign_id: str, req: BatchGenerateRequest = BatchGenerateRequest()
+):
     """Start batch video generation for all pending products in a campaign.
     Returns immediately — poll /progress for status.
     """
@@ -117,7 +126,9 @@ async def start_batch_generation(campaign_id: str, req: BatchGenerateRequest = B
         raise HTTPException(status_code=404, detail="Campaign not found")
 
     if campaign.status == CampaignStatus.generating:
-        raise HTTPException(status_code=409, detail="Batch generation already in progress")
+        raise HTTPException(
+            status_code=409, detail="Batch generation already in progress"
+        )
 
     products = await db.list_products(campaign_id)
     pending = [p for p in products if p.status == "pending"]
@@ -128,7 +139,9 @@ async def start_batch_generation(campaign_id: str, req: BatchGenerateRequest = B
     await db.update_campaign_status(campaign_id, CampaignStatus.generating)
 
     # Fire-and-forget: run batch in background
-    asyncio.create_task(batch_generator.run_batch(campaign, pending, concurrency=req.concurrency))
+    asyncio.create_task(
+        batch_generator.run_batch(campaign, pending, concurrency=req.concurrency)
+    )
 
     return {
         "status": "started",

@@ -7,22 +7,29 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class SKUTier(str, Enum):
-    hero = "hero"        # Top 20% — Seedance 1.5 Pro
+    hero = "hero"  # Top 20% — Seedance 1.5 Pro
     catalog = "catalog"  # 80% — Seedance 1.0 Pro Fast
 
 
 class Platform(str, Enum):
-    tiktok = "tiktok"        # 9:16
+    tiktok = "tiktok"  # 9:16
     instagram = "instagram"  # 1:1
-    youtube = "youtube"      # 16:9
+    youtube = "youtube"  # 16:9
 
 
 # ---- Requests ----
 
+
 class GenerateRequest(BaseModel):
     """Video Generation Pipeline input."""
-    brief: str = Field(..., description="Campaign brief, e.g. 'Summer collection, beach vibes, energetic'")
-    product_image_url: Optional[str] = Field(None, description="Public URL of the product image")
+
+    brief: str = Field(
+        ...,
+        description="Campaign brief, e.g. 'Summer collection, beach vibes, energetic'",
+    )
+    product_image_url: Optional[str] = Field(
+        None, description="Public URL of the product image"
+    )
     sku_tier: SKUTier = SKUTier.catalog
     sku_id: str = Field("SKU-001", description="Product SKU identifier")
     platforms: list[Platform] = Field(
@@ -32,40 +39,47 @@ class GenerateRequest(BaseModel):
     duration: int = Field(8, ge=2, le=12)
     resolution: str = "720p"
 
-    model_config = ConfigDict(json_schema_extra={
-        "examples": [
-            {
-                "brief": "Summer running campaign, energetic and dynamic vibes, urban streets at golden hour",
-                "sku_tier": "catalog",
-                "sku_id": "SHOE-001",
-                "platforms": ["tiktok", "instagram"],
-                "duration": 5,
-                "resolution": "720p",
-            },
-            {
-                "brief": "Luxury watch showcase, elegant and sophisticated, minimalist studio setting",
-                "product_image_url": "https://example.com/product.jpg",
-                "sku_tier": "hero",
-                "sku_id": "WATCH-PREMIUM-001",
-                "platforms": ["youtube"],
-                "duration": 10,
-                "resolution": "1080p",
-            },
-        ],
-    })
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [
+                {
+                    "brief": "Summer running campaign, energetic and dynamic vibes, urban streets at golden hour",
+                    "sku_tier": "catalog",
+                    "sku_id": "SHOE-001",
+                    "platforms": ["tiktok", "instagram"],
+                    "duration": 5,
+                    "resolution": "720p",
+                },
+                {
+                    "brief": "Luxury watch showcase, elegant and sophisticated, minimalist studio setting",
+                    "product_image_url": "https://example.com/product.jpg",
+                    "sku_tier": "hero",
+                    "sku_id": "WATCH-PREMIUM-001",
+                    "platforms": ["youtube"],
+                    "duration": 10,
+                    "resolution": "1080p",
+                },
+            ],
+        }
+    )
 
 
 # ---- Script Output (from Seed 1.8) ----
 
+
 class AdScript(BaseModel):
     """Generated ad script and video prompt from Seed 1.8."""
+
     ad_copy: str = Field(..., description="Short ad copy / headline")
     scene_description: str = Field(..., description="Visual scene description")
-    video_prompt: str = Field(..., description="Optimized Seedance video generation prompt")
+    video_prompt: str = Field(
+        ..., description="Optimized Seedance video generation prompt"
+    )
     camera_direction: str = Field(..., description="Camera movement instruction")
 
 
 # ---- Video Task ----
+
 
 class VideoTaskStatus(BaseModel):
     task_id: str
@@ -76,6 +90,7 @@ class VideoTaskStatus(BaseModel):
 
 
 # ---- Cost ----
+
 
 class CostBreakdown(BaseModel):
     script_input_tokens: int = 0
@@ -90,6 +105,7 @@ class CostBreakdown(BaseModel):
 
 # ---- Full Response ----
 
+
 class GenerateResponse(BaseModel):
     task_id: str
     sku_id: str
@@ -101,6 +117,7 @@ class GenerateResponse(BaseModel):
 
 
 # ---- Cost Summary ----
+
 
 class CostSummary(BaseModel):
     total_videos: int = 0

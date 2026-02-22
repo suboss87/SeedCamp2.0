@@ -34,7 +34,9 @@ class Settings(BaseSettings):
     brief_max_tokens: int = 256
 
     # --- Security ---
-    cors_origins: str = "*"  # Comma-separated origins, e.g. "https://example.com,https://app.example.com"
+    cors_origins: str = (
+        "*"  # Comma-separated origins, e.g. "https://example.com,https://app.example.com"
+    )
     api_key: str = ""  # Optional API key to protect endpoints; leave empty to disable
     rate_limit: str = "60/minute"  # Rate limit per client (slowapi format)
     max_upload_size_mb: int = 10  # Max image upload size in MB

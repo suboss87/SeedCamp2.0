@@ -3,6 +3,7 @@ Video Generation — Seedance 1.5 Pro / 1.0 Pro Fast
 Step 4 of the Pipeline: asynchronous video generation with polling.
 Model is selected by the Smart Router (step 3).
 """
+
 import asyncio
 import logging
 from typing import Optional
@@ -54,7 +55,7 @@ async def create_video_task(
     POST /api/v3/contents/generations/tasks
     model_id comes from the Smart Router.
     Returns the task_id for polling.
-    
+
     Automatically retries on transient failures (network, 5xx, rate limits).
     """
     content = []
@@ -73,7 +74,9 @@ async def create_video_task(
     }
 
     try:
-        async with httpx.AsyncClient(timeout=90) as client:  # Increased timeout for large videos
+        async with httpx.AsyncClient(
+            timeout=90
+        ) as client:  # Increased timeout for large videos
             resp = await client.post(
                 f"{_BASE}/contents/generations/tasks",
                 headers=_HEADERS,
@@ -90,7 +93,7 @@ async def create_video_task(
     task_id = data.get("id", "")
     if not task_id:
         raise ValueError(f"No task ID returned from ModelArk API: {data}")
-    
+
     logger.info("Created video task %s with model %s", task_id, model_id)
     return task_id
 
@@ -99,7 +102,7 @@ async def create_video_task(
 async def get_video_status(task_id: str, model_used: str = "") -> VideoTaskStatus:
     """Query the status of a video generation task via
     GET /api/v3/contents/generations/tasks/{task_id}
-    
+
     Automatically retries on transient failures.
     """
     try:

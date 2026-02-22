@@ -7,6 +7,7 @@ Generates a tailored 2-4 sentence advertising brief for each product
 by combining campaign-level theme with product-specific attributes.
 Uses the same Seed 1.8 model via OpenAI SDK.
 """
+
 import logging
 
 from openai import AsyncOpenAI
@@ -71,6 +72,11 @@ Tier: {sku_tier} ({'premium cinematic quality' if sku_tier == 'hero' else 'cost-
     output_tokens = usage.completion_tokens if usage else 0
 
     brief = response.choices[0].message.content.strip()
-    logger.info("Generated brief for %s (%d in / %d out tokens)", product_name, input_tokens, output_tokens)
+    logger.info(
+        "Generated brief for %s (%d in / %d out tokens)",
+        product_name,
+        input_tokens,
+        output_tokens,
+    )
 
     return brief, input_tokens, output_tokens

@@ -3,6 +3,7 @@ AdCamp — FastAPI Application
 AI-Powered Video Generation at Scale with BytePlus ModelArk.
 Implements the 5-step pipeline: Input → Script Gen → Smart Router → Video Gen → Output.
 """
+
 import asyncio
 import json
 import logging
@@ -31,7 +32,9 @@ from app import monitoring
 from app.routes.campaigns import router as campaigns_router
 from app.utils.retry import validate_api_key, InvalidAPIKeyError
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 app = FastAPI(
@@ -85,14 +88,24 @@ app.add_middleware(
 # API key authentication middleware.
 # When API_KEY is set in env, all /api/* requests require Authorization: Bearer <key>.
 # Health, metrics, and docs endpoints remain open.
-_PUBLIC_PATHS = {"/health", "/health/detailed", "/metrics", "/docs", "/openapi.json", "/redoc"}
+_PUBLIC_PATHS = {
+    "/health",
+    "/health/detailed",
+    "/metrics",
+    "/docs",
+    "/openapi.json",
+    "/redoc",
+}
+
 
 @app.middleware("http")
 async def api_key_auth(request: Request, call_next):
     if settings.api_key and request.url.path.startswith("/api"):
         auth = request.headers.get("Authorization", "")
         if auth != f"Bearer {settings.api_key}":
-            return JSONResponse(status_code=401, content={"detail": "Invalid or missing API key"})
+            return JSONResponse(
+                status_code=401, content={"detail": "Invalid or missing API key"}
+            )
     return await call_next(request)
 
 
@@ -102,10 +115,10 @@ app.mount("/output", StaticFiles(directory=str(settings.output_dir)), name="outp
 app.include_router(campaigns_router)
 
 # Lazy import for GCS (used by /api/upload-image)
-from google.cloud import storage
-
+from google.cloud import storage  # noqa: E402
 
 # ─── Shared Pipeline Helpers ─────────────────────────────────────────────────────
+
 
 async def _run_pipeline(req: GenerateRequest) -> dict:
     """Thin wrapper: unpack GenerateRequest and call the extracted pipeline."""
@@ -129,6 +142,7 @@ def _track_success_metrics(cost_usd: float, sku_tier: SKUTier):
 
 # ─── Startup Events ───────────────────────────────────────────────────────────────
 
+
 @app.on_event("startup")
 async def startup_event():
     """Validate configuration and initialize services on startup."""
@@ -140,12 +154,12 @@ async def startup_event():
         logger.info("Firestore initialized")
     except Exception as e:
         logger.warning("Firestore init failed (continuing without persistence): %s", e)
-    
+
     # Validate API key
     if not settings.ark_api_key:
         logger.error("ARK_API_KEY environment variable is not set!")
         raise InvalidAPIKeyError("ARK_API_KEY is required but not configured")
-    
+
     logger.info("Validating ModelArk API key...")
     try:
         await validate_api_key(settings.ark_api_key, settings.ark_base_url)
@@ -157,7 +171,8 @@ async def startup_event():
     except Exception as e:
         logger.warning(
             "Could not validate API key at startup (network issue or endpoint unreachable). "
-            "The API key may still be valid — pipeline calls will fail if it is not. Error: %s", e,
+            "The API key may still be valid — pipeline calls will fail if it is not. Error: %s",
+            e,
         )
 
     logger.debug("Configured models:")
@@ -168,6 +183,7 @@ async def startup_event():
 
 
 # ─── Health ───────────────────────────────────────────────────────────────────────
+
 
 @app.get("/health")
 async def health():
@@ -197,6 +213,7 @@ async def health_detailed():
 
 
 # ─── Image Upload Endpoint ───────────────────────────────────────────────────────
+
 
 @app.post("/api/upload-image")
 @limiter.limit(settings.rate_limit)
@@ -237,6 +254,7 @@ async def upload_image(request: Request, file: UploadFile = File(...)):
 
 # ─── Full Pipeline (Steps 1-4) ──────────────────────────────────────────────────
 
+
 @app.post("/api/generate", response_model=GenerateResponse)
 @limiter.limit(settings.rate_limit)
 async def generate_ad(request: Request, req: GenerateRequest):
@@ -275,6 +293,7 @@ async def generate_ad(request: Request, req: GenerateRequest):
 
 # ─── Video Status ─────────────────────────────────────────────────────────────────
 
+
 @app.get("/api/status/{task_id}", response_model=VideoTaskStatus)
 async def check_status(task_id: str):
     """Poll video generation status."""
@@ -297,6 +316,7 @@ async def wait_for_result(task_id: str):
 
 # ─── Cost Summary ─────────────────────────────────────────────────────────────────
 
+
 @app.get("/api/cost-summary", response_model=CostSummary)
 async def get_cost_summary():
     """Aggregate cost tracking across all generated videos."""
@@ -305,6 +325,7 @@ async def get_cost_summary():
 
 # ─── Streaming Generation (SSE for live progress) ────────────────────────────────
 
+
 @app.post("/api/generate-stream")
 @limiter.limit(settings.rate_limit)
 async def generate_ad_stream(request: Request, req: GenerateRequest):
@@ -312,6 +333,7 @@ async def generate_ad_stream(request: Request, req: GenerateRequest):
     Video Generation Pipeline with Server-Sent Events (SSE) for live progress.
     Streams progress updates to the frontend in real-time.
     """
+
     async def event_generator():
         try:
             # Steps 1-4: Run pipeline
@@ -324,7 +346,9 @@ async def generate_ad_stream(request: Request, req: GenerateRequest):
             task_id = result["task_id"]
             model_id = result["model_id"]
 
-            model_name = "Seedance 1.5 Pro" if "1-5" in model_id else "Seedance 1.0 Pro Fast"
+            model_name = (
+                "Seedance 1.5 Pro" if "1-5" in model_id else "Seedance 1.0 Pro Fast"
+            )
             yield f"data: {json.dumps({'step': 2, 'status': 'complete', 'message': 'Script generated', 'progress': 35, 'data': {'script': script.model_dump(), 'tokens': {'input': result['in_tokens'], 'output': result['out_tokens']}}})}\n\n"
             yield f"data: {json.dumps({'step': 3, 'status': 'complete', 'message': f'Routed to {model_name}', 'progress': 45, 'data': {'model': model_id, 'cost_per_m': result['cost_per_m']}})}\n\n"
             yield f"data: {json.dumps({'step': 4, 'status': 'complete', 'message': 'Video task created', 'progress': 55, 'data': {'task_id': task_id}})}\n\n"
@@ -342,10 +366,15 @@ async def generate_ad_stream(request: Request, req: GenerateRequest):
                 if status.status == "Succeeded":
                     _track_success_metrics(result["cost"].total_cost_usd, req.sku_tier)
                     data_final = {
-                        'step': 5, 'status': 'complete',
-                        'message': 'Video generated successfully',
-                        'progress': 100,
-                        'data': {'video_url': status.video_url, 'cost': result["cost"].model_dump(), 'script': script.model_dump()}
+                        "step": 5,
+                        "status": "complete",
+                        "message": "Video generated successfully",
+                        "progress": 100,
+                        "data": {
+                            "video_url": status.video_url,
+                            "cost": result["cost"].model_dump(),
+                            "script": script.model_dump(),
+                        },
                     }
                     yield f"data: {json.dumps(data_final)}\n\n"
                     break

@@ -2,8 +2,8 @@
 Cost Tracker
 Tracks token usage and calculates cost per video generation.
 """
+
 import logging
-from typing import Optional
 
 from app.config import settings
 from app.models.schemas import CostBreakdown, CostSummary, SKUTier
@@ -24,9 +24,10 @@ def calculate_cost(
 ) -> CostBreakdown:
     """Calculate the cost breakdown for a single video generation."""
     script_cost = (
-        (script_input_tokens / 1_000_000) * settings.cost_per_m_seed18_input
-        + (script_output_tokens / 1_000_000) * settings.cost_per_m_seed18_output
-    )
+        script_input_tokens / 1_000_000
+    ) * settings.cost_per_m_seed18_input + (
+        script_output_tokens / 1_000_000
+    ) * settings.cost_per_m_seed18_output
     video_cost = (video_tokens / 1_000_000) * cost_per_m
     total = round(script_cost + video_cost, 6)
 
@@ -42,15 +43,20 @@ def calculate_cost(
     )
 
     # Log to history
-    _history.append({
-        "sku_tier": sku_tier.value,
-        "total_cost": total,
-        "model": model_used,
-    })
+    _history.append(
+        {
+            "sku_tier": sku_tier.value,
+            "total_cost": total,
+            "model": model_used,
+        }
+    )
 
     logger.info(
         "Cost: script=$%.4f video=$%.4f total=$%.4f (model=%s)",
-        script_cost, video_cost, total, model_used,
+        script_cost,
+        video_cost,
+        total,
+        model_used,
     )
     return breakdown
 

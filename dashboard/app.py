@@ -1,17 +1,41 @@
 """
 AdCamp — AI Video Ad Generation Dashboard
 """
+
 import streamlit as st
 
 from config import (
-    ACCENT, ACCENT_HOVER, ACCENT_LIGHT, ACCENT_MUTED, ACCENT_GRAD,
-    SIDEBAR_BG, SIDEBAR_CARD, SIDEBAR_BORDER, SIDEBAR_TEXT, SIDEBAR_DIM,
-    BG_PAGE, BG_CARD, BG_SURFACE, BG_HOVER,
-    BORDER, BORDER_LIGHT,
-    TEXT, TEXT_2, TEXT_3,
-    GREEN, GREEN_BG, RED, RED_BG, AMBER, AMBER_BG,
-    SHADOW_SM, SHADOW_MD, SHADOW_LG,
-    RADIUS, RADIUS_SM, RADIUS_LG,
+    ACCENT,
+    ACCENT_HOVER,
+    ACCENT_LIGHT,
+    ACCENT_MUTED,
+    ACCENT_GRAD,
+    SIDEBAR_BG,
+    SIDEBAR_CARD,
+    SIDEBAR_BORDER,
+    SIDEBAR_TEXT,
+    SIDEBAR_DIM,
+    BG_PAGE,
+    BG_CARD,
+    BG_SURFACE,
+    BG_HOVER,
+    BORDER,
+    BORDER_LIGHT,
+    TEXT,
+    TEXT_2,
+    TEXT_3,
+    GREEN,
+    GREEN_BG,
+    RED,
+    RED_BG,
+    AMBER,
+    AMBER_BG,
+    SHADOW_SM,
+    SHADOW_MD,
+    SHADOW_LG,
+    RADIUS,
+    RADIUS_SM,
+    RADIUS_LG,
     API_BASE,
 )
 from sections import (
@@ -31,7 +55,8 @@ st.set_page_config(
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # GLOBAL STYLESHEET
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-st.markdown(f"""
+st.markdown(
+    f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
@@ -805,7 +830,9 @@ ul[role="listbox"] [aria-selected="true"],
 }}
 .ac-footer a:hover {{ color: {ACCENT_HOVER}; }}
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # ── Session defaults ──────────────────────────────────────────────────────────
 for k, v in {
@@ -821,12 +848,15 @@ for k, v in {
 render_sidebar_analytics()
 
 # ── Main content ──────────────────────────────────────────────────────────────
-st.markdown("""
+st.markdown(
+    """
 <div class="ac-hero">
     <p class="ac-hero-title">Ad<span class="ac-hero-accent">Camp</span></p>
     <p class="ac-hero-sub">AI-powered video ad generation at scale</p>
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 tab_video, tab_campaign = st.tabs(["Quick Video", "Campaign Batch"])
 
@@ -839,9 +869,12 @@ with tab_campaign:
 st.divider()
 render_campaign_history()
 
-st.markdown(f"""
+st.markdown(
+    f"""
 <div class="ac-footer">
     AdCamp v2.0 &middot; Powered by BytePlus ModelArk &middot;
     <a href="{API_BASE}/docs" target="_blank">API Docs</a>
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)

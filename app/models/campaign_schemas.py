@@ -2,6 +2,7 @@
 Campaign Pydantic Models
 Data models for campaigns, products, video results, and batch operations.
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -10,8 +11,8 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
-
 # ─── Enums ───────────────────────────────────────────────────────────────────────
+
 
 class CampaignStatus(str, Enum):
     draft = "draft"
@@ -30,10 +31,16 @@ class ProductStatus(str, Enum):
 
 # ─── Campaign ────────────────────────────────────────────────────────────────────
 
+
 class CampaignCreate(BaseModel):
     """Input for creating a new campaign."""
+
     name: str = Field(..., min_length=1, max_length=200)
-    theme: str = Field(..., min_length=1, description="Campaign theme/brief used for auto-brief generation")
+    theme: str = Field(
+        ...,
+        min_length=1,
+        description="Campaign theme/brief used for auto-brief generation",
+    )
     platforms: list[str] = Field(default=["tiktok"])
     duration: int = Field(default=8, ge=2, le=15)
     resolution: str = Field(default="720p")
@@ -41,6 +48,7 @@ class CampaignCreate(BaseModel):
 
 class Campaign(BaseModel):
     """Full campaign document (mirrors Firestore)."""
+
     id: str
     name: str
     theme: str
@@ -58,8 +66,10 @@ class Campaign(BaseModel):
 
 # ─── Product ─────────────────────────────────────────────────────────────────────
 
+
 class ProductCreate(BaseModel):
     """Single product from CSV row."""
+
     sku_id: str
     product_name: str
     description: str
@@ -70,6 +80,7 @@ class ProductCreate(BaseModel):
 
 class Product(BaseModel):
     """Full product document (mirrors Firestore)."""
+
     id: str
     campaign_id: str
     sku_id: str
@@ -85,8 +96,10 @@ class Product(BaseModel):
 
 # ─── Video Result ────────────────────────────────────────────────────────────────
 
+
 class VideoResult(BaseModel):
     """Video generation result document (mirrors Firestore)."""
+
     id: str
     campaign_id: str
     product_id: str
@@ -103,8 +116,10 @@ class VideoResult(BaseModel):
 
 # ─── Batch / Progress ────────────────────────────────────────────────────────────
 
+
 class BatchProgress(BaseModel):
     """Polling response for batch generation progress."""
+
     campaign_id: str
     status: CampaignStatus
     total_products: int
@@ -116,13 +131,16 @@ class BatchProgress(BaseModel):
 
 class BatchGenerateRequest(BaseModel):
     """Request to start batch generation for a campaign."""
+
     concurrency: int = Field(default=3, ge=1, le=10)
 
 
 # ─── CSV Upload ──────────────────────────────────────────────────────────────────
 
+
 class CSVUploadResult(BaseModel):
     """Result of CSV file parsing and product creation."""
+
     products_created: int
     products_skipped: int
     errors: list[str] = []
