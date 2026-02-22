@@ -52,15 +52,15 @@ fi
 
 # Step 5: Update image in deployment manifests
 echo "📝 Updating deployment manifests..."
-sed "s|image: adcamp:latest|image: $REGISTRY/$REGISTRY_NAMESPACE/adcamp:$IMAGE_TAG|g" k8s/deployment-api.yaml > /tmp/deployment-api.yaml
-sed "s|image: adcamp:latest|image: $REGISTRY/$REGISTRY_NAMESPACE/adcamp:$IMAGE_TAG|g" k8s/deployment-dashboard.yaml > /tmp/deployment-dashboard.yaml
+sed "s|image: adcamp:latest|image: $REGISTRY/$REGISTRY_NAMESPACE/adcamp:$IMAGE_TAG|g" deploy/kubernetes/base/deployment-api.yaml > /tmp/deployment-api.yaml
+sed "s|image: adcamp:latest|image: $REGISTRY/$REGISTRY_NAMESPACE/adcamp:$IMAGE_TAG|g" deploy/kubernetes/base/deployment-dashboard.yaml > /tmp/deployment-dashboard.yaml
 
 # Step 6: Apply Kubernetes manifests
 echo "☸️  Applying Kubernetes manifests..."
 kubectl apply -f /tmp/deployment-api.yaml -n $NAMESPACE
 kubectl apply -f /tmp/deployment-dashboard.yaml -n $NAMESPACE
-kubectl apply -f k8s/service-api.yaml -n $NAMESPACE
-kubectl apply -f k8s/service-dashboard.yaml -n $NAMESPACE
+kubectl apply -f deploy/kubernetes/base/service-api.yaml -n $NAMESPACE
+kubectl apply -f deploy/kubernetes/base/service-dashboard.yaml -n $NAMESPACE
 
 # Step 7: Wait for rollout
 echo "⏳ Waiting for deployment to complete..."

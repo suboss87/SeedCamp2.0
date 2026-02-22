@@ -173,13 +173,10 @@ Each includes `main.tf`, `variables.tf`, `outputs.tf`, and comprehensive README 
 
 ## CI/CD Integration
 
-GitHub Actions workflows are provided in `.github/workflows/`:
-- `ci.yml` - Build, test, lint on every PR
-- `deploy-gcp.yml` - Deploy to GCP Cloud Run on merge to main
-- `deploy-aws.yml` - Deploy to AWS ECS on merge to production
-- `deploy-byteplus.yml` - Deploy to BytePlus VKE on merge to main
+A GitHub Actions workflow is provided in `.github/workflows/`:
+- `deploy.yml` - Build, test, and deploy on merge to main
 
-Adapt these for GitLab CI, CircleCI, Jenkins, or your preferred CI/CD platform.
+Adapt this for GitLab CI, CircleCI, Jenkins, or your preferred CI/CD platform. Add platform-specific deploy steps as needed (GCP Cloud Run, AWS ECS, BytePlus VKE).
 
 ## Support
 

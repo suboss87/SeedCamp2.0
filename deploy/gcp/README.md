@@ -267,7 +267,7 @@ Integrate with Prometheus/Grafana for advanced monitoring.
 
 ### GitHub Actions (Recommended)
 
-See [.github/workflows/deploy-gcp.yml](../../.github/workflows/deploy-gcp.yml)
+See [.github/workflows/deploy.yml](../../.github/workflows/deploy.yml)
 
 Required secrets in GitHub:
 - `GCP_PROJECT_ID`: Your GCP project ID

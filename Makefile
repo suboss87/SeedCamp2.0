@@ -41,7 +41,8 @@ dev:
 	@echo "   API: http://localhost:8000"
 	@echo "   Dashboard: http://localhost:8501"
 	@echo "   Press Ctrl+C to stop"
-	@(. venv/bin/activate && uvicorn app.main:app --reload --port 8000) & \
+	@trap 'kill 0' EXIT; \
+	(. venv/bin/activate && uvicorn app.main:app --reload --port 8000) & \
 	(. venv/bin/activate && streamlit run dashboard/app.py --server.port 8501)
 
 test:
@@ -100,11 +101,11 @@ deploy-gcp:
 
 deploy-aws:
 	@echo "☁️  AWS deployment not yet implemented"
-	@echo "   See: deploy/aws/README.md for manual deployment"
+	@echo "   See: deploy/aws/terraform/README.md for manual deployment"
 
 deploy-byteplus:
 	@echo "☁️  Deploying to BytePlus VKE..."
-	cd deploy/byteplus && ./scripts/deploy-vke.sh
+	./deploy/byteplus/scripts/deploy-vke.sh
 	@echo "✅ Deployment complete"
 
 # Utility targets
