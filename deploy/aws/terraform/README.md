@@ -48,7 +48,7 @@ brew install terraform  # macOS
 3. **Docker images pushed to registry**:
 ```bash
 # Option 1: Docker Hub (public)
-docker build -t suboss87/adcamp-api:latest -f deploy/docker/Dockerfile .
+docker build -t suboss87/adcamp-api:latest .
 docker build -t suboss87/adcamp-dashboard:latest -f deploy/docker/Dockerfile.dashboard .
 docker push suboss87/adcamp-api:latest
 docker push suboss87/adcamp-dashboard:latest
@@ -144,7 +144,7 @@ terraform apply
 
 ```bash
 # Build and push new images
-docker build -t suboss87/adcamp-api:v2 -f deploy/docker/Dockerfile .
+docker build -t suboss87/adcamp-api:v2 .
 docker push suboss87/adcamp-api:v2
 
 # Update terraform.tfvars

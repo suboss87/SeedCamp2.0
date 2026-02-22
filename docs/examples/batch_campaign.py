@@ -6,7 +6,7 @@ Usage:
     make dev
 
     # Run this script
-    python3 examples/batch_campaign.py
+    python3 docs/examples/batch_campaign.py
 """
 import asyncio
 import httpx

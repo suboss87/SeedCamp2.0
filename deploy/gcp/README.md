@@ -33,7 +33,7 @@ export GCP_PROJECT_ID=your-project-id
 export GCP_REGION=asia-southeast1
 
 # Run deployment script
-./scripts/deploy.sh
+./scripts/deploy-gcp.sh
 ```
 
 The script will:
@@ -95,7 +95,7 @@ gcloud builds submit --tag gcr.io/$(gcloud config get-value project)/adcamp \
 
 ```bash
 # Build locally
-docker build -t gcr.io/$(gcloud config get-value project)/adcamp -f deploy/docker/Dockerfile .
+docker build -t gcr.io/$(gcloud config get-value project)/adcamp .
 
 # Configure Docker for GCR
 gcloud auth configure-docker
@@ -289,7 +289,7 @@ Create `cloudbuild.yaml` in repo root:
 ```yaml
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/adcamp', '-f', 'deploy/docker/Dockerfile', '.']
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/adcamp', '.']
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/adcamp']
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -402,15 +402,14 @@ SERVICE_URL=$(gcloud run services describe adcamp-api --format 'value(status.url
 curl $SERVICE_URL/health
 
 # Test video generation
-curl -X POST $SERVICE_URL/api/v1/campaigns/generate \
+curl -X POST $SERVICE_URL/api/generate \
   -H "Content-Type: application/json" \
   -d '{
-    "product_name": "Premium Headphones",
-    "key_features": ["Noise Cancelling", "40hr Battery", "Wireless"],
-    "target_audience": "Tech enthusiasts",
-    "tone": "Exciting and modern",
-    "cta": "Buy Now",
-    "sku_tier": "hero"
+    "brief": "Premium headphones with noise cancelling and 40hr battery",
+    "sku_id": "HEADPHONES-001",
+    "sku_tier": "hero",
+    "platforms": ["tiktok"],
+    "duration": 5
   }'
 ```
 

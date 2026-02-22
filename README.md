@@ -115,6 +115,10 @@ That's it. Luxury listings get premium video, standard listings get fast video, 
 
 ## How It Works
 
+<p align="center">
+  <img src="docs/assets/images/logical-architecture-professional.png" alt="AdCamp Architecture" width="800">
+</p>
+
 ### 5-Step Pipeline
 
 | Step | What Happens | Technology |
@@ -152,6 +156,18 @@ Blended (20/80 split):                                  ~$0.09/video
 | Small | 500 | ~6,900 | ~$621 |
 | Medium | 2,500 | ~34,500 | ~$3,105 |
 | Large | 10,000 | ~138,000 | ~$12,420 |
+
+### Cost Comparison: AdCamp vs Alternatives
+
+| Approach | Cost per Video | 10K Videos | Open Source | Custom Tiers |
+|----------|---------------|------------|-------------|--------------|
+| **Studio/Agency** | $500–5,000 | $5M–50M | No | N/A |
+| **Runway / Kling (manual)** | $0.50–2.00 | $5K–20K | No | No |
+| **Creatify / Synthesia** | $0.10–1.00 | $1K–10K | No | No |
+| **Raw API (no pipeline)** | $0.08–0.13 | ~$900 | DIY | DIY |
+| **AdCamp** | **$0.08–0.13** | **~$900** | **Yes** | **Yes** |
+
+> AdCamp gives you the same per-video cost as raw API calls, but with production infrastructure (batching, retry, cost tracking, monitoring) included and ready to deploy.
 
 ---
 

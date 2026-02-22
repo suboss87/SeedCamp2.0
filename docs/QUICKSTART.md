@@ -81,7 +81,7 @@ Your API will be live at `https://adcamp-api.onrender.com`
 export ARK_API_KEY=your-api-key-here
 
 # Start services
-docker-compose up -d
+docker-compose -f deploy/docker/docker-compose.yml up -d
 
 # Test
 curl http://localhost:8000/health

@@ -6,7 +6,7 @@ Usage:
     make dev
 
     # Run this script
-    python3 examples/generate_single_video.py
+    python3 docs/examples/generate_single_video.py
 """
 import asyncio
 import httpx
@@ -35,7 +35,7 @@ async def main():
         task_id = result["task_id"]
         print(f"Task created: {task_id}")
         print(f"Model used: {result['video']['model_used']}")
-        print(f"Script headline: {result['script']['headline']}")
+        print(f"Ad copy: {result['script']['ad_copy']}")
 
         # Step 2: Poll until complete
         print("\nPolling for video completion...")
