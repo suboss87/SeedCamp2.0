@@ -195,8 +195,8 @@ Metrics are **not persisted** across restarts (extend to Redis/Prometheus for pr
 ### Current Deployment
 
 - **Project**: `your-gcp-project-id` (GCP)
-- **API**: https://adcamp-api-qhfkhbdd4a-as.a.run.app
-- **Dashboard**: https://adcamp-dashboard-qhfkhbdd4a-as.a.run.app
+- **API**: `https://adcamp-api-<HASH>.a.run.app` (your Cloud Run URL)
+- **Dashboard**: `https://adcamp-dashboard-<HASH>.a.run.app` (your Cloud Run URL)
 - **Secret**: `adcamp-ark-api-key` in GCP Secret Manager
 - **Images**: `gcr.io/your-gcp-project-id/adcamp:latest`, `gcr.io/your-gcp-project-id/adcamp-dashboard:latest`
 - **Latest Features**: SSE streaming, image upload, BytePlus branding

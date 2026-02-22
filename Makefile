@@ -104,7 +104,7 @@ deploy-aws:
 
 deploy-byteplus:
 	@echo "☁️  Deploying to BytePlus VKE..."
-	cd deploy/byteplus && ./scripts/deploy.sh
+	cd deploy/byteplus && ./scripts/deploy-vke.sh
 	@echo "✅ Deployment complete"
 
 # Utility targets

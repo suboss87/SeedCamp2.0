@@ -76,13 +76,13 @@ kubectl create secret generic adcamp-secrets \
   --from-literal=ARK_API_KEY=your-api-key-here \
   --from-literal=ARK_BASE_URL=https://ark.ap-southeast.bytepluses.com/api/v3
 
-# OR edit k8s/secret.yaml and apply
-kubectl apply -f k8s/secret.yaml
+# OR edit deploy/kubernetes/base/secret.yaml and apply
+kubectl apply -f deploy/kubernetes/base/secret.yaml
 ```
 
 ### Step 5: Update Deployment Manifests
 
-Edit `k8s/deployment-api.yaml` and `k8s/deployment-dashboard.yaml`:
+Edit `deploy/kubernetes/base/deployment-api.yaml` and `deploy/kubernetes/base/deployment-dashboard.yaml`:
 
 ```yaml
 image: cr-ap-southeast-1.bytepluses.com/your-namespace/adcamp:latest
@@ -92,7 +92,7 @@ image: cr-ap-southeast-1.bytepluses.com/your-namespace/adcamp:latest
 
 ```bash
 # Apply all manifests
-kubectl apply -f k8s/
+kubectl apply -f deploy/kubernetes/base/
 
 # Check deployment status
 kubectl get pods

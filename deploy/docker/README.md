@@ -123,15 +123,14 @@ docker-compose exec api pip list
 ### Generate a Test Video
 
 ```bash
-curl -X POST http://localhost:8000/api/v1/campaigns/generate \
+curl -X POST http://localhost:8000/api/generate \
   -H "Content-Type: application/json" \
   -d '{
-    "product_name": "Premium Coffee Beans",
-    "key_features": ["Organic", "Fair Trade", "Dark Roast"],
-    "target_audience": "Coffee enthusiasts",
-    "tone": "Warm and inviting",
-    "cta": "Shop Now",
-    "sku_tier": "catalog"
+    "brief": "Premium organic coffee beans — rich, bold, fair trade certified",
+    "sku_id": "COFFEE-001",
+    "sku_tier": "catalog",
+    "platforms": ["tiktok"],
+    "duration": 5
   }'
 ```
 
@@ -243,4 +242,4 @@ Actual usage varies with load. Peak during video generation: ~1.5GB RAM.
 - **Test locally**: Generate sample videos using the dashboard
 - **Deploy to staging**: Use [Railway](../railway/) or [Render](../render/)
 - **Deploy to production**: Use [GCP Cloud Run](../gcp/) or [AWS ECS](../aws/)
-- **Monitor**: See [docs/guides/monitoring.md](../../docs/guides/monitoring.md)
+- **Monitor**: See [deploy/monitoring/](../monitoring/) or check `/metrics` endpoint
