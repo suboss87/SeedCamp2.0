@@ -3,7 +3,7 @@
 [![BytePlus ModelArk](https://img.shields.io/badge/Powered%20by-BytePlus%20ModelArk-blue)](https://www.byteplus.com/en/product/modelark)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Tests](https://img.shields.io/badge/tests-42%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-59%20passing-brightgreen)]()
 
 > **Built by [Subash Natarajan](https://www.linkedin.com/in/subashn/)** — The implementation blueprint for cost-optimized AI video generation at scale on [BytePlus ModelArk](https://www.byteplus.com/en/product/modelark).
 
@@ -11,13 +11,15 @@
 
 ## Why This Was Built
 
-[BytePlus ModelArk](https://www.byteplus.com/en/product/modelark) gives you powerful AI video models — **Seedance Pro** for cinematic quality and **Pro Fast** at 72% lower cost with 3x speed. But having great models doesn't answer the real enterprise question: **how do you use both intelligently across thousands of items?**
+**The problem:** You have thousands of items (products, listings, vehicles) and you want AI-generated video for all of them. But your best AI model costs 2x more than the fast one. Running everything through the premium model is wasteful. Running everything through the cheap model undersells your top items.
 
-Every industry scaling AI video hits this: real estate firms generating tours for 50K listings. Retailers creating product videos for 10K SKUs. Auto dealers producing walkthroughs for 500K vehicles. The high-value items deserve your best model. The rest need fast, cheap, good-enough video. Without a system to route automatically, you either **overpay** (everything through Pro) or **underdeliver** (everything through Fast).
+**What you actually need:** A system that automatically looks at each item's business value and routes it to the right model — premium quality for the top 20% that drive revenue, fast and cheap for the other 80%.
 
-**AdCamp is that system.** Fork it, change 4 files for your industry, and you have a pipeline that routes each item to the right Seedance model based on its business value — with cost tracking, batch processing, and failure handling built in.
+**That's what AdCamp is.** It's a working pipeline that does this routing automatically, with cost tracking, batch processing, and failure handling built in. Fork it, change 4 files for your industry, and deploy.
 
-**The result**: ~$0.09/video blended cost (vs $0.13 all-premium). At 10,000 items, that's ~$12K/year in AI costs — replacing what would cost millions in manual video production.
+**The result:** ~$0.09/video blended cost (vs $0.13 all-premium). At 10,000 items, that's ~$12K/year in AI costs — replacing what would cost millions in manual video production.
+
+> **Implementation:** AdCamp uses [BytePlus ModelArk](https://www.byteplus.com/en/product/modelark) — **Seedance Pro** for premium-tier video and **Pro Fast** at 72% lower cost with 3x speed. The five architecture patterns work with any AI provider.
 
 ## Who Should Fork This
 
@@ -252,7 +254,7 @@ adcamp/
 ├── dashboard/                  # Streamlit UI (tabs, A/B comparison)
 ├── deploy/                     # Docker, GCP, AWS, K8s, monitoring
 ├── docs/                       # Guides, changelog, examples
-├── tests/                      # Unit tests (42 passing)
+├── tests/                      # Unit tests (59 passing)
 └── .github/                    # CONTRIBUTING, SECURITY, workflows
 ```
 
@@ -285,28 +287,36 @@ That's it. The pipeline routes luxury listings to the premium model, standard li
 ## Testing
 
 ```bash
-make test                                    # All 42 tests with coverage
+make test                                    # All 59 tests with coverage
 pytest tests/unit/test_model_router.py -v    # Router tests (Pattern 1)
 pytest tests/unit/test_cost_tracker.py -v    # Cost tracking tests (Pattern 3)
 pytest tests/unit/test_retry.py -v           # Retry/resilience tests (Pattern 5)
 pytest tests/unit/test_pipeline.py -v        # Pipeline integration tests (Patterns 1-3)
 pytest tests/unit/test_csv_parser.py -v      # CSV parser tests
+pytest tests/unit/test_security.py -v        # Security tests (auth, CORS, limits)
 ```
 
 ## Production Considerations
 
-This is a **reference architecture** — it demonstrates the patterns, not a hardened deployment. To take it to production:
+Security essentials are **built in** and activated via environment variables:
+
+| Area | Default (Demo) | Production (Set in `.env`) |
+|------|----------------|---------------------------|
+| **Authentication** | Open endpoints | `API_KEY=your-secret` — Bearer token on all `/api/*` routes |
+| **CORS** | `*` (any origin) | `CORS_ORIGINS=https://yourdomain.com` — comma-separated |
+| **Rate limiting** | 60 req/min per client | `RATE_LIMIT=30/minute` — slowapi format |
+| **Upload limits** | 10 MB max | `MAX_UPLOAD_SIZE_MB=5` — rejects oversized files with 413 |
+
+Additional hardening for production deployments:
 
 | Area | Current (Reference) | Production Recommendation |
 |------|-------------------|--------------------------|
-| **Authentication** | None (open endpoints) | API key middleware or JWT |
 | **Metrics** | In-memory, resets on restart | Prometheus with persistent storage |
 | **Cost tracking** | In-memory list | PostgreSQL or Redis for durable records |
-| **Rate limiting** | None | Per-client limits (e.g., slowapi) |
 | **Secrets** | `.env` file | Cloud secret manager (GCP/AWS SSM) |
 | **Error reporting** | Logging only | Sentry or equivalent |
 
-The five architecture patterns are production-grade in design. The infrastructure around them needs hardening for your specific deployment.
+The five architecture patterns are production-grade in design. Security controls are built in. Persistence and observability need hardening for your specific deployment.
 
 ## Documentation
 
@@ -323,7 +333,7 @@ Contributions welcome! See [CONTRIBUTING.md](.github/CONTRIBUTING.md).
 
 ```bash
 make install    # Setup environment
-make test       # Run tests (42 passing)
+make test       # Run tests (59 passing)
 make lint       # Check code style
 ```
 
