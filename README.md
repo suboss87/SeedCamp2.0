@@ -196,6 +196,7 @@ adcamp/
 ├── dashboard/                     ← STREAMLIT UI (works as-is)
 ├── tests/                         ← 59 TESTS (all passing)
 ├── deploy/                        ← DEPLOYMENT CONFIGS
+│   ├── byteplus/                  # BytePlus VKE (recommended)
 │   ├── docker/                    # Docker Compose
 │   ├── gcp/                       # Cloud Run + Terraform
 │   ├── aws/                       # ECS Fargate
@@ -229,10 +230,13 @@ adcamp/
 
 | Platform | Time | Best For | Guide |
 |----------|------|----------|-------|
+| **BytePlus VKE** | 30 min | Production (recommended) | [deploy/byteplus/](deploy/byteplus/) |
 | **Docker Compose** | 5 min | Local dev | [deploy/docker/](deploy/docker/) |
-| **GCP Cloud Run** | 20 min | Production | [deploy/gcp/](deploy/gcp/) |
+| **GCP Cloud Run** | 20 min | GCP shops | [deploy/gcp/](deploy/gcp/) |
 | **AWS ECS** | 30 min | AWS shops | [deploy/aws/](deploy/aws/) |
-| **Kubernetes** | 45 min | Full control | [deploy/kubernetes/](deploy/kubernetes/) |
+| **Kubernetes** | 45 min | Multi-cloud / on-prem | [deploy/kubernetes/](deploy/kubernetes/) |
+
+> **Why BytePlus VKE first?** AdCamp calls ModelArk APIs for every video. Deploying on BytePlus VKE co-locates your compute with the AI inference endpoint — lowest latency, no cross-cloud egress, one vendor for compute + AI.
 
 ## Testing
 
@@ -267,7 +271,7 @@ For persistence and observability, add Prometheus (config provided in `deploy/mo
 | **Backend** | FastAPI, async/await, SSE streaming |
 | **Dashboard** | Streamlit |
 | **Persistence** | Google Firestore |
-| **Deployment** | Docker, GCP Cloud Run, AWS ECS, Kubernetes, Terraform |
+| **Deployment** | BytePlus VKE, Docker, GCP Cloud Run, AWS ECS, Kubernetes, Terraform |
 
 ## Documentation
 

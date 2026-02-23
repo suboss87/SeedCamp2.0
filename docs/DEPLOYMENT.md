@@ -12,7 +12,7 @@ This guide covers deploying the AdCamp Video Generation Pipeline to production u
 
 ## BytePlus VKE Deployment (Recommended)
 
-BytePlus VKE is the managed Kubernetes service from BytePlus, providing enterprise-grade container management with native integration to ModelArk APIs.
+BytePlus [VKE (Vital Kubernetes Engine)](https://docs.byteplus.com/en/docs/vke/What-is-Vital-Kubernetes-Engine) is the managed Kubernetes service from BytePlus, providing enterprise-grade container management with native integration to ModelArk APIs.
 
 ### Prerequisites
 
@@ -25,15 +25,17 @@ BytePlus VKE is the managed Kubernetes service from BytePlus, providing enterpri
 
 #### Option A: Using BytePlus Container Registry (CR)
 
+> Replace `<instance>` below with your CR instance name from [console.byteplus.com/cr](https://console.byteplus.com/cr). See [CR docs](https://docs.byteplus.com/en/docs/cr/what-is-cr).
+
 ```bash
 # Log in to BytePlus CR
-docker login cr-ap-southeast-1.bytepluses.com
+docker login <instance>-ap-southeast-1.cr.bytepluses.com
 
 # Build the Docker image
-docker build -t cr-ap-southeast-1.bytepluses.com/your-namespace/adcamp:latest .
+docker build -t <instance>-ap-southeast-1.cr.bytepluses.com/your-namespace/adcamp:latest .
 
 # Push to BytePlus CR
-docker push cr-ap-southeast-1.bytepluses.com/your-namespace/adcamp:latest
+docker push <instance>-ap-southeast-1.cr.bytepluses.com/your-namespace/adcamp:latest
 ```
 
 #### Option B: Using Docker Hub
@@ -85,7 +87,7 @@ kubectl apply -f deploy/kubernetes/base/secret.yaml
 Edit `deploy/kubernetes/base/deployment-api.yaml` and `deploy/kubernetes/base/deployment-dashboard.yaml`:
 
 ```yaml
-image: cr-ap-southeast-1.bytepluses.com/your-namespace/adcamp:latest
+image: <instance>-ap-southeast-1.cr.bytepluses.com/your-namespace/adcamp:latest
 ```
 
 ### Step 6: Deploy to VKE

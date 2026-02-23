@@ -11,7 +11,9 @@ on:
       - main
 
 env:
-  REGISTRY: cr-ap-southeast-1.bytepluses.com
+  # BytePlus CR URL format: <instance>-<region>.cr.bytepluses.com
+  # Set REGISTRY_INSTANCE secret to your BytePlus CR instance name
+  REGISTRY: ${{ secrets.REGISTRY_INSTANCE }}-ap-southeast-1.cr.bytepluses.com
   IMAGE_NAME: adcamp
 
 jobs:

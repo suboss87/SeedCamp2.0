@@ -1,237 +1,250 @@
-# BytePlus VKE Deployment
+# BytePlus VKE Deployment (Recommended)
 
-Deploy AdCamp to BytePlus VKE (Volcano Engine Kubernetes) for a fully BytePlus-native stack with co-location benefits.
+Deploy AdCamp to [BytePlus VKE (Vital Kubernetes Engine)](https://docs.byteplus.com/en/docs/vke/What-is-Vital-Kubernetes-Engine) — the managed Kubernetes service from BytePlus. Co-locating with ModelArk gives you the lowest possible API latency and a single-vendor stack.
 
 ## Why BytePlus VKE?
 
-✅ **Co-located with ModelArk**: Ultra-low latency to ModelArk APIs  
-✅ **Unified platform**: Single vendor for compute + AI services  
-✅ **Enterprise support**: Direct BytePlus support for full stack  
-⚠️ **No free tier**: Pay-as-you-go pricing  
+- **Co-located with ModelArk** — Same network as the Seed/Seedance API. Lowest latency, no cross-cloud egress fees.
+- **Unified platform** — Compute, container registry, Kubernetes, and AI inference on one console ([console.byteplus.com](https://console.byteplus.com)).
+- **Enterprise Kubernetes** — Managed control plane, HPA, cluster autoscaler, Karpenter, VCI (serverless pods).
+- **Integrated observability** — Built-in pod monitoring, log collection, and resource metrics via VKE console.
 
-**Cost**: ~$200/year for cluster + workload
+**Estimated cost**: ~$200/year infrastructure (excludes ModelArk API usage).
 
 ## Prerequisites
 
-- BytePlus account with VKE enabled
-- `kubectl` CLI tool ([install](https://kubernetes.io/docs/tasks/tools/))
-- `volc` CLI (BytePlus CLI) or VKE web console access
-- ModelArk API key
-- Container registry (BytePlus CR or external)
+| Requirement | Notes |
+|-------------|-------|
+| BytePlus account | [console.byteplus.com](https://console.byteplus.com) with VKE enabled |
+| `kubectl` | [Install guide](https://kubernetes.io/docs/tasks/tools/) |
+| Docker | For building container images |
+| ModelArk API key | From [ModelArk Console](https://console.byteplus.com/modelark) |
+| BytePlus CR instance | [Container Registry](https://docs.byteplus.com/en/docs/cr/what-is-cr) in ap-southeast-1 |
 
 ## Architecture
 
 ```
-BytePlus Cloud (Same Region)
-┌─────────────────────────────────┐
-│  VKE Cluster                    │
-│  ┌───────────────────────────┐  │
-│  │  adcamp-api (2 replicas)  │──┼──> ModelArk API
-│  │  adcamp-dashboard (1 rep) │  │    (ultra-low latency)
-│  └───────────────────────────┘  │
-└─────────────────────────────────┘
+BytePlus Cloud — ap-southeast-1 (Singapore)
+┌──────────────────────────────────────────────┐
+│  VKE Cluster (Vital Kubernetes Engine)       │
+│  ┌────────────────────────────────────────┐  │
+│  │  Namespace: adcamp                     │  │
+│  │                                        │  │
+│  │  adcamp-api (2 replicas)               │  │
+│  │    ├── Script gen  → Seed 1.8          │──┼──> ModelArk API
+│  │    └── Video gen   → Seedance Pro/Fast │  │    ark.ap-southeast.bytepluses.com
+│  │                                        │  │    (same-region, ultra-low latency)
+│  │  adcamp-dashboard (1 replica)          │  │
+│  │    └── Streamlit UI                    │  │
+│  └────────────────────────────────────────┘  │
+│                                              │
+│  BytePlus CR (Container Registry)            │
+│    <instance>-ap-southeast-1.cr.bytepluses.com│
+└──────────────────────────────────────────────┘
 ```
 
 ## Quick Deploy
 
 ### 1. Create VKE Cluster
 
-**Via Console**:
-1. Go to VKE Console → Create Cluster
-2. Choose region: `ap-southeast-1` (same as ModelArk)
-3. Node spec: 2 nodes, 4 vCPU / 8GB each
-4. Enable public access for API server
+**Via [VKE Console](https://console.byteplus.com/vke):**
 
-**Via CLI** (if available):
-```bash
-volc vke create-cluster \
-  --cluster-name adcamp-cluster \
-  --region ap-southeast-1 \
-  --node-count 2 \
-  --node-type ecs.g2.large
-```
+1. Click **Create Cluster**
+2. Region: `ap-southeast-1` (Singapore) — same region as ModelArk
+3. Kubernetes version: 1.28+ (1.30 recommended)
+4. Node pool: 2 nodes, `ecs.g3i.xlarge` (4 vCPU / 16 GB)
+5. Network: VPC with internet access enabled
 
-### 2. Configure kubectl
+### 2. Connect kubectl
 
 ```bash
-# Download kubeconfig from VKE console
-# Or via CLI:
-volc vke get-kubeconfig --cluster-name adcamp-cluster > ~/.kube/config-vke
-
-# Set as default
+# Download kubeconfig from VKE Console → Cluster → Connection Info
 export KUBECONFIG=~/.kube/config-vke
 
 # Verify
 kubectl get nodes
 ```
 
-### 3. Create Secret for API Key
+### 3. Build and Push Image to BytePlus CR
 
 ```bash
-kubectl create secret generic adcamp-secrets \
-  --from-literal=ARK_API_KEY=your_modelark_api_key_here \
-  --namespace=default
-```
+# Log in to your BytePlus Container Registry instance
+# Replace <instance> with your CR instance name (from CR Console)
+docker login <instance>-ap-southeast-1.cr.bytepluses.com
 
-### 4. Build and Push Image
-
-**Option A: BytePlus CR**
-
-```bash
-# Login to BytePlus Container Registry
-docker login cr-ap-southeast-1.bytepluses.com
-
-# Build image
-docker build -t cr-ap-southeast-1.bytepluses.com/adcamp/api:latest \
-  -f ../../docker/Dockerfile ../../..
+# Build
+docker build -t <instance>-ap-southeast-1.cr.bytepluses.com/adcamp/api:latest .
 
 # Push
-docker push cr-ap-southeast-1.bytepluses.com/adcamp/api:latest
+docker push <instance>-ap-southeast-1.cr.bytepluses.com/adcamp/api:latest
 ```
 
-**Option B: Use existing GCR/ECR image**
+> **CR URL format**: `<instance>-<region>.cr.bytepluses.com/<namespace>/<repo>:<tag>`
+> Create your CR instance and namespace at [console.byteplus.com/cr](https://console.byteplus.com/cr).
+> See [CR docs](https://docs.byteplus.com/en/docs/cr/what-is-cr) for setup.
 
-Update `vke/deployment.yaml` with your image URL.
-
-### 5. Deploy to VKE
+### 4. Create Namespace and Secret
 
 ```bash
-# Apply all manifests
+# Create namespace
+kubectl apply -f vke/namespace.yaml
+
+# Create secret with your ModelArk API key
+kubectl create secret generic adcamp-secrets \
+  --from-literal=ARK_API_KEY=your_modelark_api_key_here \
+  --from-literal=ARK_BASE_URL=https://ark.ap-southeast.bytepluses.com/api/v3 \
+  --namespace=adcamp
+```
+
+### 5. Update Image URL and Deploy
+
+```bash
+# Edit vke/deployment-api.yaml and vke/deployment-dashboard.yaml
+# Replace <instance> with your CR instance name
+
+# Deploy all manifests
 kubectl apply -f vke/
 
-# Or use automated script
-./scripts/deploy.sh
+# Watch rollout
+kubectl rollout status deployment/adcamp-api -n adcamp --timeout=5m
+kubectl rollout status deployment/adcamp-dashboard -n adcamp --timeout=5m
 ```
 
 ### 6. Get Service URL
 
 ```bash
-# Get LoadBalancer IP
-kubectl get service adcamp-api -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
+# Get LoadBalancer external IP (may take 1-2 minutes)
+kubectl get svc -n adcamp
 
 # Test
-curl http://<EXTERNAL-IP>/health
+API_IP=$(kubectl get svc adcamp-api -n adcamp -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+curl http://$API_IP/health
 ```
 
-## Configuration
-
-### Manifests in `vke/`
-
-- `namespace.yaml`: Creates `adcamp` namespace
-- `secret.yaml`: Stores API key (template - populate before apply)
-- `deployment.yaml`: API and dashboard deployments
-- `service.yaml`: LoadBalancer services
-- `ingress.yaml`: Ingress for custom domain (optional)
-
-### Update Deployment
+### One-Command Deploy (Alternative)
 
 ```bash
-# Edit deployment
-kubectl edit deployment adcamp-api -n adcamp
-
-# Or apply updated manifest
-kubectl apply -f vke/deployment.yaml
-
-# Rollout status
-kubectl rollout status deployment/adcamp-api -n adcamp
+# Set your CR instance name and deploy
+export REGISTRY_INSTANCE=your-cr-instance
+./scripts/deploy-vke.sh production
 ```
+
+## Manifest Reference
+
+| File | Purpose |
+|------|---------|
+| `vke/namespace.yaml` | Creates `adcamp` namespace |
+| `vke/secret.yaml` | API key template (use `kubectl create secret` instead) |
+| `vke/deployment-api.yaml` | API server — 2 replicas, health checks, resource limits |
+| `vke/deployment-dashboard.yaml` | Streamlit dashboard — 1 replica |
+| `vke/service-api.yaml` | LoadBalancer for API (port 80 → 8000) |
+| `vke/service-dashboard.yaml` | LoadBalancer for dashboard (port 80 → 8501) |
+| `vke/ingress.yaml` | Optional — custom domain routing |
+
+## Operations
 
 ### Scaling
 
 ```bash
-# Scale API replicas
+# Manual scale
 kubectl scale deployment adcamp-api --replicas=5 -n adcamp
 
-# Auto-scaling (HPA)
+# Horizontal Pod Autoscaler (CPU-based)
 kubectl autoscale deployment adcamp-api \
-  --cpu-percent=70 \
-  --min=2 \
-  --max=10 \
-  -n adcamp
+  --cpu-percent=70 --min=2 --max=10 -n adcamp
 ```
 
-## Monitoring
-
-### Logs
+### Rolling Updates
 
 ```bash
-# View API logs
+# Update image tag
+kubectl set image deployment/adcamp-api \
+  api=<instance>-ap-southeast-1.cr.bytepluses.com/adcamp/api:v2 \
+  -n adcamp
+
+# Watch rollout
+kubectl rollout status deployment/adcamp-api -n adcamp
+
+# Rollback if needed
+kubectl rollout undo deployment/adcamp-api -n adcamp
+```
+
+### Logs and Monitoring
+
+```bash
+# API logs
 kubectl logs -f deployment/adcamp-api -n adcamp
 
-# View dashboard logs
+# Dashboard logs
 kubectl logs -f deployment/adcamp-dashboard -n adcamp
-```
 
-### Metrics
-
-```bash
 # Resource usage
 kubectl top pods -n adcamp
 kubectl top nodes
 ```
 
-**Enable VKE Monitoring**: Configure in VKE console → Monitoring
+VKE also provides built-in monitoring via the console: **VKE Console → Cluster → Monitoring**.
 
-## Cost Optimization
+## Cost Breakdown
 
-### VKE Cluster Costs
-- **Control plane**: ~$50/month
-- **Worker nodes**: 2 × 4vCPU/8GB ≈ ~$120/month
-- **LoadBalancer**: ~$10/month
-- **Network egress**: Variable
+| Component | Monthly | Annual |
+|-----------|---------|--------|
+| VKE control plane | ~$0 (free for standard clusters) | $0 |
+| Worker nodes (2 x ecs.g3i.xlarge) | ~$120 | ~$1,440 |
+| LoadBalancer (2 services) | ~$20 | ~$240 |
+| Container Registry | ~$5 | ~$60 |
+| Network egress | Variable | Variable |
+| **Infrastructure total** | **~$145** | **~$1,740** |
 
-**Total**: ~$180-220/month base cost
+> ModelArk API costs are separate: ~$0.09/video blended average. At 34,500 videos/year = ~$3,105/year.
 
-### Tips
-1. Use spot/preemptible instances for non-prod
-2. Scale down during off-hours
-3. Use HPA for auto-scaling
-4. Enable cluster auto-scaler
+### Cost Optimization Tips
 
-## Terraform
-
-For IaC deployment, see [terraform/](./terraform/)
-
-```bash
-cd deploy/byteplus/terraform
-
-terraform init
-terraform plan
-terraform apply
-```
+1. **Right-size nodes** — Start with `ecs.g3i.large` (2 vCPU / 8 GB) if traffic is low
+2. **Cluster autoscaler** — Scale nodes down during off-hours
+3. **Spot instances** — Use for non-production workloads (up to 70% savings)
+4. **VCI (serverless pods)** — Burst to [Vital Container Instance](https://docs.byteplus.com/en/docs/vke/VCI-benefits) for spiky workloads without pre-provisioning nodes
 
 ## Troubleshooting
 
 ### Pods Not Starting
 
 ```bash
-# Check pod status
 kubectl describe pod <POD_NAME> -n adcamp
-
-# Check events
 kubectl get events -n adcamp --sort-by='.lastTimestamp'
 ```
 
 ### Image Pull Errors
 
-Ensure image is accessible:
+Verify your CR instance is accessible and image exists:
 ```bash
-# Test image pull locally
-docker pull cr-ap-southeast-1.bytepluses.com/adcamp/api:latest
+docker pull <instance>-ap-southeast-1.cr.bytepluses.com/adcamp/api:latest
 ```
 
-### LoadBalancer Pending
+If pulling from VKE nodes fails, ensure the VKE cluster VPC can reach the CR instance. See [CR FAQ](https://docs.byteplus.com/en/docs/cr/How-do-I-address-a-Docker-login-failure).
 
-VKE provisions LoadBalancer automatically. May take 2-3 minutes.
+### LoadBalancer Stuck in Pending
 
+VKE automatically provisions a CLB (Cloud Load Balancer). Allow 1-3 minutes. Check:
 ```bash
-# Check service
 kubectl describe service adcamp-api -n adcamp
 ```
 
-## Next Steps
+### ModelArk API Unreachable
 
-- **Custom domain**: Configure ingress with your domain
-- **SSL/TLS**: Add cert-manager for automatic HTTPS
-- **Monitoring**: Set up Prometheus + Grafana
-- **CI/CD**: Integrate with BytePlus CI/CD pipelines
+Verify DNS resolution from inside the cluster:
+```bash
+kubectl exec -it deployment/adcamp-api -n adcamp -- \
+  curl -s https://ark.ap-southeast.bytepluses.com/api/v3
+```
+
+If DNS fails, check VPC internet access settings in VKE console.
+
+## Documentation
+
+- [VKE Overview](https://docs.byteplus.com/en/docs/vke/What-is-Vital-Kubernetes-Engine)
+- [VKE Regions](https://docs.byteplus.com/en/docs/vke/Regions-and-Availability-Zones)
+- [Container Registry](https://docs.byteplus.com/en/docs/cr/what-is-cr)
+- [ModelArk Quick Start](https://docs.byteplus.com/en/docs/ModelArk/1399008)
+- [VKE Node Pools](https://docs.byteplus.com/en/docs/vke/NodePool-overview)
+- [VKE Terraform](https://docs.byteplus.com/en/docs/vke/Managing-clusters-created-using-Terraform)

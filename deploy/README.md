@@ -6,13 +6,13 @@ This directory contains deployment configurations for multiple cloud platforms a
 
 | Platform | Free Tier | Setup Time | Best For | Estimated Cost* | Guide |
 |----------|-----------|------------|----------|----------------|-------|
+| **BytePlus VKE** (recommended) | ❌ Pay-as-you-go | 30 min | Production — co-located with ModelArk | ~$200/yr | [byteplus/](./byteplus/) |
 | **Docker Compose** | ✅ Yes | 5 min | Local dev & testing | $0 | [docker/](./docker/) |
 | **Railway** | ❌ No ($5/mo) | 10 min | Quick demos & prototypes | ~$60/yr | [railway/](./railway/) |
 | **Render** | ✅ Yes | 15 min | Side projects & MVPs | Free tier available | [render/](./render/) |
-| **GCP Cloud Run** | ✅ Yes (2M req/mo) | 20 min | Production workloads | ~$50/yr | [gcp/](./gcp/) |
+| **GCP Cloud Run** | ✅ Yes (2M req/mo) | 20 min | GCP ecosystem | ~$50/yr | [gcp/](./gcp/) |
 | **AWS ECS/Fargate** | ✅ 12mo free tier | 30 min | AWS ecosystem | ~$100/yr | [aws/](./aws/) |
 | **Generic Kubernetes** | Varies | 25 min | Multi-cloud, on-prem | Varies | [kubernetes/](./kubernetes/) |
-| **BytePlus VKE** | ❌ Pay-as-you-go | 45 min | BytePlus-native stack | ~$200/yr | [byteplus/](./byteplus/) |
 
 *Cost estimates based on 34,500 videos/year (95/day) + ModelArk API costs (~$2,760/yr). Infrastructure only.
 
@@ -24,24 +24,24 @@ This directory contains deployment configurations for multiple cloud platforms a
 
 ### For Production
 
+#### Choose **BytePlus VKE** (recommended) if you want:
+- ✅ Co-location with ModelArk APIs — lowest latency, no cross-cloud egress
+- ✅ Single vendor for compute + AI inference + container registry
+- ✅ Enterprise Kubernetes with managed control plane, HPA, and VCI
+- ✅ Built-in monitoring and log collection
+- ⚠️ No free tier — pay-as-you-go pricing
+
 #### Choose **GCP Cloud Run** if you want:
 - ✅ Generous free tier (2M requests/month)
 - ✅ Serverless auto-scaling (0 → 1000 instances)
 - ✅ Pay only for actual usage
 - ✅ Simple deployment (single command)
-- ✅ Integrated monitoring & logging
 
 #### Choose **AWS ECS/Fargate** if you:
 - ✅ Already use AWS services
 - ✅ Need advanced VPC networking
 - ✅ Want deep integration with AWS ecosystem (ALB, RDS, etc.)
 - ✅ Have AWS credits or enterprise agreement
-
-#### Choose **BytePlus VKE** if you:
-- ✅ Want to run everything on BytePlus infrastructure
-- ✅ Need co-location with ModelArk APIs for ultra-low latency
-- ✅ Have BytePlus enterprise support
-- ⚠️ Note: No free tier available
 
 #### Choose **Generic Kubernetes** if you:
 - ✅ Need multi-cloud portability
@@ -136,13 +136,13 @@ HERO_SKU_THRESHOLD=0.20            # Top 20% = hero SKUs
 
 ## Platform-Specific Guides
 
+- **[BytePlus VKE](./byteplus/)** - Production deployment co-located with ModelArk (recommended)
 - **[Docker Compose](./docker/)** - Local development and testing
 - **[Railway](./railway/)** - One-click deploy for quick prototypes
 - **[Render](./render/)** - Free tier hosting for side projects
 - **[GCP Cloud Run](./gcp/)** - Serverless production deployment
 - **[AWS ECS/Fargate](./aws/)** - AWS-native container deployment
 - **[Generic Kubernetes](./kubernetes/)** - Portable K8s manifests with Kustomize
-- **[BytePlus VKE](./byteplus/)** - BytePlus Kubernetes Engine
 - **[Monitoring Stack](./monitoring/)** - Prometheus + Grafana observability
 
 ## Monitoring & Observability
@@ -188,6 +188,7 @@ Adapt this for GitLab CI, CircleCI, Jenkins, or your preferred CI/CD platform. A
 
 1. Start with [Docker Compose](./docker/) for local development
 2. Deploy to [Railway](./railway/) or [Render](./render/) for staging
-3. Graduate to [GCP Cloud Run](./gcp/) or [AWS ECS](./aws/) for production
-4. Implement monitoring and observability (see [monitoring/](./monitoring/))
-5. Set up CI/CD for automated deployments
+3. Graduate to [BytePlus VKE](./byteplus/) for production (recommended — co-located with ModelArk)
+4. Or use [GCP Cloud Run](./gcp/) / [AWS ECS](./aws/) if you prefer those clouds
+5. Add monitoring with [Prometheus + Grafana](./monitoring/)
+6. Set up CI/CD for automated deployments

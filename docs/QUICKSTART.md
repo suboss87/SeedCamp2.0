@@ -100,19 +100,23 @@ curl -X POST http://localhost:8000/api/generate \
 
 ---
 
-## Option 4: BytePlus VKE (Full BytePlus Stack)
+## Option 4: BytePlus VKE (Recommended for Production)
 
-**Cost**: Pay-as-you-go | **Time**: 60 minutes | **Best for**: BytePlus-native deployment
+**Cost**: Pay-as-you-go | **Time**: 30 minutes | **Best for**: Production — co-located with ModelArk
 
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete VKE guide.
+[BytePlus VKE (Vital Kubernetes Engine)](https://docs.byteplus.com/en/docs/vke/What-is-Vital-Kubernetes-Engine) runs your workload on the same network as the ModelArk API, giving you the lowest latency and a single-vendor stack.
+
+See [deploy/byteplus/](../deploy/byteplus/) or [DEPLOYMENT.md](./DEPLOYMENT.md) for the complete guide.
 
 **Prerequisites**:
-- BytePlus account with VKE access
+- BytePlus account with VKE enabled ([console.byteplus.com](https://console.byteplus.com))
+- BytePlus CR instance ([Container Registry](https://docs.byteplus.com/en/docs/cr/what-is-cr))
 - kubectl configured
 - Docker installed
 
 **Quick deploy**:
 ```bash
+export REGISTRY_INSTANCE=your-cr-instance
 ./deploy/byteplus/scripts/deploy-vke.sh production
 ```
 

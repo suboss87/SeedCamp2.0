@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adcamp-dashboard
+  namespace: adcamp
+  labels:
+    app: adcamp
+    component: dashboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: adcamp
+      component: dashboard
+  template:
+    metadata:
+      labels:
+        app: adcamp
+        component: dashboard
+    spec:
+      containers:
+      - name: dashboard
+        # Replace <instance> with your BytePlus CR instance name
+        image: <instance>-ap-southeast-1.cr.bytepluses.com/adcamp/api:latest
+        imagePullPolicy: Always
+        command: ["streamlit", "run", "dashboard/app.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
+        ports:
+        - containerPort: 8501
+          name: http
+        env:
+        - name: API_BASE_URL
+          value: "http://adcamp-api.adcamp.svc.cluster.local"
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
