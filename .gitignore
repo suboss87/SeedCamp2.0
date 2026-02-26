@@ -69,6 +69,14 @@ deploy/monitoring/alertmanager-data/
 # Internal session notes
 tasks/
 
+# AI tool configs
+.claude/
+CLAUDE.md
+AGENTS.md
+
+# Podcast sources (personal content)
+podcast/
+
 # Miscellaneous
 *.jpg
 *.jpeg
