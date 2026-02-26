@@ -71,6 +71,35 @@ groups:
           summary: "AdCamp API is down"
           description: "API has been unreachable for more than 1 minute"
 
+  - name: adcamp_safety_alerts
+    interval: 30s
+    rules:
+      # High safety block rate
+      - alert: HighSafetyBlockRate
+        expr: |
+          (
+            rate(safety_blocked_total[5m]) /
+            (rate(safety_checks_total[5m]) + 0.001)
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          service: api
+        annotations:
+          summary: "High content safety block rate"
+          description: "Safety block rate is {{ $value | humanizePercentage }} over the last 5 minutes (threshold: 5%)"
+
+      # Safety eval latency
+      - alert: SafetyEvalLatency
+        expr: safety_eval_avg_seconds > 10
+        for: 5m
+        labels:
+          severity: warning
+          service: api
+        annotations:
+          summary: "Safety evaluation is slow"
+          description: "Average safety evaluation time is {{ $value }}s (threshold: 10s)"
+
   - name: adcamp_model_alerts
     interval: 30s
     rules:

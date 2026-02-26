@@ -28,7 +28,7 @@ from app.models.schemas import (
 )
 from app.services import cost_tracker, video_gen
 from app.services import firestore_client
-from app.services.pipeline import run_pipeline
+from app.services.pipeline import run_pipeline, ContentBlockedError
 from app import monitoring
 from app.routes.campaigns import router as campaigns_router
 from app.utils.retry import validate_api_key, InvalidAPIKeyError
@@ -298,6 +298,10 @@ async def generate_ad(request: Request, req: GenerateRequest):
         result = await _run_pipeline(req)
         _track_success_metrics(result["cost"].total_cost_usd, req.sku_tier)
 
+        safety_data = None
+        if result.get("safety"):
+            safety_data = result["safety"].model_dump()
+
         return GenerateResponse(
             task_id=result["task_id"],
             sku_id=req.sku_id,
@@ -310,6 +314,18 @@ async def generate_ad(request: Request, req: GenerateRequest):
                 model_used=result["model_id"],
             ),
             cost=result["cost"],
+            safety=safety_data,
+        )
+
+    except ContentBlockedError as e:
+        logger.warning("Content blocked for SKU %s: %s", req.sku_id, e)
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "error": "content_blocked",
+                "message": str(e),
+                "safety": e.safety_result.model_dump(),
+            },
         )
 
     except Exception:
@@ -355,6 +371,27 @@ async def get_cost_summary():
     return cost_tracker.get_summary()
 
 
+# ─── Safety Summary ──────────────────────────────────────────────────────────
+
+
+@app.get("/api/safety-summary")
+async def get_safety_summary():
+    """Aggregate safety evaluation metrics."""
+    metrics = monitoring.get_metrics()
+    checks = metrics["safety_checks_total"]
+    flagged = metrics["safety_flagged_total"]
+    blocked = metrics["safety_blocked_total"]
+    return {
+        "safety_enabled": settings.safety_enabled,
+        "total_checks": checks,
+        "total_flagged": flagged,
+        "total_blocked": blocked,
+        "block_rate": round(blocked / checks, 4) if checks > 0 else 0.0,
+        "flag_rate": round(flagged / checks, 4) if checks > 0 else 0.0,
+        "avg_eval_seconds": metrics["safety_eval_avg_seconds"],
+    }
+
+
 # ─── Streaming Generation (SSE for live progress) ────────────────────────────────
 
 
@@ -373,15 +410,24 @@ async def generate_ad_stream(request: Request, req: GenerateRequest):
             await asyncio.sleep(0.5)
 
             yield f"data: {json.dumps({'step': 2, 'status': 'running', 'message': 'Generating ad script with Seed 1.8...', 'progress': 15})}\n\n"
-            result = await _run_pipeline(req)
+            try:
+                result = await _run_pipeline(req)
+            except ContentBlockedError as e:
+                yield f"data: {json.dumps({'step': 2, 'status': 'complete', 'message': 'Script generated', 'progress': 30})}\n\n"
+                yield f"data: {json.dumps({'step': 'safety', 'status': 'blocked', 'message': f'Content blocked by safety evaluation (score={e.safety_result.overall_score:.2f})', 'progress': 0, 'data': {'safety': e.safety_result.model_dump()}})}\n\n"
+                return
             script = result["script"]
             task_id = result["task_id"]
             model_id = result["model_id"]
 
+            safety_msg = ""
+            if result.get("safety"):
+                safety = result["safety"]
+                safety_msg = f" (safety: {safety.risk_level})"
             model_name = (
                 "Seedance 1.5 Pro" if "1-5" in model_id else "Seedance 1.0 Pro Fast"
             )
-            yield f"data: {json.dumps({'step': 2, 'status': 'complete', 'message': 'Script generated', 'progress': 35, 'data': {'script': script.model_dump(), 'tokens': {'input': result['in_tokens'], 'output': result['out_tokens']}}})}\n\n"
+            yield f"data: {json.dumps({'step': 2, 'status': 'complete', 'message': f'Script generated{safety_msg}', 'progress': 35, 'data': {'script': script.model_dump(), 'tokens': {'input': result['in_tokens'], 'output': result['out_tokens']}}})}\n\n"
             yield f"data: {json.dumps({'step': 3, 'status': 'complete', 'message': f'Routed to {model_name}', 'progress': 45, 'data': {'model': model_id, 'cost_per_m': result['cost_per_m']}})}\n\n"
             yield f"data: {json.dumps({'step': 4, 'status': 'complete', 'message': 'Video task created', 'progress': 55, 'data': {'task_id': task_id}})}\n\n"
 

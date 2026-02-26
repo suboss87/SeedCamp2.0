@@ -98,6 +98,7 @@ class CostBreakdown(BaseModel):
     script_cost_usd: float = 0.0
     video_tokens: int = 0
     video_cost_usd: float = 0.0
+    safety_eval_cost_usd: float = 0.0
     total_cost_usd: float = 0.0
     model_used: str = ""
     cost_per_m_tokens: float = 0.0
@@ -114,6 +115,7 @@ class GenerateResponse(BaseModel):
     script: AdScript
     video: VideoTaskStatus
     cost: CostBreakdown
+    safety: Optional[dict] = None
 
 
 # ---- Cost Summary ----

@@ -15,8 +15,12 @@ _metrics = {
     "videos_generated_total": 0,
     "videos_failed_total": 0,
     "api_requests_total": 0,
+    "safety_checks_total": 0,
+    "safety_flagged_total": 0,
+    "safety_blocked_total": 0,
     "script_generation_duration_seconds": [],
     "video_generation_duration_seconds": [],
+    "safety_eval_duration_seconds": [],
 }
 
 
@@ -57,6 +61,10 @@ def get_metrics() -> Dict[str, Any]:
         "video_generation_avg_seconds": round(
             _avg("video_generation_duration_seconds"), 2
         ),
+        "safety_checks_total": _metrics["safety_checks_total"],
+        "safety_flagged_total": _metrics["safety_flagged_total"],
+        "safety_blocked_total": _metrics["safety_blocked_total"],
+        "safety_eval_avg_seconds": round(_avg("safety_eval_duration_seconds"), 2),
         "total_cost_usd": cost_summary.total_cost_usd,
         "avg_cost_per_video": cost_summary.avg_cost_per_video,
         "hero_videos": cost_summary.hero_videos,
@@ -113,6 +121,22 @@ def prometheus_format() -> str:
         "# HELP catalog_videos_total Total catalog videos generated",
         "# TYPE catalog_videos_total counter",
         f"catalog_videos_total {metrics['catalog_videos']}",
+        "",
+        "# HELP safety_checks_total Total safety evaluations performed",
+        "# TYPE safety_checks_total counter",
+        f"safety_checks_total {metrics['safety_checks_total']}",
+        "",
+        "# HELP safety_flagged_total Total content flagged by safety eval",
+        "# TYPE safety_flagged_total counter",
+        f"safety_flagged_total {metrics['safety_flagged_total']}",
+        "",
+        "# HELP safety_blocked_total Total content blocked by safety eval",
+        "# TYPE safety_blocked_total counter",
+        f"safety_blocked_total {metrics['safety_blocked_total']}",
+        "",
+        "# HELP safety_eval_avg_seconds Average safety evaluation duration",
+        "# TYPE safety_eval_avg_seconds gauge",
+        f"safety_eval_avg_seconds {metrics['safety_eval_avg_seconds']}",
         "",
     ]
     return "\n".join(lines)

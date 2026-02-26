@@ -8,6 +8,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from app.models.schemas import AdScript, SKUTier
+from app.models.safety_schemas import SafetyEvalResult
 from app.services import cost_tracker
 from app.services.pipeline import _estimate_video_tokens, run_pipeline
 
@@ -66,18 +67,37 @@ class TestRunPipeline:
         with patch("app.services.pipeline.monitoring") as mock:
             yield mock
 
+    @pytest.fixture
+    def mock_safety_evaluator(self):
+        """Mock safety_evaluator to return safe result."""
+        safe_result = SafetyEvalResult(
+            overall_score=0.05,
+            risk_level="safe",
+            categories=[],
+            flagged_issues=[],
+            recommendation="proceed",
+            eval_tokens_in=300,
+            eval_tokens_out=150,
+            eval_cost_usd=0.000375,
+        )
+        with patch("app.services.pipeline.safety_evaluator") as mock:
+            mock.evaluate_content_safety = AsyncMock(
+                return_value=(safe_result, 300, 150),
+            )
+            yield mock
+
     async def test_pipeline_returns_all_required_keys(
-        self, mock_script_writer, mock_video_gen, mock_monitoring,
+        self, mock_script_writer, mock_video_gen, mock_monitoring, mock_safety_evaluator,
     ):
         result = await run_pipeline(
             brief="test brief", sku_tier=SKUTier.catalog, sku_id="SKU-001",
         )
         assert set(result.keys()) == {
-            "script", "model_id", "cost_per_m", "task_id", "cost", "in_tokens", "out_tokens",
+            "script", "model_id", "cost_per_m", "task_id", "cost", "in_tokens", "out_tokens", "safety",
         }
 
     async def test_hero_routes_to_pro_model(
-        self, mock_script_writer, mock_video_gen, mock_monitoring,
+        self, mock_script_writer, mock_video_gen, mock_monitoring, mock_safety_evaluator,
     ):
         result = await run_pipeline(
             brief="hero brief", sku_tier=SKUTier.hero, sku_id="HERO-001",
@@ -85,7 +105,7 @@ class TestRunPipeline:
         assert "fast" not in result["model_id"].lower()
 
     async def test_catalog_routes_to_fast_model(
-        self, mock_script_writer, mock_video_gen, mock_monitoring,
+        self, mock_script_writer, mock_video_gen, mock_monitoring, mock_safety_evaluator,
     ):
         result = await run_pipeline(
             brief="catalog brief", sku_tier=SKUTier.catalog, sku_id="CAT-001",
@@ -93,7 +113,7 @@ class TestRunPipeline:
         assert "fast" in result["model_id"].lower()
 
     async def test_pipeline_records_to_cost_history(
-        self, mock_script_writer, mock_video_gen, mock_monitoring,
+        self, mock_script_writer, mock_video_gen, mock_monitoring, mock_safety_evaluator,
     ):
         await run_pipeline(
             brief="test", sku_tier=SKUTier.catalog, sku_id="SKU-001",
@@ -102,7 +122,7 @@ class TestRunPipeline:
         assert cost_tracker._history[0]["sku_tier"] == "catalog"
 
     async def test_hero_costs_more_than_catalog_end_to_end(
-        self, mock_script_writer, mock_video_gen, mock_monitoring,
+        self, mock_script_writer, mock_video_gen, mock_monitoring, mock_safety_evaluator,
     ):
         hero = await run_pipeline(
             brief="hero", sku_tier=SKUTier.hero, sku_id="H-001",

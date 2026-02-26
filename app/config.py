@@ -33,6 +33,13 @@ class Settings(BaseSettings):
     brief_temperature: float = 0.8
     brief_max_tokens: int = 256
 
+    # --- Safety evaluation ---
+    safety_enabled: bool = True
+    safety_threshold_flag: float = 0.3  # Flag for review
+    safety_threshold_block: float = 0.8  # Block video generation
+    safety_temperature: float = 0.0  # Deterministic evaluation
+    safety_max_tokens: int = 512
+
     # --- Security ---
     cors_origins: str = (
         "*"  # Comma-separated origins, e.g. "https://example.com,https://app.example.com"

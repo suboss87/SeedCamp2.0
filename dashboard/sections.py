@@ -47,6 +47,19 @@ def _fetch_analytics() -> dict:
     return st.session_state["analytics_data"]
 
 
+def _fetch_safety_summary() -> dict:
+    if st.session_state.get("_refresh_analytics"):
+        st.session_state.pop("safety_data", None)
+    if "safety_data" not in st.session_state:
+        try:
+            resp = requests.get(f"{API_BASE}/api/safety-summary", timeout=10)
+            resp.raise_for_status()
+            st.session_state["safety_data"] = resp.json()
+        except Exception:
+            st.session_state["safety_data"] = {}
+    return st.session_state["safety_data"]
+
+
 def _fetch_campaigns() -> list:
     if st.session_state.get("_refresh_campaigns"):
         st.session_state.pop("campaigns_list", None)
@@ -165,6 +178,39 @@ def render_sidebar_analytics():
                 )
         else:
             st.caption("Generate videos to see cost metrics")
+
+        # Safety evaluation metrics
+        safety = _fetch_safety_summary()
+        if safety and safety.get("total_checks", 0) > 0:
+            st.markdown(
+                '<div class="ac-label">Content Safety</div>', unsafe_allow_html=True
+            )
+            checks = safety.get("total_checks", 0)
+            flagged = safety.get("total_flagged", 0)
+            blocked = safety.get("total_blocked", 0)
+            block_rate = safety.get("block_rate", 0) * 100
+
+            st.markdown(
+                f"""
+            <div class="ac-stat">
+                <span class="ac-stat-label">Safety Checks</span>
+                <span class="ac-stat-val">{checks}</span>
+            </div>
+            <div class="ac-stat">
+                <span class="ac-stat-label">Flagged</span>
+                <span class="ac-stat-val">{flagged}</span>
+            </div>
+            <div class="ac-stat">
+                <span class="ac-stat-label">Blocked</span>
+                <span class="ac-stat-val">{blocked}</span>
+            </div>
+            <div class="ac-stat">
+                <span class="ac-stat-label">Block Rate</span>
+                <span class="ac-stat-val">{block_rate:.1f}%</span>
+            </div>
+            """,
+                unsafe_allow_html=True,
+            )
 
         st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
         if st.button(
