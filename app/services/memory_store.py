@@ -9,7 +9,7 @@ Data is lost on restart. For production persistence, set PERSISTENCE_BACKEND=fir
 import logging
 import uuid
 from copy import deepcopy
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from app.models.campaign_schemas import (
@@ -39,7 +39,7 @@ def init():
 
 
 async def create_campaign(data: CampaignCreate) -> Campaign:
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     campaign = Campaign(
         id=uuid.uuid4().hex[:20],
         name=data.name,
@@ -72,7 +72,7 @@ async def list_campaigns(limit: int = 20, offset: int = 0) -> list[Campaign]:
 async def update_campaign_status(campaign_id: str, status: CampaignStatus):
     if campaign_id in _campaigns:
         _campaigns[campaign_id]["status"] = status.value
-        _campaigns[campaign_id]["updated_at"] = datetime.utcnow()
+        _campaigns[campaign_id]["updated_at"] = datetime.now(timezone.utc)
 
 
 async def delete_campaign(campaign_id: str):
@@ -104,7 +104,7 @@ async def create_product(campaign_id: str, data: ProductCreate) -> Product:
         image_url=data.image_url,
         sku_tier=data.sku_tier,
         category=data.category,
-        created_at=datetime.utcnow(),
+        created_at=datetime.now(timezone.utc),
     )
     _products[product.id] = product.model_dump()
     return product
@@ -122,7 +122,7 @@ async def create_products_batch(
         _campaigns[campaign_id]["total_products"] = _campaigns[campaign_id].get(
             "total_products", 0
         ) + len(products)
-        _campaigns[campaign_id]["updated_at"] = datetime.utcnow()
+        _campaigns[campaign_id]["updated_at"] = datetime.now(timezone.utc)
     logger.info("Created %d products for campaign %s", len(created), campaign_id)
     return created
 
@@ -173,7 +173,7 @@ async def increment_campaign_completed(campaign_id: str, cost_usd: float):
         _campaigns[campaign_id]["total_cost_usd"] = (
             _campaigns[campaign_id].get("total_cost_usd", 0.0) + cost_usd
         )
-        _campaigns[campaign_id]["updated_at"] = datetime.utcnow()
+        _campaigns[campaign_id]["updated_at"] = datetime.now(timezone.utc)
 
 
 async def increment_campaign_failed(campaign_id: str):
@@ -181,4 +181,4 @@ async def increment_campaign_failed(campaign_id: str):
         _campaigns[campaign_id]["failed_videos"] = (
             _campaigns[campaign_id].get("failed_videos", 0) + 1
         )
-        _campaigns[campaign_id]["updated_at"] = datetime.utcnow()
+        _campaigns[campaign_id]["updated_at"] = datetime.now(timezone.utc)

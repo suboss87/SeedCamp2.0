@@ -1,0 +1,13 @@
+# Default owners for everything in the repo
+* @suboss87
+
+# Core pipeline and services
+/app/services/ @suboss87
+/app/models/ @suboss87
+/app/utils/ @suboss87
+
+# Deployment configurations
+/deploy/ @suboss87
+
+# CI/CD
+/.github/workflows/ @suboss87

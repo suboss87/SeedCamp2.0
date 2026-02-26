@@ -3,7 +3,7 @@
 [![BytePlus ModelArk](https://img.shields.io/badge/Powered%20by-BytePlus%20ModelArk-blue)](https://www.byteplus.com/en/product/modelark)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Tests](https://img.shields.io/badge/tests-59%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-76%20passing-brightgreen)]()
 
 A production-ready pipeline for generating AI videos across thousands of products, listings, or items — with smart cost control built in. Fork it, configure it, deploy it.
 
@@ -194,7 +194,7 @@ adcamp/
 │   └── utils/retry.py             # ⭐ Retry with backoff (works as-is)
 │
 ├── dashboard/                     ← STREAMLIT UI (works as-is)
-├── tests/                         ← 59 TESTS (all passing)
+├── tests/                         ← 76 TESTS (all passing)
 ├── deploy/                        ← DEPLOYMENT CONFIGS
 │   ├── byteplus/                  # BytePlus VKE (recommended)
 │   ├── docker/                    # Docker Compose
@@ -241,7 +241,7 @@ adcamp/
 ## Testing
 
 ```bash
-make test                                    # All 59 tests with coverage
+make test                                    # All 76 tests with coverage
 pytest tests/unit/test_model_router.py -v    # Routing logic
 pytest tests/unit/test_cost_tracker.py -v    # Cost calculations
 pytest tests/unit/test_retry.py -v           # Retry/resilience

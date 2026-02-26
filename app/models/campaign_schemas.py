@@ -5,7 +5,7 @@ Data models for campaigns, products, video results, and batch operations.
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Optional
 
@@ -53,8 +53,8 @@ class Campaign(BaseModel):
     name: str
     theme: str
     status: CampaignStatus = CampaignStatus.draft
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     total_products: int = 0
     completed_videos: int = 0
     failed_videos: int = 0
@@ -91,10 +91,10 @@ class Product(BaseModel):
     category: Optional[str] = None
     generated_brief: Optional[str] = None
     status: ProductStatus = ProductStatus.pending
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
-# ─── Video Result ────────────────────────────────────────────────────────────────
+# ─── Video Result
 
 
 class VideoResult(BaseModel):
@@ -110,7 +110,7 @@ class VideoResult(BaseModel):
     model_used: str = ""
     script: Optional[dict] = None  # AdScript as dict
     cost: Optional[dict] = None  # CostBreakdown as dict
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     completed_at: Optional[datetime] = None
 
 

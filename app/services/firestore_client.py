@@ -5,7 +5,7 @@ Uses AsyncClient for consistency with the async codebase.
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 try:
@@ -54,7 +54,7 @@ def _get_db() -> AsyncClient:
 async def create_campaign(data: CampaignCreate) -> Campaign:
     db = _get_db()
     doc_ref = db.collection("campaigns").document()
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     campaign = Campaign(
         id=doc_ref.id,
         name=data.name,
@@ -95,7 +95,7 @@ async def update_campaign_status(campaign_id: str, status: CampaignStatus):
     await db.collection("campaigns").document(campaign_id).update(
         {
             "status": status.value,
-            "updated_at": datetime.utcnow(),
+            "updated_at": datetime.now(timezone.utc),
         }
     )
 
@@ -133,7 +133,7 @@ async def create_product(campaign_id: str, data: ProductCreate) -> Product:
         image_url=data.image_url,
         sku_tier=data.sku_tier,
         category=data.category,
-        created_at=datetime.utcnow(),
+        created_at=datetime.now(timezone.utc),
     )
     await doc_ref.set(product.model_dump())
     return product
@@ -158,7 +158,7 @@ async def create_products_batch(
             image_url=data.image_url,
             sku_tier=data.sku_tier,
             category=data.category,
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
         )
         batch.set(doc_ref, product.model_dump())
         created.append(product)
@@ -169,7 +169,7 @@ async def create_products_batch(
         campaign_ref,
         {
             "total_products": firestore.Increment(len(products)),
-            "updated_at": datetime.utcnow(),
+            "updated_at": datetime.now(timezone.utc),
         },
     )
 
@@ -226,7 +226,7 @@ async def increment_campaign_completed(campaign_id: str, cost_usd: float):
         {
             "completed_videos": firestore.Increment(1),
             "total_cost_usd": firestore.Increment(cost_usd),
-            "updated_at": datetime.utcnow(),
+            "updated_at": datetime.now(timezone.utc),
         }
     )
 
@@ -237,6 +237,6 @@ async def increment_campaign_failed(campaign_id: str):
     await db.collection("campaigns").document(campaign_id).update(
         {
             "failed_videos": firestore.Increment(1),
-            "updated_at": datetime.utcnow(),
+            "updated_at": datetime.now(timezone.utc),
         }
     )

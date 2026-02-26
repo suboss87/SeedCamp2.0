@@ -115,13 +115,15 @@ def retry_with_backoff(
                     if isinstance(
                         modelark_error, (InvalidAPIKeyError, QuotaExceededError)
                     ):
-                        logger.error(f"{func.__name__} failed: {modelark_error}")
+                        logger.error("%s failed: %s", func.__name__, modelark_error)
                         raise modelark_error
 
                     # Check if retriable
                     if status_code not in retriable_status_codes:
                         logger.error(
-                            f"{func.__name__} failed with non-retriable error: {modelark_error}"
+                            "%s failed with non-retriable error: %s",
+                            func.__name__,
+                            modelark_error,
                         )
                         raise modelark_error
 
@@ -143,19 +145,27 @@ def retry_with_backoff(
                 ) as e:
                     last_exception = e
                     logger.warning(
-                        f"{func.__name__} network error (attempt {attempt + 1}/{max_retries + 1}): {e}"
+                        "%s network error (attempt %d/%d): %s",
+                        func.__name__,
+                        attempt + 1,
+                        max_retries + 1,
+                        e,
                     )
 
                 # Don't sleep after last attempt
                 if attempt < max_retries:
                     logger.info(
-                        f"Retrying {func.__name__} in {delay:.1f}s (attempt {attempt + 1}/{max_retries + 1})"
+                        "Retrying %s in %.1fs (attempt %d/%d)",
+                        func.__name__,
+                        delay,
+                        attempt + 1,
+                        max_retries + 1,
                     )
                     await asyncio.sleep(delay)
                     delay = min(delay * backoff_factor, max_delay)
 
             # All retries exhausted
-            logger.error(f"{func.__name__} failed after {max_retries + 1} attempts")
+            logger.error("%s failed after %d attempts", func.__name__, max_retries + 1)
             raise last_exception or Exception(f"{func.__name__} failed")
 
         return wrapper
@@ -200,8 +210,8 @@ async def validate_api_key(api_key: str, base_url: str) -> bool:
 
     except httpx.HTTPStatusError as e:
         error = parse_modelark_error(e.response)
-        logger.error(f"API key validation failed: {error}")
+        logger.error("API key validation failed: %s", error)
         raise error
     except Exception as e:
-        logger.error(f"Failed to validate API key: {e}")
+        logger.error("Failed to validate API key: %s", e)
         raise ModelArkAPIError(f"API key validation error: {e}")

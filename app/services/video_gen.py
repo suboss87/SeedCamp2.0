@@ -87,7 +87,7 @@ async def create_video_task(
     except httpx.HTTPStatusError as e:
         # Parse ModelArk-specific error for better logging
         error = parse_modelark_error(e.response)
-        logger.error(f"Failed to create video task: {error}")
+        logger.error("Failed to create video task: %s", error)
         raise
 
     task_id = data.get("id", "")
@@ -115,7 +115,7 @@ async def get_video_status(task_id: str, model_used: str = "") -> VideoTaskStatu
             data = resp.json()
     except httpx.HTTPStatusError as e:
         error = parse_modelark_error(e.response)
-        logger.error(f"Failed to get video status for {task_id}: {error}")
+        logger.error("Failed to get video status for %s: %s", task_id, error)
         raise
 
     raw_status = data.get("status", "Unknown")

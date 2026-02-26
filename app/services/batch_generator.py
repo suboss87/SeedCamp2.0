@@ -6,7 +6,7 @@ with semaphore-based concurrency and per-product error handling.
 
 import asyncio
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.models.campaign_schemas import (
     Campaign,
@@ -88,7 +88,7 @@ async def _process_product(campaign: Campaign, product: Product):
         product_id=product.id,
         task_id="",
         status="generating",
-        created_at=datetime.utcnow(),
+        created_at=datetime.now(timezone.utc),
     )
     await db.save_video_result(video_result)
     await db.update_product_status(product.id, ProductStatus.generating)
@@ -135,7 +135,7 @@ async def _process_product(campaign: Campaign, product: Product):
                     "model_used": pipeline_result["model_id"],
                     "script": pipeline_result["script"].model_dump(),
                     "cost": pipeline_result["cost"].model_dump(),
-                    "completed_at": datetime.utcnow(),
+                    "completed_at": datetime.now(timezone.utc),
                 },
             )
             await db.update_product_status(product.id, ProductStatus.completed)
@@ -161,7 +161,7 @@ async def _mark_failed(result_id: str, product_id: str, campaign_id: str, error:
         {
             "status": "failed",
             "error": error,
-            "completed_at": datetime.utcnow(),
+            "completed_at": datetime.now(timezone.utc),
         },
     )
     await db.update_product_status(product_id, ProductStatus.failed)

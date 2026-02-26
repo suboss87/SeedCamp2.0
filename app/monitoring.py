@@ -5,7 +5,7 @@ Prometheus metrics, health checks, and observability utilities.
 
 import time
 from typing import Dict, Any
-from datetime import datetime
+from datetime import datetime, timezone
 
 _start_time = time.time()
 
@@ -76,7 +76,7 @@ def get_health_status() -> Dict[str, Any]:
     """Get comprehensive health status."""
     return {
         "status": "healthy",
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "metrics": get_metrics(),
         "uptime_seconds": round(time.time() - _start_time, 1),
     }
