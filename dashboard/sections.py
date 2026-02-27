@@ -182,9 +182,7 @@ def render_sidebar_analytics():
         # Safety evaluation metrics
         safety = _fetch_safety_summary()
         if safety and safety.get("total_checks", 0) > 0:
-            st.markdown(
-                '<div class="ac-label">Content Safety</div>', unsafe_allow_html=True
-            )
+            st.markdown('<div class="ac-label">Content Safety</div>', unsafe_allow_html=True)
             checks = safety.get("total_checks", 0)
             flagged = safety.get("total_flagged", 0)
             blocked = safety.get("total_blocked", 0)
@@ -213,9 +211,7 @@ def render_sidebar_analytics():
             )
 
         st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
-        if st.button(
-            "Refresh Analytics", use_container_width=True, key="sb_refresh_analytics"
-        ):
+        if st.button("Refresh Analytics", use_container_width=True, key="sb_refresh_analytics"):
             st.session_state["_refresh_analytics"] = True
             st.rerun()
 
@@ -228,9 +224,7 @@ def render_sidebar_analytics():
 def _run_sse_generation(
     payload, progress_area, script_area, cost_area, video_area, variant_label=""
 ) -> dict:
-    header = (
-        f"Pipeline Progress — {variant_label}" if variant_label else "Pipeline Progress"
-    )
+    header = f"Pipeline Progress — {variant_label}" if variant_label else "Pipeline Progress"
 
     with progress_area:
         st.markdown(f"#### {header}")
@@ -296,9 +290,7 @@ def _run_sse_generation(
                     cost = final_data["cost"]
                     cc1, cc2, cc3 = st.columns(3)
                     with cc1:
-                        st.metric(
-                            "Script Cost", f"${cost.get('script_cost_usd', 0):.4f}"
-                        )
+                        st.metric("Script Cost", f"${cost.get('script_cost_usd', 0):.4f}")
                     with cc2:
                         st.metric("Video Cost", f"${cost.get('video_cost_usd', 0):.4f}")
                     with cc3:
@@ -306,9 +298,7 @@ def _run_sse_generation(
 
             with video_area:
                 if "video_url" in final_data:
-                    st.success(
-                        "Video generated successfully!", icon=":material/check_circle:"
-                    )
+                    st.success("Video generated successfully!", icon=":material/check_circle:")
                     st.video(final_data["video_url"])
                     st.link_button(
                         "Download Video",
@@ -344,9 +334,7 @@ def _render_ab_comparison(result_a: dict, result_b: dict, label_a: str, label_b:
                     continue
                 if "video_url" in result:
                     st.video(result["video_url"])
-                    st.link_button(
-                        "Download", result["video_url"], use_container_width=True
-                    )
+                    st.link_button("Download", result["video_url"], use_container_width=True)
                 cost = result.get("cost", {})
                 total = cost.get("total_cost_usd", 0)
                 st.metric("Total Cost", f"${total:.4f}")
@@ -524,15 +512,10 @@ def render_quick_video():
                 cost_b = cost_label(ab_variant_b, duration, resolution)
                 st.caption(f"A: **{cost_a}** vs B: **{cost_b}**")
             elif ab_enabled:
-                fmt_a = (
-                    fmt(current_val)
-                    if ab_field != "platforms"
-                    else ", ".join(current_val)
-                )
+                fmt_a = fmt(current_val) if ab_field != "platforms" else ", ".join(current_val)
                 fmt_b = fmt(ab_variant_b)
                 st.caption(
-                    f"Two videos generated sequentially. "
-                    f"A: **{fmt_a}** | B: **{fmt_b}**"
+                    f"Two videos generated sequentially. " f"A: **{fmt_a}** | B: **{fmt_b}**"
                 )
 
     st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
@@ -569,9 +552,7 @@ def render_quick_video():
                     upload_resp.raise_for_status()
                     image_url = upload_resp.json().get("url")
                 except Exception as e:
-                    st.warning(
-                        f"Image upload failed: {e}. " "Continuing without image."
-                    )
+                    st.warning(f"Image upload failed: {e}. " "Continuing without image.")
 
         payload_a = {
             "brief": brief,
@@ -588,9 +569,7 @@ def render_quick_video():
             script_area = st.container()
             cost_area = st.container()
             video_area = st.container()
-            _run_sse_generation(
-                payload_a, progress_area, script_area, cost_area, video_area
-            )
+            _run_sse_generation(payload_a, progress_area, script_area, cost_area, video_area)
         else:
             fmt = _AB_FORMAT[ab_field]
             current_val = {
@@ -601,9 +580,7 @@ def render_quick_video():
             }[ab_field]
 
             if ab_field == "platforms":
-                label_a = (
-                    f"Variant A: " f"{', '.join(p.capitalize() for p in platforms)}"
-                )
+                label_a = f"Variant A: " f"{', '.join(p.capitalize() for p in platforms)}"
                 label_b = f"Variant B: {ab_variant_b.capitalize()}"
             else:
                 label_a = f"Variant A: {fmt(current_val)}"
@@ -659,9 +636,7 @@ def render_campaign_batch():
     with left:
         with st.container(border=True):
             st.markdown("**Create New**")
-            name = st.text_input(
-                "Name", placeholder="e.g. Summer 2025 Collection", key="cb_name"
-            )
+            name = st.text_input("Name", placeholder="e.g. Summer 2025 Collection", key="cb_name")
             theme = st.text_area(
                 "Theme",
                 placeholder="Describe the overall mood, aesthetic, and message...",
@@ -786,9 +761,7 @@ def render_campaign_batch():
     ):
         with st.spinner("Parsing..."):
             try:
-                files = {
-                    "file": (uploaded_csv.name, uploaded_csv.getvalue(), "text/csv")
-                }
+                files = {"file": (uploaded_csv.name, uploaded_csv.getvalue(), "text/csv")}
                 resp = requests.post(
                     f"{API_BASE}/api/campaigns/{active_id}/products",
                     files=files,
@@ -808,9 +781,7 @@ def render_campaign_batch():
                 st.error(f"Upload failed: {e}")
 
     try:
-        products = requests.get(
-            f"{API_BASE}/api/campaigns/{active_id}/products", timeout=10
-        ).json()
+        products = requests.get(f"{API_BASE}/api/campaigns/{active_id}/products", timeout=10).json()
     except Exception:
         products = []
 
@@ -868,9 +839,7 @@ def render_campaign_batch():
 
 def _render_campaign_results(campaign_id: str):
     try:
-        results_resp = requests.get(
-            f"{API_BASE}/api/campaigns/{campaign_id}/results", timeout=10
-        )
+        results_resp = requests.get(f"{API_BASE}/api/campaigns/{campaign_id}/results", timeout=10)
         results_resp.raise_for_status()
         results = results_resp.json()
     except Exception:
@@ -915,9 +884,7 @@ def _render_campaign_results(campaign_id: str):
                         st.caption(f"{model} — ${cost_val:.4f}")
 
                         if video_url:
-                            st.link_button(
-                                "Download", video_url, use_container_width=True
-                            )
+                            st.link_button("Download", video_url, use_container_width=True)
 
     if failed:
         with st.expander(f"Failed ({len(failed)})"):
@@ -935,9 +902,7 @@ def _poll_batch_progress(campaign_id: str):
     st.markdown("#### Generation Progress")
 
     try:
-        p = requests.get(
-            f"{API_BASE}/api/campaigns/{campaign_id}/progress", timeout=10
-        ).json()
+        p = requests.get(f"{API_BASE}/api/campaigns/{campaign_id}/progress", timeout=10).json()
     except Exception:
         st.caption("Waiting for progress data...")
         return
@@ -962,12 +927,9 @@ def _poll_batch_progress(campaign_id: str):
             st.toast("All videos generated!", icon=":material/check_circle:")
             st.success("All videos generated successfully")
         elif status == "partial":
-            st.toast(
-                "Generation completed with some failures", icon=":material/warning:"
-            )
+            st.toast("Generation completed with some failures", icon=":material/warning:")
             st.warning(
-                f"{p.get('completed_videos', 0)} succeeded, "
-                f"{p.get('failed_videos', 0)} failed"
+                f"{p.get('completed_videos', 0)} succeeded, " f"{p.get('failed_videos', 0)} failed"
             )
         else:
             st.toast("Batch generation failed", icon=":material/error:")
@@ -987,9 +949,7 @@ def _confirm_delete(campaign_id: str, campaign_name: str):
         if st.button("Cancel", use_container_width=True, key="del_cancel"):
             st.rerun()
     with c2:
-        if st.button(
-            "Delete", type="primary", use_container_width=True, key="del_confirm"
-        ):
+        if st.button("Delete", type="primary", use_container_width=True, key="del_confirm"):
             try:
                 requests.delete(
                     f"{API_BASE}/api/campaigns/{campaign_id}", timeout=10
@@ -1066,7 +1026,5 @@ def render_campaign_history():
                             st.session_state["active_campaign_id"] = c["id"]
                             st.rerun()
                 with ac2:
-                    if st.button(
-                        "Delete", key=f"hist_del_{c['id']}", use_container_width=True
-                    ):
+                    if st.button("Delete", key=f"hist_del_{c['id']}", use_container_width=True):
                         _confirm_delete(c["id"], c["name"])

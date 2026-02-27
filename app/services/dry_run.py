@@ -12,9 +12,8 @@ import asyncio
 import logging
 import uuid
 
-from app.config import settings
-from app.models.schemas import AdScript, VideoTaskStatus
 from app.models.safety_schemas import SafetyCategory, SafetyEvalResult
+from app.models.schemas import AdScript, VideoTaskStatus
 
 logger = logging.getLogger(__name__)
 

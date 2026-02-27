@@ -8,9 +8,7 @@ Data is lost on restart. For production persistence, set PERSISTENCE_BACKEND=fir
 
 import logging
 import uuid
-from copy import deepcopy
 from datetime import datetime, timezone
-from typing import Optional
 
 from app.models.campaign_schemas import (
     Campaign,
@@ -55,7 +53,7 @@ async def create_campaign(data: CampaignCreate) -> Campaign:
     return campaign
 
 
-async def get_campaign(campaign_id: str) -> Optional[Campaign]:
+async def get_campaign(campaign_id: str) -> Campaign | None:
     data = _campaigns.get(campaign_id)
     if not data:
         return None
@@ -63,9 +61,7 @@ async def get_campaign(campaign_id: str) -> Optional[Campaign]:
 
 
 async def list_campaigns(limit: int = 20, offset: int = 0) -> list[Campaign]:
-    sorted_campaigns = sorted(
-        _campaigns.values(), key=lambda c: c["created_at"], reverse=True
-    )
+    sorted_campaigns = sorted(_campaigns.values(), key=lambda c: c["created_at"], reverse=True)
     return [Campaign(**c) for c in sorted_campaigns[offset : offset + limit]]
 
 
@@ -78,14 +74,10 @@ async def update_campaign_status(campaign_id: str, status: CampaignStatus):
 async def delete_campaign(campaign_id: str):
     _campaigns.pop(campaign_id, None)
     # Delete associated products and results
-    product_ids = [
-        pid for pid, p in _products.items() if p["campaign_id"] == campaign_id
-    ]
+    product_ids = [pid for pid, p in _products.items() if p["campaign_id"] == campaign_id]
     for pid in product_ids:
         _products.pop(pid, None)
-    result_ids = [
-        rid for rid, r in _video_results.items() if r["campaign_id"] == campaign_id
-    ]
+    result_ids = [rid for rid, r in _video_results.items() if r["campaign_id"] == campaign_id]
     for rid in result_ids:
         _video_results.pop(rid, None)
     logger.info("Deleted campaign %s and all associated data", campaign_id)
@@ -110,9 +102,7 @@ async def create_product(campaign_id: str, data: ProductCreate) -> Product:
     return product
 
 
-async def create_products_batch(
-    campaign_id: str, products: list[ProductCreate]
-) -> list[Product]:
+async def create_products_batch(campaign_id: str, products: list[ProductCreate]) -> list[Product]:
     created = []
     for data in products:
         product = await create_product(campaign_id, data)
@@ -128,14 +118,10 @@ async def create_products_batch(
 
 
 async def list_products(campaign_id: str) -> list[Product]:
-    return [
-        Product(**p) for p in _products.values() if p["campaign_id"] == campaign_id
-    ]
+    return [Product(**p) for p in _products.values() if p["campaign_id"] == campaign_id]
 
 
-async def update_product_status(
-    product_id: str, status: ProductStatus, brief: str = None
-):
+async def update_product_status(product_id: str, status: ProductStatus, brief: str = None):
     if product_id in _products:
         _products[product_id]["status"] = status.value
         if brief is not None:
@@ -155,11 +141,7 @@ async def update_video_result(result_id: str, updates: dict):
 
 
 async def list_video_results(campaign_id: str) -> list[VideoResult]:
-    return [
-        VideoResult(**r)
-        for r in _video_results.values()
-        if r["campaign_id"] == campaign_id
-    ]
+    return [VideoResult(**r) for r in _video_results.values() if r["campaign_id"] == campaign_id]
 
 
 # ─── Campaign Counter Updates (atomic in-memory) ─────────────────────────────────

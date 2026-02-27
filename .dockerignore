@@ -27,9 +27,6 @@ htmlcov/
 tests/
 docs/
 podcast/
-CLAUDE.md
-AGENTS.md
-.claude/
 
 # IDE & OS
 .vscode/

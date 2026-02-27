@@ -7,7 +7,6 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -73,9 +72,9 @@ class ProductCreate(BaseModel):
     sku_id: str
     product_name: str
     description: str
-    image_url: Optional[str] = None
+    image_url: str | None = None
     sku_tier: str = "catalog"  # "hero" or "catalog"
-    category: Optional[str] = None
+    category: str | None = None
 
 
 class Product(BaseModel):
@@ -86,10 +85,10 @@ class Product(BaseModel):
     sku_id: str
     product_name: str
     description: str
-    image_url: Optional[str] = None
+    image_url: str | None = None
     sku_tier: str = "catalog"
-    category: Optional[str] = None
-    generated_brief: Optional[str] = None
+    category: str | None = None
+    generated_brief: str | None = None
     status: ProductStatus = ProductStatus.pending
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
@@ -105,13 +104,13 @@ class VideoResult(BaseModel):
     product_id: str
     task_id: str
     status: str = "pending"
-    video_url: Optional[str] = None
-    error: Optional[str] = None
+    video_url: str | None = None
+    error: str | None = None
     model_used: str = ""
-    script: Optional[dict] = None  # AdScript as dict
-    cost: Optional[dict] = None  # CostBreakdown as dict
+    script: dict | None = None  # AdScript as dict
+    cost: dict | None = None  # CostBreakdown as dict
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    completed_at: Optional[datetime] = None
+    completed_at: datetime | None = None
 
 
 # ─── Batch / Progress ────────────────────────────────────────────────────────────

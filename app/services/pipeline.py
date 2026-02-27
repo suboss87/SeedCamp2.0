@@ -6,20 +6,19 @@ endpoints and the batch generator.
 
 import logging
 import time
-from typing import Optional
 
+from app import monitoring
 from app.config import settings
 from app.models.schemas import SKUTier
 from app.services import cost_tracker, model_router
-from app import monitoring
 
 # In dry-run mode, use simulated stubs instead of real API calls
 if settings.dry_run:
+    from app.services import dry_run as safety_evaluator
     from app.services import dry_run as script_writer
     from app.services import dry_run as video_gen
-    from app.services import dry_run as safety_evaluator
 else:
-    from app.services import script_writer, video_gen, safety_evaluator
+    from app.services import safety_evaluator, script_writer, video_gen
 
 logger = logging.getLogger(__name__)
 
@@ -46,8 +45,8 @@ async def run_pipeline(
     brief: str,
     sku_tier: SKUTier,
     sku_id: str = "SKU-001",
-    product_image_url: Optional[str] = None,
-    platforms: Optional[list[str]] = None,
+    product_image_url: str | None = None,
+    platforms: list[str] | None = None,
     duration: int = 8,
     resolution: str = "720p",
 ) -> dict:
@@ -62,9 +61,7 @@ async def run_pipeline(
     logger.info("Step 2: Seed 1.8 — Generating ad script for SKU %s...", sku_id)
     script_start = time.time()
     script, in_tokens, out_tokens = await script_writer.generate_script(brief)
-    monitoring.record_duration(
-        "script_generation_duration_seconds", time.time() - script_start
-    )
+    monitoring.record_duration("script_generation_duration_seconds", time.time() - script_start)
 
     # Step 2.5: Content Safety Evaluation
     safety_result = None
@@ -72,12 +69,10 @@ async def run_pipeline(
     if settings.safety_enabled:
         logger.info("Step 2.5: Safety eval for SKU %s...", sku_id)
         safety_start = time.time()
-        safety_result, safety_in, safety_out = (
-            await safety_evaluator.evaluate_content_safety(script)
+        safety_result, safety_in, safety_out = await safety_evaluator.evaluate_content_safety(
+            script
         )
-        monitoring.record_duration(
-            "safety_eval_duration_seconds", time.time() - safety_start
-        )
+        monitoring.record_duration("safety_eval_duration_seconds", time.time() - safety_start)
         monitoring.increment_counter("safety_checks_total")
         safety_eval_cost = safety_result.eval_cost_usd
 
@@ -107,9 +102,7 @@ async def run_pipeline(
     # Step 4: Video generation via Seedance
     primary_platform = platforms[0] if platforms else "tiktok"
     ratio = video_gen._RATIO_MAP.get(primary_platform, "16:9")
-    logger.info(
-        "Step 4: Seedance — Creating video task with %s (ratio=%s)...", model_id, ratio
-    )
+    logger.info("Step 4: Seedance — Creating video task with %s (ratio=%s)...", model_id, ratio)
     video_start = time.time()
     task_id = await video_gen.create_video_task(
         prompt=script.video_prompt,
@@ -119,9 +112,7 @@ async def run_pipeline(
         resolution=resolution,
         ratio=ratio,
     )
-    monitoring.record_duration(
-        "video_generation_duration_seconds", time.time() - video_start
-    )
+    monitoring.record_duration("video_generation_duration_seconds", time.time() - video_start)
 
     # Calculate cost
     est_video_tokens = _estimate_video_tokens(duration, resolution)

@@ -10,8 +10,8 @@ import logging
 from openai import AsyncOpenAI
 
 from app.config import settings
-from app.models.schemas import AdScript
 from app.models.safety_schemas import SafetyCategory, SafetyEvalResult
+from app.models.schemas import AdScript
 from app.utils.retry import retry_with_backoff
 
 logger = logging.getLogger(__name__)

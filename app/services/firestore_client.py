@@ -6,16 +6,15 @@ Uses AsyncClient for consistency with the async codebase.
 
 import logging
 from datetime import datetime, timezone
-from typing import Optional
 
 try:
-    from google.cloud.firestore import AsyncClient
     from google.cloud import firestore
+    from google.cloud.firestore import AsyncClient
 except ImportError:
     raise ImportError(
         "Firestore backend requires google-cloud-firestore. "
         "Install with: pip install -r requirements-gcp.txt"
-    )
+    ) from None
 
 from app.models.campaign_schemas import (
     Campaign,
@@ -30,7 +29,7 @@ from app.models.campaign_schemas import (
 logger = logging.getLogger(__name__)
 
 # Lazily initialized — call init() during app startup
-_db: Optional[AsyncClient] = None
+_db: AsyncClient | None = None
 
 
 def init():
@@ -42,9 +41,7 @@ def init():
 
 def _get_db() -> AsyncClient:
     if _db is None:
-        raise RuntimeError(
-            "Firestore not initialized — call firestore_client.init() on startup"
-        )
+        raise RuntimeError("Firestore not initialized — call firestore_client.init() on startup")
     return _db
 
 
@@ -70,7 +67,7 @@ async def create_campaign(data: CampaignCreate) -> Campaign:
     return campaign
 
 
-async def get_campaign(campaign_id: str) -> Optional[Campaign]:
+async def get_campaign(campaign_id: str) -> Campaign | None:
     db = _get_db()
     doc = await db.collection("campaigns").document(campaign_id).get()
     if not doc.exists:
@@ -108,9 +105,7 @@ async def delete_campaign(campaign_id: str):
     async for doc in products_query.stream():
         await doc.reference.delete()
     # Delete video results
-    results_query = db.collection("video_results").where(
-        "campaign_id", "==", campaign_id
-    )
+    results_query = db.collection("video_results").where("campaign_id", "==", campaign_id)
     async for doc in results_query.stream():
         await doc.reference.delete()
     # Delete campaign
@@ -139,9 +134,7 @@ async def create_product(campaign_id: str, data: ProductCreate) -> Product:
     return product
 
 
-async def create_products_batch(
-    campaign_id: str, products: list[ProductCreate]
-) -> list[Product]:
+async def create_products_batch(campaign_id: str, products: list[ProductCreate]) -> list[Product]:
     """Create multiple products and update campaign product count."""
     db = _get_db()
     created = []
@@ -185,9 +178,7 @@ async def list_products(campaign_id: str) -> list[Product]:
     return [Product(**doc.to_dict()) for doc in docs]
 
 
-async def update_product_status(
-    product_id: str, status: ProductStatus, brief: str = None
-):
+async def update_product_status(product_id: str, status: ProductStatus, brief: str = None):
     db = _get_db()
     updates: dict = {"status": status.value}
     if brief is not None:

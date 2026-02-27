@@ -4,8 +4,8 @@ Prometheus metrics, health checks, and observability utilities.
 """
 
 import time
-from typing import Dict, Any
 from datetime import datetime, timezone
+from typing import Any
 
 _start_time = time.time()
 
@@ -45,7 +45,7 @@ def _avg(metric_key: str) -> float:
     return sum(vals) / len(vals) if vals else 0
 
 
-def get_metrics() -> Dict[str, Any]:
+def get_metrics() -> dict[str, Any]:
     """Get current metrics snapshot."""
     from app.services import cost_tracker
 
@@ -55,12 +55,8 @@ def get_metrics() -> Dict[str, Any]:
         "videos_generated_total": _metrics["videos_generated_total"],
         "videos_failed_total": _metrics["videos_failed_total"],
         "api_requests_total": _metrics["api_requests_total"],
-        "script_generation_avg_seconds": round(
-            _avg("script_generation_duration_seconds"), 2
-        ),
-        "video_generation_avg_seconds": round(
-            _avg("video_generation_duration_seconds"), 2
-        ),
+        "script_generation_avg_seconds": round(_avg("script_generation_duration_seconds"), 2),
+        "video_generation_avg_seconds": round(_avg("video_generation_duration_seconds"), 2),
         "safety_checks_total": _metrics["safety_checks_total"],
         "safety_flagged_total": _metrics["safety_flagged_total"],
         "safety_blocked_total": _metrics["safety_blocked_total"],
@@ -72,7 +68,7 @@ def get_metrics() -> Dict[str, Any]:
     }
 
 
-def get_health_status() -> Dict[str, Any]:
+def get_health_status() -> dict[str, Any]:
     """Get comprehensive health status."""
     return {
         "status": "healthy",

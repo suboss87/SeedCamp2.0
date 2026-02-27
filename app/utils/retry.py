@@ -4,9 +4,11 @@ Implements exponential backoff, rate limit handling, and error recovery.
 """
 
 import asyncio
+import contextlib
 import logging
+from collections.abc import Callable
 from functools import wraps
-from typing import Callable, Any
+from typing import Any
 
 import httpx
 
@@ -18,9 +20,7 @@ logger = logging.getLogger(__name__)
 class ModelArkAPIError(Exception):
     """Base exception for ModelArk API errors."""
 
-    def __init__(
-        self, message: str, status_code: int = None, response_body: dict = None
-    ):
+    def __init__(self, message: str, status_code: int = None, response_body: dict = None):
         super().__init__(message)
         self.status_code = status_code
         self.response_body = response_body or {}
@@ -53,9 +53,7 @@ def parse_modelark_error(response: httpx.Response) -> ModelArkAPIError:
     except Exception:
         body = {"detail": response.text}
 
-    error_msg = body.get("error", {}).get("message") or body.get(
-        "detail", "Unknown error"
-    )
+    error_msg = body.get("error", {}).get("message") or body.get("detail", "Unknown error")
     error_code = body.get("error", {}).get("code", "")
 
     # Map ModelArk error codes to exceptions
@@ -72,9 +70,7 @@ def parse_modelark_error(response: httpx.Response) -> ModelArkAPIError:
     if status_code == 403 and "quota" in error_code.lower():
         return QuotaExceededError(f"Quota exceeded: {error_msg}", status_code, body)
 
-    return ModelArkAPIError(
-        f"ModelArk API error ({status_code}): {error_msg}", status_code, body
-    )
+    return ModelArkAPIError(f"ModelArk API error ({status_code}): {error_msg}", status_code, body)
 
 
 def retry_with_backoff(
@@ -112,11 +108,9 @@ def retry_with_backoff(
                     modelark_error = parse_modelark_error(e.response)
 
                     # Don't retry on auth errors or quota exceeded
-                    if isinstance(
-                        modelark_error, (InvalidAPIKeyError, QuotaExceededError)
-                    ):
+                    if isinstance(modelark_error, (InvalidAPIKeyError, QuotaExceededError)):
                         logger.error("%s failed: %s", func.__name__, modelark_error)
-                        raise modelark_error
+                        raise modelark_error from e
 
                     # Check if retriable
                     if status_code not in retriable_status_codes:
@@ -125,16 +119,14 @@ def retry_with_backoff(
                             func.__name__,
                             modelark_error,
                         )
-                        raise modelark_error
+                        raise modelark_error from e
 
                     # Rate limit handling with Retry-After header
                     if status_code == 429:
                         retry_after = e.response.headers.get("Retry-After")
                         if retry_after:
-                            try:
+                            with contextlib.suppress(ValueError):
                                 delay = float(retry_after)
-                            except ValueError:
-                                pass
 
                     last_exception = modelark_error
 
@@ -211,7 +203,7 @@ async def validate_api_key(api_key: str, base_url: str) -> bool:
     except httpx.HTTPStatusError as e:
         error = parse_modelark_error(e.response)
         logger.error("API key validation failed: %s", error)
-        raise error
+        raise error from e
     except Exception as e:
         logger.error("Failed to validate API key: %s", e)
-        raise ModelArkAPIError(f"API key validation error: {e}")
+        raise ModelArkAPIError(f"API key validation error: {e}") from e

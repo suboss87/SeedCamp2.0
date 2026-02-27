@@ -6,13 +6,12 @@ Model is selected by the Smart Router (step 3).
 
 import asyncio
 import logging
-from typing import Optional
 
 import httpx
 
 from app.config import settings
 from app.models.schemas import VideoTaskStatus
-from app.utils.retry import retry_with_backoff, parse_modelark_error
+from app.utils.retry import parse_modelark_error, retry_with_backoff
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +43,7 @@ _RATIO_MAP = {
 async def create_video_task(
     prompt: str,
     model_id: str,
-    image_url: Optional[str] = None,
+    image_url: str | None = None,
     duration: int = 5,
     resolution: str = "720p",
     ratio: str = "16:9",
@@ -74,9 +73,7 @@ async def create_video_task(
     }
 
     try:
-        async with httpx.AsyncClient(
-            timeout=90
-        ) as client:  # Increased timeout for large videos
+        async with httpx.AsyncClient(timeout=90) as client:  # Increased timeout for large videos
             resp = await client.post(
                 f"{_BASE}/contents/generations/tasks",
                 headers=_HEADERS,

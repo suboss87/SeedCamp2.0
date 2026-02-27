@@ -22,7 +22,7 @@ async def main():
         resp = await client.post(
             f"{API_URL}/api/campaigns/",
             json={
-                "name": "Summer Launch 2025",
+                "name": "Summer Launch 2026",
                 "theme": "Energetic summer vibes with bright colors and upbeat music",
                 "platforms": ["tiktok", "instagram"],
                 "duration": 8,

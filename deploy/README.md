@@ -167,8 +167,6 @@ See [deploy/monitoring/README.md](./monitoring/README.md) for full setup guide.
 Enterprise users can use Infrastructure as Code (Terraform) for:
 - **GCP**: `deploy/gcp/terraform/` - Cloud Run + Secret Manager
 - **AWS**: `deploy/aws/terraform/` - ECS Fargate + ALB + Secrets Manager
-- **BytePlus**: `deploy/byteplus/terraform/` - VKE + ModelArk integration
-
 Each includes `main.tf`, `variables.tf`, `outputs.tf`, and comprehensive README with cost estimates and production best practices.
 
 ## CI/CD Integration

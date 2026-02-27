@@ -11,7 +11,7 @@ import os
 import uuid
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException, Request, Response, UploadFile, File
+from fastapi import FastAPI, File, HTTPException, Request, Response, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
@@ -35,14 +35,12 @@ if settings.dry_run:
     from app.services import dry_run as video_gen
 else:
     from app.services import video_gen
-from app.services.pipeline import run_pipeline, ContentBlockedError
 from app import monitoring
 from app.routes.campaigns import router as campaigns_router
-from app.utils.retry import validate_api_key, InvalidAPIKeyError
+from app.services.pipeline import ContentBlockedError, run_pipeline
+from app.utils.retry import InvalidAPIKeyError, validate_api_key
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -147,15 +145,7 @@ app.add_middleware(
 
 # API key authentication middleware.
 # When API_KEY is set in env, all /api/* requests require Authorization: Bearer <key>.
-# Health, metrics, and docs endpoints remain open.
-_PUBLIC_PATHS = {
-    "/health",
-    "/health/detailed",
-    "/metrics",
-    "/docs",
-    "/openapi.json",
-    "/redoc",
-}
+# Health, metrics, and docs endpoints remain open (they don't start with /api).
 
 
 @app.middleware("http")
@@ -163,9 +153,7 @@ async def api_key_auth(request: Request, call_next):
     if settings.api_key and request.url.path.startswith("/api"):
         auth = request.headers.get("Authorization", "")
         if auth != f"Bearer {settings.api_key}":
-            return JSONResponse(
-                status_code=401, content={"detail": "Invalid or missing API key"}
-            )
+            return JSONResponse(status_code=401, content={"detail": "Invalid or missing API key"})
     return await call_next(request)
 
 
@@ -197,8 +185,6 @@ def _track_success_metrics(cost_usd: float, sku_tier: SKUTier):
     Cost and per-tier counts are tracked automatically by cost_tracker.
     """
     monitoring.increment_counter("videos_generated_total")
-
-
 
 
 # ─── Health ───────────────────────────────────────────────────────────────────────
@@ -282,15 +268,11 @@ async def upload_image(request: Request, file: UploadFile = File(...)):
             raise HTTPException(
                 status_code=501,
                 detail="Image upload requires google-cloud-storage. Install with: pip install google-cloud-storage",
-            )
+            ) from None
         client = storage.Client()
         bucket = client.bucket(settings.gcs_bucket)
-        safe_name = (
-            os.path.basename(file.filename or "image") if file.filename else "image"
-        )
-        ext = os.path.splitext(safe_name)[1] or (
-            ".jpg" if detected == "image/jpeg" else ".png"
-        )
+        safe_name = os.path.basename(file.filename or "image") if file.filename else "image"
+        ext = os.path.splitext(safe_name)[1] or (".jpg" if detected == "image/jpeg" else ".png")
         blob_name = f"uploads/{uuid.uuid4().hex}{ext}"
         blob = bucket.blob(blob_name)
         blob.upload_from_string(content, content_type=detected)
@@ -301,7 +283,7 @@ async def upload_image(request: Request, file: UploadFile = File(...)):
         raise
     except Exception:
         logger.exception("Image upload failed")
-        raise HTTPException(status_code=500, detail="Image upload failed")
+        raise HTTPException(status_code=500, detail="Image upload failed") from None
 
 
 # ─── Full Pipeline (Steps 1-4) ──────────────────────────────────────────────────
@@ -351,7 +333,7 @@ async def generate_ad(request: Request, req: GenerateRequest):
                 "message": str(e),
                 "safety": e.safety_result.model_dump(),
             },
-        )
+        ) from e
 
     except Exception:
         monitoring.increment_counter("videos_failed_total")
@@ -359,7 +341,7 @@ async def generate_ad(request: Request, req: GenerateRequest):
         raise HTTPException(
             status_code=500,
             detail="Video generation pipeline failed. Check server logs for details.",
-        )
+        ) from None
 
 
 # ─── Video Status ─────────────────────────────────────────────────────────────────
@@ -372,7 +354,7 @@ async def check_status(task_id: str):
         return await video_gen.get_video_status(task_id)
     except Exception:
         logger.exception("Status check failed for task %s", task_id)
-        raise HTTPException(status_code=500, detail="Failed to check video status")
+        raise HTTPException(status_code=500, detail="Failed to check video status") from None
 
 
 @app.get("/api/wait/{task_id}", response_model=VideoTaskStatus)
@@ -384,7 +366,7 @@ async def wait_for_result(task_id: str):
         logger.exception("Wait failed for task %s", task_id)
         raise HTTPException(
             status_code=500, detail="Failed while waiting for video result"
-        )
+        ) from None
 
 
 # ─── Cost Summary ─────────────────────────────────────────────────────────────────
@@ -449,9 +431,7 @@ async def generate_ad_stream(request: Request, req: GenerateRequest):
             if result.get("safety"):
                 safety = result["safety"]
                 safety_msg = f" (safety: {safety.risk_level})"
-            model_name = (
-                "Seedance 1.5 Pro" if "1-5" in model_id else "Seedance 1.0 Pro Fast"
-            )
+            model_name = "Seedance 1.5 Pro" if "1-5" in model_id else "Seedance 1.0 Pro Fast"
             yield f"data: {json.dumps({'step': 2, 'status': 'complete', 'message': f'Script generated{safety_msg}', 'progress': 35, 'data': {'script': script.model_dump(), 'tokens': {'input': result['in_tokens'], 'output': result['out_tokens']}}})}\n\n"
             yield f"data: {json.dumps({'step': 3, 'status': 'complete', 'message': f'Routed to {model_name}', 'progress': 45, 'data': {'model': model_id, 'cost_per_m': result['cost_per_m']}})}\n\n"
             yield f"data: {json.dumps({'step': 4, 'status': 'complete', 'message': 'Video task created', 'progress': 55, 'data': {'task_id': task_id}})}\n\n"

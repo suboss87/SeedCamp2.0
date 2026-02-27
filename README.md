@@ -125,7 +125,8 @@ That's it. Luxury listings get premium video, standard listings get fast video, 
 |------|-------------|------------|
 | **1. Input** | Brief + product image + business tier | FastAPI request validation |
 | **2. Script** | AI writes ad copy + video prompt | Seed 1.8 (OpenAI-compatible) |
-| **3. Route** | Picks premium or fast model by tier | Pure function, 28 lines |
+| **2.5 Safety** | Screens scripts for 7 safety categories | Configurable thresholds |
+| **3. Route** | Picks premium or fast model by tier | Pure function, ~37 lines |
 | **4. Generate** | Async video creation + polling | ModelArk REST API + retry |
 | **5. Output** | Platform-ready MP4 + cost breakdown | Cost tracker + monitoring |
 
@@ -135,11 +136,11 @@ Every pattern is in its own file, tested, and swappable:
 
 | Pattern | File | What It Does | Lines |
 |---------|------|-------------|-------|
-| **Tiered Routing** | `app/services/model_router.py` | Routes items to models by business value | 28 |
-| **Async Pipeline** | `app/services/video_gen.py` | Submit → poll → result for long-running AI tasks | 161 |
-| **Cost Tracking** | `app/services/cost_tracker.py` | Per-request token counting and cost attribution | 76 |
-| **Batch Processing** | `app/services/batch_generator.py` | Semaphore-controlled concurrency + progress tracking | 137 |
-| **Retry Logic** | `app/utils/retry.py` | Exponential backoff, Retry-After, error classification | 179 |
+| **Tiered Routing** | `app/services/model_router.py` | Routes items to models by business value | ~37 |
+| **Async Pipeline** | `app/services/video_gen.py` | Submit → poll → result for long-running AI tasks | ~163 |
+| **Cost Tracking** | `app/services/cost_tracker.py` | Per-request token counting and cost attribution | ~81 |
+| **Batch Processing** | `app/services/batch_generator.py` | Semaphore-controlled concurrency + progress tracking | ~168 |
+| **Retry Logic** | `app/utils/retry.py` | Exponential backoff, Retry-After, error classification | ~217 |
 
 > These patterns transfer to **any AI workload** — image generation, text processing, audio synthesis. Replace the video API call and keep everything else.
 

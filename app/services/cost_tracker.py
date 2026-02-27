@@ -23,9 +23,7 @@ def calculate_cost(
     sku_tier: SKUTier,
 ) -> CostBreakdown:
     """Calculate the cost breakdown for a single video generation."""
-    script_cost = (
-        script_input_tokens / 1_000_000
-    ) * settings.cost_per_m_seed18_input + (
+    script_cost = (script_input_tokens / 1_000_000) * settings.cost_per_m_seed18_input + (
         script_output_tokens / 1_000_000
     ) * settings.cost_per_m_seed18_output
     video_cost = (video_tokens / 1_000_000) * cost_per_m

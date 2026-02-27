@@ -53,9 +53,7 @@ def parse_csv(text: str) -> tuple[list[ProductCreate], list[str]]:
         # Validate required fields are non-empty
         empty_fields = [col for col in REQUIRED_COLUMNS if not row.get(col)]
         if empty_fields:
-            errors.append(
-                f"Row {row_num}: empty required fields: {', '.join(empty_fields)}"
-            )
+            errors.append(f"Row {row_num}: empty required fields: {', '.join(empty_fields)}")
             continue
 
         # Normalize sku_tier

@@ -20,9 +20,7 @@ class SafetyCategory(BaseModel):
 class SafetyEvalResult(BaseModel):
     """Result of content safety evaluation on a generated ad script."""
 
-    overall_score: float = Field(
-        ..., ge=0.0, le=1.0, description="Aggregate risk score"
-    )
+    overall_score: float = Field(..., ge=0.0, le=1.0, description="Aggregate risk score")
     risk_level: Literal["safe", "low_risk", "high_risk", "blocked"] = Field(
         ..., description="Risk classification based on overall_score thresholds"
     )
@@ -32,9 +30,7 @@ class SafetyEvalResult(BaseModel):
     flagged_issues: list[str] = Field(
         default_factory=list, description="Human-readable list of flagged concerns"
     )
-    recommendation: str = Field(
-        "", description="Action recommendation (proceed / review / block)"
-    )
+    recommendation: str = Field("", description="Action recommendation (proceed / review / block)")
     eval_tokens_in: int = Field(0, description="Input tokens used for safety eval")
     eval_tokens_out: int = Field(0, description="Output tokens used for safety eval")
     eval_cost_usd: float = Field(0.0, description="Cost of safety evaluation in USD")

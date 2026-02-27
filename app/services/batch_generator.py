@@ -8,6 +8,7 @@ import asyncio
 import logging
 from datetime import datetime, timezone
 
+from app.config import settings
 from app.models.campaign_schemas import (
     Campaign,
     CampaignStatus,
@@ -15,7 +16,6 @@ from app.models.campaign_schemas import (
     ProductStatus,
     VideoResult,
 )
-from app.config import settings
 from app.models.schemas import SKUTier
 from app.services.persistence import db
 from app.services.pipeline import run_pipeline
@@ -49,14 +49,10 @@ async def run_batch(campaign: Campaign, products: list[Product], concurrency: in
             await _process_product(campaign, product)
 
     # Run all products concurrently (bounded by semaphore)
-    results = await asyncio.gather(
-        *[process_one(p) for p in products], return_exceptions=True
-    )
-    for product, result in zip(products, results):
+    results = await asyncio.gather(*[process_one(p) for p in products], return_exceptions=True)
+    for product, result in zip(products, results, strict=True):
         if isinstance(result, Exception):
-            logger.error(
-                "Unhandled exception for product %s: %s", product.sku_id, result
-            )
+            logger.error("Unhandled exception for product %s: %s", product.sku_id, result)
 
     # Determine final campaign status
     updated = await db.get_campaign(campaign.id)
@@ -102,9 +98,7 @@ async def _process_product(campaign: Campaign, product: Product):
             sku_tier=product.sku_tier,
             category=product.category,
         )
-        await db.update_product_status(
-            product.id, ProductStatus.generating, brief=brief
-        )
+        await db.update_product_status(product.id, ProductStatus.generating, brief=brief)
 
         # Stage B + C + D: Run pipeline (script → route → video)
         sku_tier = SKUTier.hero if product.sku_tier == "hero" else SKUTier.catalog
@@ -122,9 +116,7 @@ async def _process_product(campaign: Campaign, product: Product):
         await db.update_video_result(result_id, {"task_id": task_id})
 
         # Wait for video completion
-        video_status = await video_gen.wait_for_video(
-            task_id, pipeline_result["model_id"]
-        )
+        video_status = await video_gen.wait_for_video(task_id, pipeline_result["model_id"])
 
         if video_status.status == "Succeeded":
             await db.update_video_result(
@@ -142,9 +134,7 @@ async def _process_product(campaign: Campaign, product: Product):
             await db.increment_campaign_completed(
                 campaign.id, pipeline_result["cost"].total_cost_usd
             )
-            logger.info(
-                "Product %s completed: %s", product.sku_id, video_status.video_url
-            )
+            logger.info("Product %s completed: %s", product.sku_id, video_status.video_url)
         else:
             error_msg = video_status.error or f"Video generation {video_status.status}"
             await _mark_failed(result_id, product.id, campaign.id, error_msg)

@@ -58,9 +58,7 @@ PLATFORM_COLORS = {
 
 
 def platform_pill(name: str) -> str:
-    c = PLATFORM_COLORS.get(
-        name, {"bg": ACCENT_LIGHT, "text": ACCENT, "border": ACCENT_MUTED}
-    )
+    c = PLATFORM_COLORS.get(name, {"bg": ACCENT_LIGHT, "text": ACCENT, "border": ACCENT_MUTED})
     label = name.capitalize()
     return (
         f'<span style="display:inline-flex;align-items:center;gap:0.3rem;'

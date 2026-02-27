@@ -5,7 +5,7 @@ CRUD operations, CSV upload, batch generation, progress polling, results.
 
 import logging
 
-from fastapi import APIRouter, HTTPException, UploadFile, File
+from fastapi import APIRouter, File, HTTPException, UploadFile
 
 from app.models.campaign_schemas import (
     BatchGenerateRequest,
@@ -79,16 +79,14 @@ async def upload_products_csv(campaign_id: str, file: UploadFile = File(...)):
     try:
         text = content.decode("utf-8")
     except UnicodeDecodeError:
-        raise HTTPException(status_code=400, detail="CSV must be UTF-8 encoded")
+        raise HTTPException(status_code=400, detail="CSV must be UTF-8 encoded") from None
 
     from app.services.csv_parser import parse_csv
 
     products, errors = parse_csv(text)
 
     if not products and errors:
-        raise HTTPException(
-            status_code=400, detail=f"CSV parsing failed: {'; '.join(errors)}"
-        )
+        raise HTTPException(status_code=400, detail=f"CSV parsing failed: {'; '.join(errors)}")
 
     created = await db.create_products_batch(campaign_id, products)
 
@@ -119,6 +117,7 @@ async def start_batch_generation(
     Returns immediately — poll /progress for status.
     """
     import asyncio
+
     from app.services import batch_generator
 
     campaign = await db.get_campaign(campaign_id)
@@ -126,9 +125,7 @@ async def start_batch_generation(
         raise HTTPException(status_code=404, detail="Campaign not found")
 
     if campaign.status == CampaignStatus.generating:
-        raise HTTPException(
-            status_code=409, detail="Batch generation already in progress"
-        )
+        raise HTTPException(status_code=409, detail="Batch generation already in progress")
 
     products = await db.list_products(campaign_id)
     pending = [p for p in products if p.status == "pending"]
@@ -139,9 +136,7 @@ async def start_batch_generation(
     await db.update_campaign_status(campaign_id, CampaignStatus.generating)
 
     # Fire-and-forget: run batch in background
-    asyncio.create_task(
-        batch_generator.run_batch(campaign, pending, concurrency=req.concurrency)
-    )
+    asyncio.create_task(batch_generator.run_batch(campaign, pending, concurrency=req.concurrency))
 
     return {
         "status": "started",

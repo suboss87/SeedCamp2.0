@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -27,9 +26,7 @@ class GenerateRequest(BaseModel):
         ...,
         description="Campaign brief, e.g. 'Summer collection, beach vibes, energetic'",
     )
-    product_image_url: Optional[str] = Field(
-        None, description="Public URL of the product image"
-    )
+    product_image_url: str | None = Field(None, description="Public URL of the product image")
     sku_tier: SKUTier = SKUTier.catalog
     sku_id: str = Field("SKU-001", description="Product SKU identifier")
     platforms: list[Platform] = Field(
@@ -72,9 +69,7 @@ class AdScript(BaseModel):
 
     ad_copy: str = Field(..., description="Short ad copy / headline")
     scene_description: str = Field(..., description="Visual scene description")
-    video_prompt: str = Field(
-        ..., description="Optimized Seedance video generation prompt"
-    )
+    video_prompt: str = Field(..., description="Optimized Seedance video generation prompt")
     camera_direction: str = Field(..., description="Camera movement instruction")
 
 
@@ -85,8 +80,8 @@ class VideoTaskStatus(BaseModel):
     task_id: str
     status: str  # Queued, Running, Succeeded, Failed, Timeout
     model_used: str = ""
-    video_url: Optional[str] = None
-    error: Optional[str] = None
+    video_url: str | None = None
+    error: str | None = None
 
 
 # ---- Cost ----
@@ -115,7 +110,7 @@ class GenerateResponse(BaseModel):
     script: AdScript
     video: VideoTaskStatus
     cost: CostBreakdown
-    safety: Optional[dict] = None
+    safety: dict | None = None
 
 
 # ---- Cost Summary ----
