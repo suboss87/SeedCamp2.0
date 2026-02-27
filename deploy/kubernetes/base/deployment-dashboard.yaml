@@ -27,7 +27,7 @@ spec:
         - containerPort: 8501
           name: http
         env:
-        - name: API_BASE_URL
+        - name: API_URL
           value: "http://adcamp-api"
         resources:
           requests:

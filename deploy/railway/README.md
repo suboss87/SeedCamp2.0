@@ -93,7 +93,7 @@ Check `railway.toml` exists in repo root and points to correct Dockerfile:
 ```toml
 [build]
 builder = "DOCKERFILE"
-dockerfilePath = "deploy/docker/Dockerfile"
+dockerfilePath = "Dockerfile"
 ```
 
 ### Service Not Starting

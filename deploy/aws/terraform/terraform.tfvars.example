@@ -5,8 +5,8 @@ region = "ap-southeast-1"
 ark_api_key = "your-api-key-here"
 
 # Docker images (update after pushing to your registry)
-api_image       = "suboss87/adcamp-api:latest"
-dashboard_image = "suboss87/adcamp-dashboard:latest"
+api_image       = "your-registry/adcamp-api:latest"
+dashboard_image = "your-registry/adcamp-dashboard:latest"
 
 # API Service Configuration
 api_cpu           = "1024"  # 1 vCPU

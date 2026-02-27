@@ -85,8 +85,12 @@ async def lifespan(app: FastAPI):
 
     logger.debug("Configured models:")
     logger.debug("  Script: %s", settings.script_model)
-    logger.debug("  Video Pro: %s ($1.20/M)", settings.video_model_pro)
-    logger.debug("  Video Fast: %s ($0.70/M)", settings.video_model_fast)
+    logger.debug(
+        "  Video Pro: %s ($%.2f/M)", settings.video_model_pro, settings.cost_per_m_seedance_pro
+    )
+    logger.debug(
+        "  Video Fast: %s ($%.2f/M)", settings.video_model_fast, settings.cost_per_m_seedance_fast
+    )
     logger.info("Pipeline ready")
 
     yield  # App runs here
