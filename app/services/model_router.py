@@ -3,7 +3,7 @@ Smart Model Router — Step 3 of the Pipeline
 Routes each SKU to the optimal Seedance model tier based on business value.
 
 Hero SKUs (Top 20%)  → Seedance 1.5 Pro     ($1.20/M tokens, cinematic)
-Catalog SKUs (80%)   → Seedance 1.0 Pro Fast ($0.70/M tokens, 3x faster)
+Catalog SKUs (80%)   → Seedance 1.0 Pro Fast ($1.00/M tokens, 3x faster)
 """
 
 import logging

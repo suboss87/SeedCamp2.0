@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     cost_per_m_seed18_input: float = 0.25
     cost_per_m_seed18_output: float = 2.00
     cost_per_m_seedance_pro: float = 1.20
-    cost_per_m_seedance_fast: float = 0.70
+    cost_per_m_seedance_fast: float = 1.00
 
     # --- Video defaults ---
     video_duration: int = 8  # seconds (2-12)

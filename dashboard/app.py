@@ -18,6 +18,7 @@ from config import (
     ACCENT_MUTED,
     API_BASE,
     BG_CARD,
+    BG_HOVER,
     BG_PAGE,
     BG_SURFACE,
     BORDER,
@@ -59,6 +60,7 @@ st.markdown(
 html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {{
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }}
 [data-testid="stAppViewContainer"],
 [data-testid="stApp"],
@@ -75,8 +77,8 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {{
     background-color: {BG_PAGE} !important;
 }}
 .block-container {{
-    padding: 2.25rem 3rem 3rem 3rem !important;
-    max-width: 1100px !important;
+    padding: 1.5rem 2.5rem 2rem 2.5rem !important;
+    max-width: 1140px !important;
 }}
 
 /* ── Hide Streamlit chrome ───────────────────────────── */
@@ -84,15 +86,15 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {{
 header[data-testid="stHeader"] {{
     background: transparent !important;
     backdrop-filter: none !important;
-    height: 2.5rem !important;
+    height: 2.25rem !important;
     overflow: visible !important;
 }}
 
 /* ── Typography ──────────────────────────────────────── */
-[data-testid="stMain"] h1 {{ font-weight: 800 !important; letter-spacing: -0.04em !important; font-size: 1.65rem !important; line-height: 1.15 !important; color: {TEXT} !important; }}
-[data-testid="stMain"] h2 {{ font-weight: 700 !important; letter-spacing: -0.03em !important; font-size: 1.2rem !important; color: {TEXT} !important; margin-top: 0.15rem !important; }}
-[data-testid="stMain"] h3 {{ font-weight: 700 !important; letter-spacing: -0.025em !important; font-size: 1.05rem !important; color: {TEXT} !important; }}
-[data-testid="stMain"] h4 {{ font-weight: 600 !important; letter-spacing: -0.02em !important; font-size: 0.95rem !important; color: {TEXT} !important; }}
+[data-testid="stMain"] h1 {{ font-weight: 800 !important; letter-spacing: -0.035em !important; font-size: 1.35rem !important; line-height: 1.2 !important; color: {TEXT} !important; }}
+[data-testid="stMain"] h2 {{ font-weight: 700 !important; letter-spacing: -0.025em !important; font-size: 1.15rem !important; color: {TEXT} !important; margin-top: 0.1rem !important; }}
+[data-testid="stMain"] h3 {{ font-weight: 700 !important; letter-spacing: -0.02em !important; font-size: 1rem !important; color: {TEXT} !important; }}
+[data-testid="stMain"] h4 {{ font-weight: 600 !important; letter-spacing: -0.015em !important; font-size: 0.92rem !important; color: {TEXT_2} !important; }}
 p, span, div {{ font-family: 'Inter', sans-serif !important; }}
 [data-testid="stMain"] p,
 [data-testid="stMain"] span,
@@ -104,14 +106,14 @@ p, span, div {{ font-family: 'Inter', sans-serif !important; }}
     color: {TEXT} !important;
 }}
 
-/* ── SIDEBAR — Dark professional ─────────────────────── */
+/* ── SIDEBAR — Deep violet-black ─────────────────────── */
 section[data-testid="stSidebar"] {{
     background: {SIDEBAR_BG} !important;
-    border-right: none !important;
-    box-shadow: 4px 0 24px rgba(0,0,0,0.15) !important;
+    border-right: 1px solid rgba(139, 92, 246, 0.08) !important;
+    box-shadow: none !important;
 }}
 section[data-testid="stSidebar"] .block-container {{
-    padding: 1.25rem 1.25rem !important;
+    padding: 1.15rem 1.15rem !important;
 }}
 section[data-testid="stSidebar"] [data-testid="stVerticalBlockBorderWrapper"] {{
     border: none !important;
@@ -119,18 +121,17 @@ section[data-testid="stSidebar"] [data-testid="stVerticalBlockBorderWrapper"] {{
     background: transparent !important;
 }}
 /* ── Sidebar toggle arrows — ALWAYS visible ────────── */
-/* Collapse arrow inside the open sidebar */
 section[data-testid="stSidebar"] button[kind="header"],
 section[data-testid="stSidebar"] [data-testid="baseButton-header"] {{
-    background: rgba(255,255,255,0.1) !important;
-    border: 1px solid rgba(255,255,255,0.15) !important;
-    border-radius: 8px !important;
+    background: rgba(139, 92, 246, 0.12) !important;
+    border: 1px solid rgba(139, 92, 246, 0.2) !important;
+    border-radius: 7px !important;
     box-shadow: none !important;
     opacity: 1 !important;
     visibility: visible !important;
     display: flex !important;
-    width: 32px !important;
-    height: 32px !important;
+    width: 30px !important;
+    height: 30px !important;
     align-items: center !important;
     justify-content: center !important;
     cursor: pointer !important;
@@ -139,16 +140,16 @@ section[data-testid="stSidebar"] [data-testid="baseButton-header"] {{
 }}
 section[data-testid="stSidebar"] button[kind="header"]:hover,
 section[data-testid="stSidebar"] [data-testid="baseButton-header"]:hover {{
-    background: rgba(255,255,255,0.2) !important;
+    background: rgba(139, 92, 246, 0.2) !important;
 }}
 section[data-testid="stSidebar"] button[kind="header"] svg,
 section[data-testid="stSidebar"] [data-testid="baseButton-header"] svg {{
-    fill: #FFFFFF !important;
-    color: #FFFFFF !important;
-    width: 20px !important;
-    height: 20px !important;
+    fill: {SIDEBAR_TEXT} !important;
+    color: {SIDEBAR_TEXT} !important;
+    width: 18px !important;
+    height: 18px !important;
 }}
-/* Expand arrow when sidebar is collapsed — FORCE always visible */
+/* Expand arrow when sidebar is collapsed */
 [data-testid="collapsedControl"],
 [data-testid="collapsedControl"] * {{
     opacity: 1 !important;
@@ -163,29 +164,29 @@ section[data-testid="stSidebar"] [data-testid="baseButton-header"] svg {{
 [data-testid="collapsedControl"] button,
 [data-testid="collapsedControl"] [data-testid="baseButton-header"] {{
     background: {BG_CARD} !important;
-    border: 1.5px solid #CBD5E1 !important;
-    border-radius: 8px !important;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
+    border: 1px solid {BORDER} !important;
+    border-radius: 7px !important;
+    box-shadow: {SHADOW_SM} !important;
     opacity: 1 !important;
     visibility: visible !important;
     display: flex !important;
-    width: 36px !important;
-    height: 36px !important;
+    width: 34px !important;
+    height: 34px !important;
     align-items: center !important;
     justify-content: center !important;
     cursor: pointer !important;
-    transition: background 0.15s ease !important;
+    transition: background 0.12s ease !important;
 }}
 [data-testid="collapsedControl"] button:hover,
 [data-testid="collapsedControl"] [data-testid="baseButton-header"]:hover {{
-    background: #F1F5F9 !important;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.15) !important;
+    background: {BG_SURFACE} !important;
+    box-shadow: {SHADOW_MD} !important;
 }}
 [data-testid="collapsedControl"] svg {{
-    fill: #1E293B !important;
-    color: #1E293B !important;
-    width: 20px !important;
-    height: 20px !important;
+    fill: {TEXT_2} !important;
+    color: {TEXT_2} !important;
+    width: 18px !important;
+    height: 18px !important;
     opacity: 1 !important;
     visibility: visible !important;
 }}
@@ -203,26 +204,26 @@ section[data-testid="stSidebar"] [data-testid="stMetricLabel"] {{
     color: {SIDEBAR_DIM} !important;
 }}
 section[data-testid="stSidebar"] [data-testid="stMetricValue"] {{
-    color: #F1F5F9 !important;
+    color: #FFFFFF !important;
 }}
 section[data-testid="stSidebar"] .stProgress > div > div {{
-    background: rgba(255,255,255,0.08) !important;
+    background: rgba(139, 92, 246, 0.1) !important;
 }}
 section[data-testid="stSidebar"] .stProgress > div > div > div {{
     background: {ACCENT_GRAD} !important;
 }}
 section[data-testid="stSidebar"] .stButton > button {{
-    background: rgba(255,255,255,0.06) !important;
-    border: 1px solid rgba(255,255,255,0.1) !important;
+    background: rgba(139, 92, 246, 0.08) !important;
+    border: 1px solid rgba(139, 92, 246, 0.15) !important;
     color: {SIDEBAR_TEXT} !important;
     border-radius: {RADIUS_SM} !important;
     font-weight: 500 !important;
-    font-size: 0.8rem !important;
-    transition: all 0.2s ease !important;
+    font-size: 0.78rem !important;
+    transition: all 0.12s ease !important;
 }}
 section[data-testid="stSidebar"] .stButton > button:hover {{
-    background: rgba(255,255,255,0.1) !important;
-    border-color: rgba(255,255,255,0.18) !important;
+    background: rgba(139, 92, 246, 0.15) !important;
+    border-color: rgba(139, 92, 246, 0.25) !important;
     color: #FFFFFF !important;
 }}
 section[data-testid="stSidebar"] [data-testid="stMetricDelta"] {{
@@ -256,12 +257,13 @@ section[data-testid="stSidebar"] [data-testid="stExpander"] summary {{
     border: 1px solid {BORDER} !important;
     border-radius: {RADIUS} !important;
     box-shadow: {SHADOW_SM} !important;
-    transition: box-shadow 0.2s ease, border-color 0.2s ease !important;
+    transition: box-shadow 0.15s ease, border-color 0.15s ease !important;
     overflow: hidden !important;
     background: {BG_CARD} !important;
 }}
 [data-testid="stMainBlockContainer"] [data-testid="stVerticalBlockBorderWrapper"][style*="border"]:hover {{
     box-shadow: {SHADOW_MD} !important;
+    border-color: #D1D5DB !important;
 }}
 
 /* ── Tabs (segmented pill style) ─────────────────────── */
@@ -275,10 +277,11 @@ section[data-testid="stSidebar"] [data-testid="stExpander"] summary {{
     gap: 4px !important;
     border-bottom: none !important;
     padding: 4px !important;
-    background-color: {BG_SURFACE} !important;
+    background-color: #EDEAF5 !important;
     border-radius: 10px !important;
     display: inline-flex !important;
     width: auto !important;
+    border: 1px solid #DDD8EC !important;
 }}
 [data-testid="stTabs"] [data-baseweb="tab-highlight"] {{
     display: none !important;
@@ -288,30 +291,36 @@ section[data-testid="stSidebar"] [data-testid="stExpander"] summary {{
 }}
 [data-testid="stTabs"] [data-baseweb="tab"] {{
     font-family: 'Inter', sans-serif !important;
-    font-weight: 500 !important;
+    font-weight: 600 !important;
     font-size: 0.82rem !important;
     letter-spacing: -0.01em !important;
-    padding: 0.5rem 1.25rem !important;
+    padding: 0.5rem 1.35rem !important;
     border-radius: 7px !important;
     border-bottom: none !important;
-    color: {TEXT_3} !important;
-    transition: all 0.15s ease !important;
+    color: {TEXT_2} !important;
+    transition: all 0.12s ease !important;
     margin-bottom: 0 !important;
     background: transparent !important;
 }}
+[data-testid="stTabs"] [data-baseweb="tab"] p {{
+    color: inherit !important;
+}}
 [data-testid="stTabs"] [data-baseweb="tab"]:hover {{
-    color: {TEXT_2} !important;
-    background: rgba(0,0,0,0.03) !important;
+    color: {TEXT} !important;
+    background: rgba(255,255,255,0.5) !important;
 }}
 [data-testid="stTabs"] [aria-selected="true"] {{
-    color: {TEXT} !important;
-    font-weight: 600 !important;
+    color: {ACCENT} !important;
+    font-weight: 700 !important;
     border-bottom: none !important;
     background: {BG_CARD} !important;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04) !important;
 }}
+[data-testid="stTabs"] [aria-selected="true"] p {{
+    color: {ACCENT} !important;
+}}
 [data-testid="stTabContent"] {{
-    padding-top: 1.5rem !important;
+    padding-top: 0.85rem !important;
 }}
 
 /* ── Force all main-area widget backgrounds to white ──── */
@@ -328,8 +337,9 @@ section[data-testid="stSidebar"] [data-testid="stExpander"] summary {{
 }}
 [data-testid="stMain"] [data-baseweb="select"] [data-baseweb="tag"],
 [data-testid="stMain"] [data-baseweb="tag"] {{
-    background-color: {ACCENT} !important;
+    background: {ACCENT} !important;
     color: #FFFFFF !important;
+    border: none !important;
 }}
 [data-testid="stMain"] [data-baseweb="tag"] span,
 [data-testid="stMain"] [data-baseweb="tag"] svg,
@@ -338,8 +348,9 @@ section[data-testid="stSidebar"] [data-testid="stExpander"] summary {{
     fill: #FFFFFF !important;
 }}
 [data-testid="stMultiSelect"] [data-baseweb="tag"] {{
-    background-color: {ACCENT} !important;
+    background: {ACCENT} !important;
     color: #FFFFFF !important;
+    border: none !important;
 }}
 [data-testid="stMultiSelect"] [data-baseweb="tag"] span,
 [data-testid="stMultiSelect"] [data-baseweb="tag"] svg {{
@@ -352,13 +363,13 @@ section[data-testid="stSidebar"] [data-testid="stExpander"] summary {{
 [data-testid="stTextInput"] input {{
     border: 1px solid {BORDER} !important;
     border-radius: {RADIUS_SM} !important;
-    padding: 0.7rem 0.9rem !important;
-    font-size: 0.875rem !important;
+    padding: 0.65rem 0.85rem !important;
+    font-size: 0.85rem !important;
     font-family: 'Inter', sans-serif !important;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+    transition: border-color 0.12s ease, box-shadow 0.12s ease !important;
     background-color: {BG_CARD} !important;
     color: {TEXT} !important;
-    line-height: 1.55 !important;
+    line-height: 1.5 !important;
 }}
 [data-testid="stTextArea"] textarea:focus,
 [data-testid="stTextInput"] input:focus {{
@@ -368,9 +379,10 @@ section[data-testid="stSidebar"] [data-testid="stExpander"] summary {{
 }}
 [data-testid="stTextArea"] label,
 [data-testid="stTextInput"] label {{
-    font-weight: 500 !important;
-    font-size: 0.82rem !important;
+    font-weight: 600 !important;
+    font-size: 0.78rem !important;
     color: {TEXT_2} !important;
+    letter-spacing: -0.01em !important;
 }}
 
 /* ── Selects & multiselects ──────────────────────────── */
@@ -379,23 +391,23 @@ section[data-testid="stSidebar"] [data-testid="stExpander"] summary {{
     border: 1px solid {BORDER} !important;
     border-radius: {RADIUS_SM} !important;
     font-size: 0.85rem !important;
-    transition: border-color 0.15s ease !important;
+    transition: border-color 0.12s ease !important;
     background-color: {BG_CARD} !important;
     color: {TEXT} !important;
 }}
 [data-testid="stSelectbox"] > div > div:hover,
 [data-testid="stMultiSelect"] > div > div:hover {{
-    border-color: {TEXT_3} !important;
+    border-color: #D1D5DB !important;
 }}
 [data-testid="stSelectbox"] label,
 [data-testid="stMultiSelect"] label {{
-    font-weight: 500 !important;
-    font-size: 0.82rem !important;
+    font-weight: 600 !important;
+    font-size: 0.78rem !important;
     color: {TEXT_2} !important;
 }}
 [data-testid="stSelectbox"] svg,
 [data-testid="stMultiSelect"] svg {{
-    fill: {TEXT_2} !important;
+    fill: {TEXT_3} !important;
 }}
 
 /* ── Dropdown menus (rendered at body level) ─────────── */
@@ -426,17 +438,17 @@ ul[role="listbox"] [aria-selected="true"],
 }}
 [data-testid="stMain"] [data-testid="stCheckbox"] [data-testid="stWidgetLabel"] p {{
     font-weight: 500 !important;
-    font-size: 0.88rem !important;
+    font-size: 0.85rem !important;
 }}
 [data-testid="stMain"] [data-testid="stCheckbox"] span[data-baseweb="checkbox"] {{
-    border-color: #94A3B8 !important;
-    border-width: 2px !important;
+    border-color: #D1D5DB !important;
+    border-width: 1.5px !important;
     border-radius: 4px !important;
-    width: 20px !important;
-    height: 20px !important;
+    width: 18px !important;
+    height: 18px !important;
 }}
 [data-testid="stMain"] [data-testid="stCheckbox"] input:checked + span[data-baseweb="checkbox"] {{
-    background-color: {ACCENT} !important;
+    background: {ACCENT} !important;
     border-color: {ACCENT} !important;
 }}
 
@@ -452,27 +464,31 @@ ul[role="listbox"] [aria-selected="true"],
     color: {TEXT} !important;
 }}
 
-/* ── Primary button ──────────────────────────────────── */
+/* ── Primary button — Solid, confident ───────────────── */
 .stButton > button[kind="primary"] {{
     background: {ACCENT} !important;
-    color: white !important;
+    color: #FFFFFF !important;
     border: none !important;
     border-radius: {RADIUS_SM} !important;
     font-family: 'Inter', sans-serif !important;
     font-weight: 600 !important;
-    font-size: 0.85rem !important;
-    padding: 0.65rem 1.5rem !important;
-    box-shadow: 0 1px 2px rgba(99, 102, 241, 0.25) !important;
-    transition: all 0.15s ease !important;
+    font-size: 0.82rem !important;
+    padding: 0.55rem 1.3rem !important;
+    box-shadow: none !important;
+    transition: all 0.12s ease !important;
     letter-spacing: -0.01em !important;
+}}
+.stButton > button[kind="primary"] p,
+.stButton > button[kind="primary"] span,
+.stButton > button[kind="primary"] div {{
+    color: #FFFFFF !important;
 }}
 .stButton > button[kind="primary"]:hover {{
     background: {ACCENT_HOVER} !important;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
-    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 6px rgba(59, 130, 246, 0.2) !important;
 }}
 .stButton > button[kind="primary"]:active {{
-    transform: translateY(0) !important;
+    background: #1D4ED8 !important;
 }}
 
 /* ── Secondary button ────────────────────────────────── */
@@ -482,17 +498,17 @@ ul[role="listbox"] [aria-selected="true"],
     border-radius: {RADIUS_SM} !important;
     font-family: 'Inter', sans-serif !important;
     font-weight: 500 !important;
-    font-size: 0.83rem !important;
+    font-size: 0.82rem !important;
     color: {TEXT_2} !important;
     background: {BG_CARD} !important;
-    transition: all 0.15s ease !important;
-    padding: 0.55rem 1.25rem !important;
+    transition: all 0.12s ease !important;
+    padding: 0.5rem 1.15rem !important;
 }}
 .stButton > button[kind="secondary"]:hover,
 .stButton > button:not([kind]):hover {{
-    border-color: {TEXT_3} !important;
+    border-color: #D1D5DB !important;
     color: {TEXT} !important;
-    background: {BG_SURFACE} !important;
+    background: {BG_HOVER} !important;
 }}
 
 /* ── Link buttons ────────────────────────────────────── */
@@ -501,11 +517,11 @@ ul[role="listbox"] [aria-selected="true"],
     border-radius: {RADIUS_SM} !important;
     font-family: 'Inter', sans-serif !important;
     font-weight: 500 !important;
-    font-size: 0.83rem !important;
-    transition: all 0.15s ease !important;
+    font-size: 0.82rem !important;
+    transition: all 0.12s ease !important;
 }}
 .stLinkButton > a:hover {{
-    border-color: {TEXT_3} !important;
+    border-color: #D1D5DB !important;
     color: {TEXT} !important;
 }}
 
@@ -513,32 +529,33 @@ ul[role="listbox"] [aria-selected="true"],
 [data-testid="stMetricLabel"] {{
     font-family: 'Inter', sans-serif !important;
     text-transform: uppercase !important;
-    letter-spacing: 0.05em !important;
-    font-size: 0.67rem !important;
+    letter-spacing: 0.06em !important;
+    font-size: 0.65rem !important;
     font-weight: 600 !important;
     color: {TEXT_3} !important;
 }}
 [data-testid="stMetricValue"] {{
     font-family: 'Inter', sans-serif !important;
     font-weight: 700 !important;
-    letter-spacing: -0.02em !important;
-    font-size: 1.35rem !important;
+    letter-spacing: -0.025em !important;
+    font-size: 1.3rem !important;
+    font-variant-numeric: tabular-nums !important;
 }}
 [data-testid="stMetricDelta"] {{
     font-family: 'Inter', sans-serif !important;
-    font-size: 0.75rem !important;
+    font-size: 0.73rem !important;
     font-weight: 500 !important;
 }}
 
 /* ── Progress bars ───────────────────────────────────── */
 .stProgress > div > div > div {{
     border-radius: 20px !important;
-    height: 5px !important;
-    background: {ACCENT_GRAD} !important;
+    height: 4px !important;
+    background: {ACCENT} !important;
 }}
 .stProgress > div > div {{
     border-radius: 20px !important;
-    height: 5px !important;
+    height: 4px !important;
     background: {BORDER_LIGHT} !important;
 }}
 
@@ -547,24 +564,24 @@ ul[role="listbox"] [aria-selected="true"],
     border: 1px solid {BORDER} !important;
     border-radius: {RADIUS} !important;
     overflow: hidden !important;
-    transition: border-color 0.15s ease !important;
+    transition: border-color 0.12s ease !important;
     background: {BG_CARD} !important;
 }}
 [data-testid="stExpander"]:hover {{
-    border-color: {TEXT_3} !important;
+    border-color: #D1D5DB !important;
 }}
 [data-testid="stExpander"] summary {{
     font-family: 'Inter', sans-serif !important;
     font-weight: 600 !important;
-    font-size: 0.85rem !important;
+    font-size: 0.84rem !important;
     color: {TEXT_2} !important;
 }}
 
 /* ── File uploader ───────────────────────────────────── */
 [data-testid="stFileUploader"] {{
-    border: 2px dashed {BORDER} !important;
+    border: 1.5px dashed {BORDER} !important;
     border-radius: {RADIUS} !important;
-    transition: all 0.15s ease !important;
+    transition: all 0.12s ease !important;
 }}
 [data-testid="stFileUploader"]:hover {{
     border-color: {ACCENT_MUTED} !important;
@@ -574,7 +591,7 @@ ul[role="listbox"] [aria-selected="true"],
 /* ── Alerts ──────────────────────────────────────────── */
 [data-testid="stAlert"] {{
     border-radius: {RADIUS_SM} !important;
-    font-size: 0.84rem !important;
+    font-size: 0.83rem !important;
     border: none !important;
 }}
 [data-testid="stToast"] {{
@@ -582,120 +599,121 @@ ul[role="listbox"] [aria-selected="true"],
     font-family: 'Inter', sans-serif !important;
 }}
 .stDivider {{ border-color: {BORDER_LIGHT} !important; }}
-[data-testid="stCaptionContainer"] {{ font-size: 0.78rem !important; }}
+[data-testid="stCaptionContainer"] {{ font-size: 0.76rem !important; }}
 
 /* ── Pipeline steps ──────────────────────────────────── */
 .ac-step {{
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.6rem 0.85rem;
-    font-size: 0.82rem;
+    gap: 0.7rem;
+    padding: 0.55rem 0.8rem;
+    font-size: 0.8rem;
     color: {TEXT_2};
     border-radius: {RADIUS_SM};
-    margin-bottom: 4px;
-    transition: all 0.2s ease;
+    margin-bottom: 3px;
+    transition: all 0.15s ease;
     border: 1px solid transparent;
 }}
 .ac-step-num {{
-    font-size: 0.65rem;
+    font-size: 0.62rem;
     font-weight: 700;
     color: {TEXT_3};
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    min-width: 3.2rem;
+    letter-spacing: 0.06em;
+    min-width: 3rem;
 }}
 .ac-step-msg {{ flex: 1; font-weight: 500; }}
-.ac-step-icon {{ font-size: 0.95rem; min-width: 1.25rem; text-align: center; }}
+.ac-step-icon {{ font-size: 0.9rem; min-width: 1.2rem; text-align: center; }}
 .ac-step.running {{ background: {ACCENT_LIGHT}; border-color: {ACCENT_MUTED}; }}
 .ac-step.running .ac-step-icon {{ color: {ACCENT}; animation: ac-pulse 1.5s ease-in-out infinite; }}
-.ac-step.complete {{ background: {GREEN_BG}; border-color: rgba(16,185,129,0.15); }}
+.ac-step.complete {{ background: {GREEN_BG}; border-color: rgba(34,197,94,0.12); }}
 .ac-step.complete .ac-step-icon {{ color: {GREEN}; }}
-.ac-step.failed {{ background: {RED_BG}; border-color: rgba(239,68,68,0.15); }}
+.ac-step.failed {{ background: {RED_BG}; border-color: rgba(244,63,94,0.12); }}
 .ac-step.failed .ac-step-icon {{ color: {RED}; }}
-@keyframes ac-pulse {{ 0%,100% {{ opacity: 1; }} 50% {{ opacity: 0.35; }} }}
+@keyframes ac-pulse {{ 0%,100% {{ opacity: 1; }} 50% {{ opacity: 0.3; }} }}
 
 /* ━━ Custom component classes ━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 /* Hero header */
 .ac-hero {{
-    padding: 1.5rem 0 1.25rem 0;
+    padding: 0.75rem 0 0.65rem 0;
     border-bottom: 1px solid {BORDER};
-    margin-bottom: 1rem;
+    margin-bottom: 0.65rem;
 }}
 .ac-hero-title {{
-    font-size: 2.6rem !important;
+    font-size: 1.65rem !important;
     font-weight: 800 !important;
-    letter-spacing: -0.04em !important;
+    letter-spacing: -0.035em !important;
     color: {TEXT} !important;
     margin: 0 !important;
-    line-height: 1.15 !important;
+    line-height: 1.2 !important;
 }}
 .ac-hero-title .ac-hero-accent {{
-    background: {ACCENT_GRAD};
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: {ACCENT};
 }}
 .ac-hero-sub {{
-    font-size: 0.84rem;
+    font-size: 0.78rem;
     color: {TEXT_3};
     font-weight: 400;
-    margin: 0.35rem 0 0 0;
+    margin: 0.15rem 0 0 0;
     letter-spacing: -0.005em;
 }}
 
 /* Sidebar brand */
 .ac-brand {{
-    padding: 0.75rem 0.5rem 1rem 0.5rem;
-    margin-bottom: 1.25rem;
+    padding: 0 0.5rem 0.75rem 0.5rem;
+    margin-top: -0.5rem;
+    margin-bottom: 1.15rem;
     border-bottom: 1px solid {SIDEBAR_BORDER};
 }}
 .ac-brand-logo {{
     display: flex;
     align-items: center;
     gap: 0.65rem;
-    margin-bottom: 0.3rem;
 }}
 .ac-brand-icon {{
-    width: 34px;
-    height: 34px;
-    border-radius: 9px;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
     background: {ACCENT_GRAD};
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 15px;
+    font-size: 16px;
     color: white;
     font-weight: 800;
     letter-spacing: -0.05em;
     flex-shrink: 0;
-    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
+}}
+.ac-brand-text {{
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
 }}
 .ac-brand-name {{
-    font-size: 1.05rem;
+    font-size: 1.1rem;
     font-weight: 800;
-    color: #F1F5F9;
+    color: #FFFFFF;
     letter-spacing: -0.03em;
     line-height: 1;
 }}
-.ac-brand-tag {{
+.ac-brand-sub {{
     font-size: 0.7rem;
     color: {SIDEBAR_DIM};
     font-weight: 400;
-    margin: 0;
-    padding-left: calc(34px + 0.65rem);
-    line-height: 1.3;
+    line-height: 1.2;
+    letter-spacing: 0;
 }}
 
 /* Sidebar section labels */
 .ac-label {{
-    font-size: 0.6rem;
+    font-size: 0.58rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: {SIDEBAR_DIM};
-    margin: 1.25rem 0.5rem 0.5rem 0.5rem;
+    margin: 1.15rem 0.5rem 0.45rem 0.5rem;
     padding: 0;
 }}
 
@@ -704,80 +722,80 @@ ul[role="listbox"] [aria-selected="true"],
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.6rem 0.85rem;
+    padding: 0.55rem 0.75rem;
     border-radius: {RADIUS_SM};
     background: {SIDEBAR_CARD};
     border: 1px solid {SIDEBAR_BORDER};
-    margin-bottom: 0.3rem;
-    transition: background 0.15s ease;
+    margin-bottom: 0.25rem;
+    transition: background 0.12s ease;
 }}
 .ac-stat:hover {{
-    background: rgba(255,255,255,0.09);
+    background: rgba(139, 92, 246, 0.12);
 }}
 .ac-stat-label {{
-    font-size: 0.73rem;
+    font-size: 0.72rem;
     font-weight: 500;
     color: {SIDEBAR_TEXT};
 }}
 .ac-stat-val {{
-    font-size: 1.05rem;
+    font-size: 1rem;
     font-weight: 700;
-    color: #F1F5F9;
+    color: #FFFFFF;
     letter-spacing: -0.02em;
     font-variant-numeric: tabular-nums;
 }}
-.ac-stat-val.accent {{ color: #A78BFA; }}
+.ac-stat-val.accent {{ color: {ACCENT}; }}
 
 /* Sidebar tier bar */
 .ac-tier {{
-    padding: 0.4rem 0.85rem;
-    font-size: 0.73rem;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.72rem;
     color: {SIDEBAR_TEXT};
 }}
 .ac-tier-bar {{
-    height: 4px;
-    border-radius: 4px;
-    background: rgba(255,255,255,0.06);
-    margin-top: 4px;
+    height: 3px;
+    border-radius: 3px;
+    background: rgba(139, 92, 246, 0.08);
+    margin-top: 3px;
     overflow: hidden;
 }}
 .ac-tier-fill {{
     height: 100%;
-    border-radius: 4px;
+    border-radius: 3px;
     background: {ACCENT_GRAD};
-    transition: width 0.4s ease;
+    transition: width 0.3s ease;
 }}
 
 /* Empty state */
 .ac-empty {{
     text-align: center;
-    padding: 2.5rem 1.5rem;
+    padding: 1.5rem 1.25rem;
 }}
 .ac-empty-icon {{
-    font-size: 2rem;
-    margin-bottom: 0.6rem;
-    opacity: 0.35;
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    opacity: 0.3;
 }}
 .ac-empty-title {{
-    font-size: 0.88rem;
+    font-size: 0.85rem;
     font-weight: 600;
     color: {TEXT_2};
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.2rem;
 }}
 .ac-empty-desc {{
-    font-size: 0.78rem;
+    font-size: 0.76rem;
     color: {TEXT_3};
-    line-height: 1.55;
+    line-height: 1.5;
     max-width: 260px;
     margin: 0 auto;
 }}
 /* Dark sidebar empty state */
 .ac-empty-dark {{
     text-align: center;
-    padding: 2rem 0.75rem;
+    padding: 1.75rem 0.75rem;
 }}
-.ac-empty-dark .ac-empty-icon {{ opacity: 0.25; }}
-.ac-empty-dark .ac-empty-title {{ color: {SIDEBAR_TEXT}; font-size: 0.85rem; }}
+.ac-empty-dark .ac-empty-icon {{ opacity: 0.2; }}
+.ac-empty-dark .ac-empty-title {{ color: {SIDEBAR_TEXT}; font-size: 0.82rem; }}
 .ac-empty-dark .ac-empty-desc {{ color: {SIDEBAR_DIM}; max-width: 220px; margin: 0 auto; }}
 
 /* Config pill */
@@ -785,26 +803,27 @@ ul[role="listbox"] [aria-selected="true"],
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
-    padding: 0.25rem 0.65rem;
+    padding: 0.3rem 0.75rem;
     border-radius: 20px;
-    font-size: 0.72rem;
+    font-size: 0.78rem;
     font-weight: 600;
     background: {ACCENT_LIGHT};
     color: {ACCENT};
     border: 1px solid {ACCENT_MUTED};
-    margin-top: 0.5rem;
+    margin-top: 0.4rem;
     white-space: nowrap;
+    font-variant-numeric: tabular-nums;
 }}
 
 /* Section heading inside main */
 .ac-section-heading {{
-    font-size: 0.68rem;
+    font-size: 0.65rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.07em;
     color: {TEXT_3};
-    margin: 1.5rem 0 0.6rem 0;
-    padding-bottom: 0.35rem;
+    margin: 1.25rem 0 0.5rem 0;
+    padding-bottom: 0.3rem;
     border-bottom: 1px solid {BORDER_LIGHT};
 }}
 
@@ -812,10 +831,10 @@ ul[role="listbox"] [aria-selected="true"],
 .ac-footer {{
     text-align: center;
     color: {TEXT_3};
-    font-size: 0.73rem;
-    padding: 1.5rem 0 0.75rem 0;
+    font-size: 0.72rem;
+    padding: 0.85rem 0 0.5rem 0;
     border-top: 1px solid {BORDER_LIGHT};
-    margin-top: 2rem;
+    margin-top: 1.25rem;
     letter-spacing: -0.01em;
 }}
 .ac-footer a {{
@@ -843,16 +862,6 @@ for k, v in {
 render_sidebar_analytics()
 
 # ── Main content ──────────────────────────────────────────────────────────────
-st.markdown(
-    """
-<div class="ac-hero">
-    <p class="ac-hero-title">Ad<span class="ac-hero-accent">Camp</span></p>
-    <p class="ac-hero-sub">AI-powered video ad generation at scale</p>
-</div>
-""",
-    unsafe_allow_html=True,
-)
-
 tab_video, tab_campaign = st.tabs(["Quick Video", "Campaign Batch"])
 
 with tab_video:

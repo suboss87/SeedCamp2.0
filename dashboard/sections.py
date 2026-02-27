@@ -78,9 +78,11 @@ def render_sidebar_analytics():
         <div class="ac-brand">
             <div class="ac-brand-logo">
                 <div class="ac-brand-icon">A</div>
-                <span class="ac-brand-name">AdCamp</span>
+                <div class="ac-brand-text">
+                    <span class="ac-brand-name">AdCamp</span>
+                    <span class="ac-brand-sub">AI video generation at scale</span>
+                </div>
             </div>
-            <p class="ac-brand-tag">AI Video Ad Generation</p>
         </div>
         """,
             unsafe_allow_html=True,
