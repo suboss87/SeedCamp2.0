@@ -3,7 +3,7 @@
 [![BytePlus ModelArk](https://img.shields.io/badge/Powered%20by-BytePlus%20ModelArk-blue)](https://www.byteplus.com/en/product/modelark)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Tests](https://img.shields.io/badge/tests-76%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-76%20passing-brightgreen)](https://github.com/suboss87/adcamp/actions)
 
 A production-ready pipeline for generating AI videos across thousands of products, listings, or items — with smart cost control built in. Fork it, configure it, deploy it.
 
@@ -63,6 +63,16 @@ cp .env.example .env           # Add your BytePlus ModelArk API key
 
 make dev                       # API on :8000, Dashboard on :8501
 ```
+
+### Try Without API Keys (Dry Run)
+
+```bash
+git clone https://github.com/suboss87/adcamp.git && cd adcamp
+make install
+DRY_RUN=true make dev        # Full pipeline with simulated API responses
+```
+
+> Dry-run mode simulates all ModelArk API calls — you get the complete pipeline experience (script generation, routing, cost tracking, dashboard) without needing a BytePlus account or API key.
 
 **Generate your first video:**
 ```bash
@@ -239,6 +249,8 @@ adcamp/
 
 > **Why BytePlus VKE first?** AdCamp calls ModelArk APIs for every video. Deploying on BytePlus VKE co-locates your compute with the AI inference endpoint — lowest latency, no cross-cloud egress, one vendor for compute + AI.
 
+> **Comprehensive guide:** See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for step-by-step instructions, environment variables, and production checklists for all platforms.
+
 ## Testing
 
 ```bash
@@ -277,6 +289,7 @@ For persistence and observability, add Prometheus (config provided in `deploy/mo
 ## Documentation
 
 - **[Quick Start Options](docs/QUICKSTART.md)** — Railway, Render, Docker, VKE
+- **[Deployment Guide](docs/DEPLOYMENT.md)** — Comprehensive guide for all platforms
 - **[GCP Deployment](docs/DEPLOY.md)** — Cloud Run step-by-step
 - **[Examples](docs/examples/)** — Single video + batch campaign scripts
 - **[API Docs](http://localhost:8000/docs)** — Swagger UI (run locally)

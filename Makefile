@@ -52,8 +52,8 @@ test:
 
 lint:
 	@echo "🔍 Running linters..."
-	. venv/bin/activate && ruff check app/ || true
-	. venv/bin/activate && black app/ --check || true
+	. venv/bin/activate && ruff check app/
+	. venv/bin/activate && black app/ --check
 	@echo "✅ Linting complete"
 
 # Docker targets
