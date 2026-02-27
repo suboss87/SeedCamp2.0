@@ -48,17 +48,17 @@ brew install terraform  # macOS
 3. **Docker images pushed to registry**:
 ```bash
 # Option 1: Docker Hub (public)
-docker build -t suboss87/adcamp-api:latest .
-docker build -t suboss87/adcamp-dashboard:latest -f deploy/docker/Dockerfile.dashboard .
-docker push suboss87/adcamp-api:latest
-docker push suboss87/adcamp-dashboard:latest
+docker build -t your-registry/adcamp-api:latest .
+docker build -t your-registry/adcamp-dashboard:latest -f deploy/docker/Dockerfile.dashboard .
+docker push your-registry/adcamp-api:latest
+docker push your-registry/adcamp-dashboard:latest
 
 # Option 2: AWS ECR (private)
 aws ecr create-repository --repository-name adcamp-api
 aws ecr create-repository --repository-name adcamp-dashboard
 aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin <account-id>.dkr.ecr.ap-southeast-1.amazonaws.com
-docker tag suboss87/adcamp-api:latest <account-id>.dkr.ecr.ap-southeast-1.amazonaws.com/adcamp-api:latest
-docker tag suboss87/adcamp-dashboard:latest <account-id>.dkr.ecr.ap-southeast-1.amazonaws.com/adcamp-dashboard:latest
+docker tag your-registry/adcamp-api:latest <account-id>.dkr.ecr.ap-southeast-1.amazonaws.com/adcamp-api:latest
+docker tag your-registry/adcamp-dashboard:latest <account-id>.dkr.ecr.ap-southeast-1.amazonaws.com/adcamp-dashboard:latest
 docker push <account-id>.dkr.ecr.ap-southeast-1.amazonaws.com/adcamp-api:latest
 docker push <account-id>.dkr.ecr.ap-southeast-1.amazonaws.com/adcamp-dashboard:latest
 ```
@@ -144,11 +144,11 @@ terraform apply
 
 ```bash
 # Build and push new images
-docker build -t suboss87/adcamp-api:v2 .
-docker push suboss87/adcamp-api:v2
+docker build -t your-registry/adcamp-api:v2 .
+docker push your-registry/adcamp-api:v2
 
 # Update terraform.tfvars
-api_image = "suboss87/adcamp-api:v2"
+api_image = "your-registry/adcamp-api:v2"
 
 # Apply changes (triggers ECS service update)
 terraform apply
