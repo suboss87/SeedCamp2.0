@@ -26,6 +26,10 @@ class ProductStatus(str, Enum):
     generating = "generating"
     completed = "completed"
     failed = "failed"
+    skipped = "skipped"  # Budget exceeded — not processed
+    approved = "approved"
+    rejected = "rejected"
+    regenerating = "regenerating"
 
 
 # ─── Campaign ────────────────────────────────────────────────────────────────────
@@ -43,6 +47,9 @@ class CampaignCreate(BaseModel):
     platforms: list[str] = Field(default=["tiktok"])
     duration: int = Field(default=8, ge=2, le=15)
     resolution: str = Field(default="720p")
+    budget_limit_usd: float | None = Field(
+        None, ge=0.01, description="Optional budget cap in USD — batch stops when exceeded"
+    )
 
 
 class Campaign(BaseModel):
@@ -61,6 +68,7 @@ class Campaign(BaseModel):
     platforms: list[str] = Field(default=["tiktok"])
     duration: int = 8
     resolution: str = "720p"
+    budget_limit_usd: float | None = None
 
 
 # ─── Product ─────────────────────────────────────────────────────────────────────
@@ -104,11 +112,19 @@ class VideoResult(BaseModel):
     product_id: str
     task_id: str
     status: str = "pending"
-    video_url: str | None = None
+    video_url: str | None = None  # Primary URL (prefers GCS when available)
+    ark_video_url: str | None = None  # Original BytePlus CDN URL (may expire)
+    gcs_video_url: str | None = None  # Permanent GCS backup URL
+    gcs_backup_status: str = "pending"  # pending | completed | failed
     error: str | None = None
     model_used: str = ""
     script: dict | None = None  # AdScript as dict
     cost: dict | None = None  # CostBreakdown as dict
+    # Approval workflow fields (Phase 3)
+    approval_status: str = "pending"  # pending | approved | rejected
+    rejected_at: datetime | None = None
+    rejection_reason: str | None = None
+    regeneration_attempt: int = 0
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     completed_at: datetime | None = None
 

@@ -109,6 +109,7 @@ class TestRunPipeline:
             "in_tokens",
             "out_tokens",
             "safety",
+            "quality",
         }
 
     async def test_hero_routes_to_pro_model(

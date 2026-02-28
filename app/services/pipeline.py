@@ -14,11 +14,12 @@ from app.services import cost_tracker, model_router
 
 # In dry-run mode, use simulated stubs instead of real API calls
 if settings.dry_run:
+    from app.services import dry_run as quality_evaluator
     from app.services import dry_run as safety_evaluator
     from app.services import dry_run as script_writer
     from app.services import dry_run as video_gen
 else:
-    from app.services import safety_evaluator, script_writer, video_gen
+    from app.services import quality_evaluator, safety_evaluator, script_writer, video_gen
 
 logger = logging.getLogger(__name__)
 
@@ -129,6 +130,25 @@ async def run_pipeline(
     cost.safety_eval_cost_usd = safety_eval_cost
     cost.total_cost_usd = round(cost.total_cost_usd + safety_eval_cost, 6)
 
+    # Step 6: Quality Evaluation (non-blocking)
+    quality_result = None
+    if settings.quality_eval_enabled:
+        try:
+            logger.info("Step 6: Quality eval for SKU %s...", sku_id)
+            quality_start = time.time()
+            quality_result, _, _ = await quality_evaluator.evaluate_video_quality(
+                script, brief, platforms
+            )
+            monitoring.record_duration("quality_eval_duration_seconds", time.time() - quality_start)
+            monitoring.increment_counter("quality_checks_total")
+            monitoring.record_quality_score(quality_result.overall_score)
+            cost.quality_eval_cost_usd = quality_result.eval_cost_usd
+            cost.total_cost_usd = round(cost.total_cost_usd + quality_result.eval_cost_usd, 6)
+        except Exception:
+            logger.exception(
+                "Quality eval failed for SKU %s — continuing without quality data", sku_id
+            )
+
     return {
         "script": script,
         "model_id": model_id,
@@ -138,4 +158,5 @@ async def run_pipeline(
         "in_tokens": in_tokens,
         "out_tokens": out_tokens,
         "safety": safety_result,
+        "quality": quality_result,
     }

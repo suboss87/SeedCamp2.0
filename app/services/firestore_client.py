@@ -59,6 +59,7 @@ async def create_campaign(data: CampaignCreate) -> Campaign:
         platforms=data.platforms,
         duration=data.duration,
         resolution=data.resolution,
+        budget_limit_usd=data.budget_limit_usd,
         created_at=now,
         updated_at=now,
     )

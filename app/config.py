@@ -42,6 +42,19 @@ class Settings(BaseSettings):
     safety_temperature: float = 0.0  # Deterministic evaluation
     safety_max_tokens: int = 512
 
+    # --- Quality evaluation ---
+    quality_eval_enabled: bool = True
+    quality_temperature: float = 0.0  # Deterministic evaluation
+    quality_max_tokens: int = 512
+
+    # --- Regeneration ---
+    max_regeneration_attempts: int = 3
+
+    # --- Notifications ---
+    notification_enabled: bool = False
+    webhook_url: str = ""
+    slack_webhook_url: str = ""
+
     # --- Dry-run mode ---
     dry_run: bool = False  # Simulate API calls without real ModelArk requests
 

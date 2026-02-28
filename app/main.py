@@ -314,6 +314,10 @@ async def generate_ad(request: Request, req: GenerateRequest):
         if result.get("safety"):
             safety_data = result["safety"].model_dump()
 
+        quality_data = None
+        if result.get("quality"):
+            quality_data = result["quality"].model_dump()
+
         return GenerateResponse(
             task_id=result["task_id"],
             sku_id=req.sku_id,
@@ -327,6 +331,7 @@ async def generate_ad(request: Request, req: GenerateRequest):
             ),
             cost=result["cost"],
             safety=safety_data,
+            quality=quality_data,
         )
 
     except ContentBlockedError as e:
@@ -453,16 +458,19 @@ async def generate_ad_stream(request: Request, req: GenerateRequest):
 
                 if status.status == "Succeeded":
                     _track_success_metrics(result["cost"].total_cost_usd, req.sku_tier)
+                    final_payload = {
+                        "video_url": status.video_url,
+                        "cost": result["cost"].model_dump(),
+                        "script": script.model_dump(),
+                    }
+                    if result.get("quality"):
+                        final_payload["quality"] = result["quality"].model_dump()
                     data_final = {
                         "step": 5,
                         "status": "complete",
                         "message": "Video generated successfully",
                         "progress": 100,
-                        "data": {
-                            "video_url": status.video_url,
-                            "cost": result["cost"].model_dump(),
-                            "script": script.model_dump(),
-                        },
+                        "data": final_payload,
                     }
                     yield f"data: {json.dumps(data_final)}\n\n"
                     break

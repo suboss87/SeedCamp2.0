@@ -20,9 +20,12 @@ _metrics = {
     "safety_checks_total": 0,
     "safety_flagged_total": 0,
     "safety_blocked_total": 0,
+    "quality_checks_total": 0,
+    "quality_scores": [],
     "script_generation_duration_seconds": [],
     "video_generation_duration_seconds": [],
     "safety_eval_duration_seconds": [],
+    "quality_eval_duration_seconds": [],
 }
 
 
@@ -39,6 +42,13 @@ def record_duration(metric: str, duration_seconds: float):
         # Keep only last 1000 samples
         if len(_metrics[metric]) > 1000:
             _metrics[metric] = _metrics[metric][-1000:]
+
+
+def record_quality_score(score: float):
+    """Record a quality score for averaging."""
+    _metrics["quality_scores"].append(score)
+    if len(_metrics["quality_scores"]) > 1000:
+        _metrics["quality_scores"] = _metrics["quality_scores"][-1000:]
 
 
 def _avg(metric_key: str) -> float:
@@ -63,6 +73,9 @@ def get_metrics() -> dict[str, Any]:
         "safety_flagged_total": _metrics["safety_flagged_total"],
         "safety_blocked_total": _metrics["safety_blocked_total"],
         "safety_eval_avg_seconds": round(_avg("safety_eval_duration_seconds"), 2),
+        "quality_checks_total": _metrics["quality_checks_total"],
+        "quality_avg_score": round(_avg("quality_scores"), 3),
+        "quality_eval_avg_seconds": round(_avg("quality_eval_duration_seconds"), 2),
         "total_cost_usd": cost_summary.total_cost_usd,
         "avg_cost_per_video": cost_summary.avg_cost_per_video,
         "hero_videos": cost_summary.hero_videos,
@@ -135,6 +148,14 @@ def prometheus_format() -> str:
         "# HELP safety_eval_avg_seconds Average safety evaluation duration",
         "# TYPE safety_eval_avg_seconds gauge",
         f"safety_eval_avg_seconds {metrics['safety_eval_avg_seconds']}",
+        "",
+        "# HELP quality_checks_total Total quality evaluations performed",
+        "# TYPE quality_checks_total counter",
+        f"quality_checks_total {metrics['quality_checks_total']}",
+        "",
+        "# HELP quality_avg_score Average quality evaluation score",
+        "# TYPE quality_avg_score gauge",
+        f"quality_avg_score {metrics['quality_avg_score']}",
         "",
     ]
     return "\n".join(lines)

@@ -96,6 +96,7 @@ class CostBreakdown(BaseModel):
     video_tokens: int = 0
     video_cost_usd: float = 0.0
     safety_eval_cost_usd: float = 0.0
+    quality_eval_cost_usd: float = 0.0
     total_cost_usd: float = 0.0
     model_used: str = ""
     cost_per_m_tokens: float = 0.0
@@ -113,6 +114,7 @@ class GenerateResponse(BaseModel):
     video: VideoTaskStatus
     cost: CostBreakdown
     safety: dict | None = None
+    quality: dict | None = None
 
 
 # ---- Cost Summary ----

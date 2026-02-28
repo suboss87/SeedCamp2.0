@@ -7,7 +7,9 @@ import asyncio
 import logging
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
+from pydantic import BaseModel, Field
 
+from app.config import settings
 from app.models.campaign_schemas import (
     BatchGenerateRequest,
     BatchProgress,
@@ -16,6 +18,7 @@ from app.models.campaign_schemas import (
     CampaignStatus,
     CSVUploadResult,
     Product,
+    ProductStatus,
     VideoResult,
 )
 from app.services.persistence import db
@@ -187,3 +190,103 @@ async def list_video_results(campaign_id: str):
     if not campaign:
         raise HTTPException(status_code=404, detail="Campaign not found")
     return await db.list_video_results(campaign_id)
+
+
+# ─── Approve / Reject ──────────────────────────────────────────────────────────
+
+
+@router.post("/{campaign_id}/results/{result_id}/approve")
+async def approve_result(campaign_id: str, result_id: str):
+    """Approve a video result."""
+    campaign = await db.get_campaign(campaign_id)
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+
+    results = await db.list_video_results(campaign_id)
+    result = next((r for r in results if r.id == result_id), None)
+    if not result:
+        raise HTTPException(status_code=404, detail="Result not found")
+
+    if result.status != "completed":
+        raise HTTPException(status_code=400, detail="Only completed videos can be approved")
+
+    await db.update_video_result(result_id, {"approval_status": "approved"})
+    await db.update_product_status(result.product_id, ProductStatus.approved)
+
+    from app.services.notifications import NotificationEvent, notify
+
+    asyncio.create_task(
+        notify(
+            NotificationEvent.video_approved,
+            {
+                "campaign_id": campaign_id,
+                "campaign_name": campaign.name,
+                "result_id": result_id,
+                "product_id": result.product_id,
+                "message": f"Video approved for product {result.product_id}",
+            },
+        )
+    )
+
+    return {"status": "approved", "result_id": result_id}
+
+
+class RejectRequest(BaseModel):
+    reason: str = Field("", description="Reason for rejection")
+    regenerate: bool = Field(False, description="Re-run pipeline for this product")
+
+
+@router.post("/{campaign_id}/results/{result_id}/reject")
+async def reject_result(campaign_id: str, result_id: str, req: RejectRequest = RejectRequest()):
+    """Reject a video result, optionally triggering regeneration."""
+    campaign = await db.get_campaign(campaign_id)
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+
+    results = await db.list_video_results(campaign_id)
+    result = next((r for r in results if r.id == result_id), None)
+    if not result:
+        raise HTTPException(status_code=404, detail="Result not found")
+
+    if result.status != "completed":
+        raise HTTPException(status_code=400, detail="Only completed videos can be rejected")
+
+    from datetime import datetime, timezone
+
+    await db.update_video_result(
+        result_id,
+        {
+            "approval_status": "rejected",
+            "rejection_reason": req.reason,
+            "rejected_at": datetime.now(timezone.utc),
+        },
+    )
+    await db.update_product_status(result.product_id, ProductStatus.rejected)
+
+    response = {"status": "rejected", "result_id": result_id, "regenerating": False}
+
+    if req.regenerate:
+        if result.regeneration_attempt >= settings.max_regeneration_attempts:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Max regeneration attempts ({settings.max_regeneration_attempts}) reached",
+            )
+
+        # Increment regeneration counter
+        new_attempt = result.regeneration_attempt + 1
+        await db.update_video_result(result_id, {"regeneration_attempt": new_attempt})
+
+        # Find the product and regenerate
+        products = await db.list_products(campaign_id)
+        product = next((p for p in products if p.id == result.product_id), None)
+        if not product:
+            raise HTTPException(status_code=404, detail="Associated product not found")
+
+        from app.services import batch_generator
+
+        task = asyncio.create_task(batch_generator.regenerate_product(campaign, product, result_id))
+        task.add_done_callback(_handle_batch_task_done)
+        response["regenerating"] = True
+        response["regeneration_attempt"] = new_attempt
+
+    return response

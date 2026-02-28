@@ -12,6 +12,7 @@ import asyncio
 import logging
 import uuid
 
+from app.models.quality_schemas import QualityDimension, QualityEvalResult
 from app.models.safety_schemas import SafetyCategory, SafetyEvalResult
 from app.models.schemas import AdScript, VideoTaskStatus
 
@@ -133,6 +134,55 @@ async def evaluate_content_safety(
     return result, 280, 120
 
 
+# ─── Quality Evaluator Stub ─────────────────────────────────────────────────────
+
+
+async def evaluate_video_quality(
+    script: AdScript,
+    brief: str = "",
+    platforms: list[str] | None = None,
+) -> tuple[QualityEvalResult, int, int]:
+    """Simulate quality evaluation — always returns good quality."""
+    logger.info("[DRY-RUN] Simulating quality evaluation")
+    await asyncio.sleep(0.1)
+
+    dimensions = [
+        QualityDimension(name=dim, score=0.78, explanation="[DRY-RUN] Good quality")
+        for dim in [
+            "prompt_clarity",
+            "brand_alignment",
+            "creative_quality",
+            "technical_precision",
+            "platform_fit",
+        ]
+    ]
+
+    result = QualityEvalResult(
+        overall_score=0.78,
+        grade="good",
+        dimensions=dimensions,
+        suggestions=["[DRY-RUN] Consider adding more specific brand elements"],
+        eval_tokens_in=320,
+        eval_tokens_out=140,
+        eval_cost_usd=0.000360,
+    )
+    return result, 320, 140
+
+
+# ─── Asset Backup Stub ───────────────────────────────────────────────────────────
+
+
+async def backup_video(
+    ark_url: str,
+    campaign_id: str,
+    product_id: str,
+) -> str:
+    """Simulate video backup to GCS."""
+    logger.info("[DRY-RUN] Simulating video backup for %s/%s", campaign_id, product_id)
+    await asyncio.sleep(0.2)
+    return f"https://storage.googleapis.com/dry-run-bucket/videos/{campaign_id}/{product_id}/backup.mp4"
+
+
 # ─── Brief Generator Stub ────────────────────────────────────────────────────────
 
 
@@ -154,3 +204,11 @@ async def generate_brief(
         f"Dynamic motion, studio lighting, professional finish."
     )
     return brief, 350, 100
+
+
+# ─── Notification Stub ──────────────────────────────────────────────────────────
+
+
+async def notify(event: str, payload: dict):
+    """Simulate notification — just logs."""
+    logger.info("[DRY-RUN] Notification: %s — %s", event, payload.get("message", ""))

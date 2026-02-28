@@ -299,6 +299,11 @@ def _run_sse_generation(
                         final_data["video_url"],
                         use_container_width=True,
                     )
+
+                    # Quality evaluation display
+                    if "quality" in final_data:
+                        _render_quality_badge(final_data["quality"])
+
             return final_data
 
         except requests.exceptions.Timeout:
@@ -309,6 +314,53 @@ def _run_sse_generation(
             with progress_area:
                 st.error(f"Error: {e}")
             return {}
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# QUALITY EVALUATION DISPLAY
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+_GRADE_COLORS = {
+    "excellent": "#22c55e",
+    "good": "#3b82f6",
+    "fair": "#f59e0b",
+    "poor": "#ef4444",
+}
+
+
+def _render_quality_badge(quality: dict):
+    """Render quality grade badge, dimension bars, and suggestions."""
+    grade = quality.get("grade", "fair")
+    score = quality.get("overall_score", 0)
+    color = _GRADE_COLORS.get(grade, "#6b7280")
+
+    with st.expander(f"Quality: {grade.capitalize()} ({score:.0%})", expanded=False):
+        st.markdown(
+            f'<div style="display:inline-block;padding:0.2rem 0.6rem;border-radius:4px;'
+            f'background:{color}20;color:{color};font-weight:600;font-size:0.85rem;">'
+            f"{grade.upper()} &mdash; {score:.0%}</div>",
+            unsafe_allow_html=True,
+        )
+
+        dimensions = quality.get("dimensions", [])
+        for dim in dimensions:
+            dim_name = dim.get("name", "").replace("_", " ").title()
+            dim_score = dim.get("score", 0)
+            pct = int(dim_score * 100)
+            st.markdown(
+                f'<div style="margin:0.3rem 0;">'
+                f'<span style="font-size:0.8rem;">{dim_name}</span>'
+                f'<div style="background:#e5e7eb;border-radius:4px;height:8px;margin-top:2px;">'
+                f'<div style="background:{color};width:{pct}%;height:100%;border-radius:4px;"></div>'
+                f"</div></div>",
+                unsafe_allow_html=True,
+            )
+
+        suggestions = quality.get("suggestions", [])
+        if suggestions:
+            st.markdown("**Suggestions:**")
+            for s in suggestions:
+                st.caption(f"- {s}")
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -657,6 +709,15 @@ def render_campaign_batch():
                 key="cb_resolution",
             )
 
+        budget_limit = st.number_input(
+            "Budget Limit (USD)",
+            min_value=0.0,
+            value=0.0,
+            step=0.50,
+            help="Optional — batch stops when total cost exceeds this limit. Set to 0 for no limit.",
+            key="cb_budget",
+        )
+
         if st.button(
             "Create Campaign",
             type="primary",
@@ -665,15 +726,18 @@ def render_campaign_batch():
             use_container_width=True,
         ):
             try:
+                payload = {
+                    "name": name,
+                    "theme": theme,
+                    "platforms": platforms,
+                    "duration": duration,
+                    "resolution": resolution,
+                }
+                if budget_limit > 0:
+                    payload["budget_limit_usd"] = budget_limit
                 resp = requests.post(
                     f"{API_BASE}/api/campaigns",
-                    json={
-                        "name": name,
-                        "theme": theme,
-                        "platforms": platforms,
-                        "duration": duration,
-                        "resolution": resolution,
-                    },
+                    json=payload,
                     timeout=10,
                 )
                 resp.raise_for_status()
@@ -843,12 +907,21 @@ def _render_campaign_results(campaign_id: str):
                     break
                 result = completed[idx]
                 with col, st.container(border=True):
-                    video_url = result.get("video_url")
+                    # Prefer permanent GCS URL over CDN URL
+                    video_url = result.get("gcs_video_url") or result.get("video_url")
                     if video_url:
                         st.video(video_url)
 
                     product_id = result.get("product_id", "N/A")
-                    st.caption(f"SKU: `{product_id}`")
+                    backup_status = result.get("gcs_backup_status", "pending")
+                    backup_badge = ""
+                    if backup_status == "completed":
+                        backup_badge = ' <span style="color:#22c55e;font-size:0.7rem;">GCS</span>'
+                    elif backup_status == "failed":
+                        backup_badge = (
+                            ' <span style="color:#f59e0b;font-size:0.7rem;">CDN only</span>'
+                        )
+                    st.markdown(f"SKU: `{product_id}`{backup_badge}", unsafe_allow_html=True)
 
                     script = result.get("script", {})
                     if script:
@@ -866,6 +939,58 @@ def _render_campaign_results(campaign_id: str):
 
                     if video_url:
                         st.link_button("Download", video_url, use_container_width=True)
+
+                    # Approve/Reject buttons
+                    approval = result.get("approval_status", "pending")
+                    regen_count = result.get("regeneration_attempt", 0)
+
+                    if approval == "approved":
+                        st.markdown(
+                            '<span style="color:#22c55e;font-weight:600;">Approved</span>',
+                            unsafe_allow_html=True,
+                        )
+                    elif approval == "rejected":
+                        reason = result.get("rejection_reason", "")
+                        st.markdown(
+                            f'<span style="color:#ef4444;font-weight:600;">Rejected</span>'
+                            f'{f" — {reason}" if reason else ""}',
+                            unsafe_allow_html=True,
+                        )
+                        if regen_count > 0:
+                            st.caption(f"Regeneration attempt: {regen_count}/3")
+                    else:
+                        btn_col1, btn_col2 = st.columns(2)
+                        with btn_col1:
+                            if st.button(
+                                "Approve",
+                                key=f"approve_{result.get('id', idx)}",
+                                use_container_width=True,
+                            ):
+                                try:
+                                    requests.post(
+                                        f"{API_BASE}/api/campaigns/{result['campaign_id']}/results/{result['id']}/approve",
+                                        timeout=10,
+                                    ).raise_for_status()
+                                    st.toast("Approved!", icon=":material/check_circle:")
+                                    st.rerun()
+                                except Exception as e:
+                                    st.error(f"Failed: {e}")
+                        with btn_col2:
+                            if st.button(
+                                "Reject",
+                                key=f"reject_{result.get('id', idx)}",
+                                use_container_width=True,
+                            ):
+                                try:
+                                    requests.post(
+                                        f"{API_BASE}/api/campaigns/{result['campaign_id']}/results/{result['id']}/reject",
+                                        json={"regenerate": True},
+                                        timeout=10,
+                                    ).raise_for_status()
+                                    st.toast("Rejected + regenerating", icon=":material/autorenew:")
+                                    st.rerun()
+                                except Exception as e:
+                                    st.error(f"Failed: {e}")
 
     if failed:
         with st.expander(f"Failed ({len(failed)})"):
@@ -995,6 +1120,18 @@ def render_campaign_history():
 
                 with right:
                     st.caption(f"{done}/{total_p} videos · ${cost:.2f}")
+                    budget = c.get("budget_limit_usd")
+                    if budget:
+                        budget_pct = min((cost / budget) * 100, 100) if budget > 0 else 0
+                        bar_color = "#ef4444" if budget_pct >= 100 else "#3b82f6"
+                        st.markdown(
+                            f'<div style="font-size:0.75rem;margin-top:0.2rem;">Budget: ${cost:.2f} / ${budget:.2f}'
+                            f'{"  &mdash; Exceeded" if budget_pct >= 100 else ""}</div>'
+                            f'<div style="background:#e5e7eb;border-radius:4px;height:6px;margin-top:2px;">'
+                            f'<div style="background:{bar_color};width:{budget_pct:.0f}%;height:100%;border-radius:4px;"></div>'
+                            f"</div>",
+                            unsafe_allow_html=True,
+                        )
 
                 ac1, ac2 = st.columns(2)
                 with ac1:
