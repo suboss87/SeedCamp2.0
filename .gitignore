@@ -80,6 +80,9 @@ AGENTS.md
 # Podcast sources (personal content)
 podcast/
 
+# Worktrees
+.worktrees/
+
 # Miscellaneous
 *.jpg
 *.jpeg
