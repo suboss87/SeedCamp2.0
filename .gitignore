@@ -69,6 +69,9 @@ deploy/monitoring/alertmanager-data/
 # Internal session notes
 tasks/
 
+# Design plans (local reference)
+docs/plans/
+
 # Editor/tool configs
 .claude/
 CLAUDE.md
