@@ -70,6 +70,7 @@ class Settings(BaseSettings):
     output_dir: Path = Path("output")
     gcs_bucket: str = "your-gcs-bucket-name"
     persistence_backend: str = "memory"  # "memory" (default) or "firestore"
+    production: bool = False  # Set PRODUCTION=true in deployed environments
 
     model_config = {"env_file": ".env", "extra": "ignore"}
 

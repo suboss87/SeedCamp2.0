@@ -11,6 +11,7 @@ import os
 import uuid
 from contextlib import asynccontextmanager
 
+import httpx
 from fastapi import FastAPI, File, HTTPException, Request, Response, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
@@ -38,7 +39,7 @@ else:
 from app import monitoring
 from app.routes.campaigns import router as campaigns_router
 from app.services.pipeline import ContentBlockedError, run_pipeline
-from app.utils.retry import InvalidAPIKeyError, validate_api_key
+from app.utils.retry import InvalidAPIKeyError, QuotaExceededError, RateLimitError, validate_api_key
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -60,6 +61,20 @@ async def lifespan(app: FastAPI):
         firestore_client.init()
     except Exception as e:
         logger.warning("Persistence init failed (continuing with defaults): %s", e)
+
+    # Warn about ephemeral backends in production
+    if settings.production and settings.persistence_backend == "memory":
+        logger.warning(
+            "PRODUCTION mode with in-memory persistence — "
+            "all campaign data will be lost on restart. "
+            "Set PERSISTENCE_BACKEND=firestore for durable storage."
+        )
+
+    if settings.production:
+        logger.warning(
+            "Metrics are in-memory only — counters reset on restart. "
+            "For durable metrics, deploy Prometheus scraping /metrics endpoint."
+        )
 
     # Validate API key (skip in dry-run mode)
     if settings.dry_run:
@@ -133,7 +148,18 @@ app = FastAPI(
 )
 
 # Rate limiting: configurable via RATE_LIMIT env var (slowapi format, e.g. "60/minute").
-limiter = Limiter(key_func=get_remote_address, default_limits=[settings.rate_limit])
+
+
+def _get_client_ip(request: Request) -> str:
+    """Extract client IP, respecting X-Forwarded-For behind reverse proxies."""
+    forwarded = request.headers.get("X-Forwarded-For", "")
+    if forwarded:
+        # First IP in the chain is the original client
+        return forwarded.split(",")[0].strip()
+    return get_remote_address(request)
+
+
+limiter = Limiter(key_func=_get_client_ip, default_limits=[settings.rate_limit])
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
@@ -159,6 +185,16 @@ async def api_key_auth(request: Request, call_next):
         if auth != f"Bearer {settings.api_key}":
             return JSONResponse(status_code=401, content={"detail": "Invalid or missing API key"})
     return await call_next(request)
+
+
+@app.middleware("http")
+async def request_id_middleware(request: Request, call_next):
+    """Attach a unique request ID for log correlation and tracing."""
+    request_id = request.headers.get("X-Request-ID", uuid.uuid4().hex[:12])
+    request.state.request_id = request_id
+    response = await call_next(request)
+    response.headers["X-Request-ID"] = request_id
+    return response
 
 
 app.mount("/output", StaticFiles(directory=str(settings.output_dir)), name="output")
@@ -345,6 +381,22 @@ async def generate_ad(request: Request, req: GenerateRequest):
             },
         ) from e
 
+    except InvalidAPIKeyError as e:
+        logger.error("API key error for SKU %s: %s", req.sku_id, e)
+        raise HTTPException(status_code=503, detail="Service configuration error") from e
+
+    except (RateLimitError, QuotaExceededError) as e:
+        monitoring.increment_counter("videos_failed_total")
+        logger.error("API limit hit for SKU %s: %s", req.sku_id, e)
+        raise HTTPException(
+            status_code=429, detail="API rate limit or quota exceeded. Try again later."
+        ) from e
+
+    except httpx.TimeoutException:
+        monitoring.increment_counter("videos_failed_total")
+        logger.error("Timeout during pipeline for SKU %s", req.sku_id)
+        raise HTTPException(status_code=504, detail="Video generation timed out") from None
+
     except Exception:
         monitoring.increment_counter("videos_failed_total")
         logger.exception("Pipeline failed for SKU %s", req.sku_id)
@@ -362,6 +414,8 @@ async def check_status(task_id: str):
     """Poll video generation status."""
     try:
         return await video_gen.get_video_status(task_id)
+    except httpx.TimeoutException:
+        raise HTTPException(status_code=504, detail="Status check timed out") from None
     except Exception:
         logger.exception("Status check failed for task %s", task_id)
         raise HTTPException(status_code=500, detail="Failed to check video status") from None
@@ -372,6 +426,8 @@ async def wait_for_result(task_id: str):
     """Block until video is ready (for demo/testing)."""
     try:
         return await video_gen.wait_for_video(task_id)
+    except httpx.TimeoutException:
+        raise HTTPException(status_code=504, detail="Video generation timed out") from None
     except Exception:
         logger.exception("Wait failed for task %s", task_id)
         raise HTTPException(

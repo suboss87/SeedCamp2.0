@@ -7,15 +7,6 @@ Uses AsyncClient for consistency with the async codebase.
 import logging
 from datetime import datetime, timezone
 
-try:
-    from google.cloud import firestore
-    from google.cloud.firestore import AsyncClient
-except ImportError:
-    raise ImportError(
-        "Firestore backend requires google-cloud-firestore. "
-        "Install with: pip install -r requirements-gcp.txt"
-    ) from None
-
 from app.models.campaign_schemas import (
     Campaign,
     CampaignCreate,
@@ -28,13 +19,27 @@ from app.models.campaign_schemas import (
 
 logger = logging.getLogger(__name__)
 
+# Lazy-loaded in init() — allows this module to be imported without google-cloud-firestore
+firestore = None  # noqa: E305
+AsyncClient = None
+
 # Lazily initialized — call init() during app startup
 _db: AsyncClient | None = None
 
 
 def init():
     """Initialize async Firestore client. Call once during app startup."""
-    global _db
+    global _db, firestore, AsyncClient
+    try:
+        from google.cloud import firestore as _firestore
+        from google.cloud.firestore import AsyncClient as _AsyncClient
+    except ImportError:
+        raise ImportError(
+            "Firestore backend requires google-cloud-firestore. "
+            "Install with: pip install -r requirements-gcp.txt"
+        ) from None
+    firestore = _firestore
+    AsyncClient = _AsyncClient
     _db = AsyncClient()
     logger.info("Firestore AsyncClient initialized")
 
