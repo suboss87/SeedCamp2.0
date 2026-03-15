@@ -1,4 +1,4 @@
-# AdCamp Deployment Options
+# SeedCamp Deployment Options
 
 This directory contains deployment configurations for multiple cloud platforms and hosting services. Choose the option that best fits your needs.
 
@@ -179,8 +179,8 @@ Adapt this for GitLab CI, CircleCI, Jenkins, or your preferred CI/CD platform. A
 ## Support
 
 - **Documentation**: See [docs/](../docs/) for detailed guides
-- **Issues**: Report bugs at https://github.com/suboss87/adcamp/issues
-- **Discussions**: Ask questions at https://github.com/suboss87/adcamp/discussions
+- **Issues**: Report bugs at https://github.com/suboss87/seedcamp/issues
+- **Discussions**: Ask questions at https://github.com/suboss87/seedcamp/discussions
 
 ## Next Steps
 

@@ -30,7 +30,7 @@ resource "google_project_service" "required_apis" {
 
 # Secret Manager for API Key
 resource "google_secret_manager_secret" "ark_api_key" {
-  secret_id = "adcamp-ark-api-key"
+  secret_id = "seedcamp-ark-api-key"
   
   replication {
     auto {}
@@ -57,7 +57,7 @@ data "google_project" "project" {
 }
 
 # Firestore Database (Native mode)
-resource "google_firestore_database" "adcamp" {
+resource "google_firestore_database" "seedcamp" {
   project     = var.project_id
   name        = "(default)"
   location_id = var.region
@@ -74,8 +74,8 @@ resource "google_project_iam_member" "firestore_user" {
 }
 
 # Cloud Run Service - API
-resource "google_cloud_run_service" "adcamp_api" {
-  name     = "adcamp-api"
+resource "google_cloud_run_service" "seedcamp_api" {
+  name     = "seedcamp-api"
   location = var.region
   
   template {
@@ -135,8 +135,8 @@ resource "google_cloud_run_service" "adcamp_api" {
 }
 
 # Cloud Run Service - Dashboard
-resource "google_cloud_run_service" "adcamp_dashboard" {
-  name     = "adcamp-dashboard"
+resource "google_cloud_run_service" "seedcamp_dashboard" {
+  name     = "seedcamp-dashboard"
   location = var.region
   
   template {
@@ -146,7 +146,7 @@ resource "google_cloud_run_service" "adcamp_dashboard" {
         
         env {
           name  = "API_URL"
-          value = google_cloud_run_service.adcamp_api.status[0].url
+          value = google_cloud_run_service.seedcamp_api.status[0].url
         }
         
         resources {
@@ -178,15 +178,15 @@ resource "google_cloud_run_service" "adcamp_dashboard" {
 
 # IAM policy for public access
 resource "google_cloud_run_service_iam_member" "api_public" {
-  service  = google_cloud_run_service.adcamp_api.name
-  location = google_cloud_run_service.adcamp_api.location
+  service  = google_cloud_run_service.seedcamp_api.name
+  location = google_cloud_run_service.seedcamp_api.location
   role     = "roles/run.invoker"
   member   = "allUsers"
 }
 
 resource "google_cloud_run_service_iam_member" "dashboard_public" {
-  service  = google_cloud_run_service.adcamp_dashboard.name
-  location = google_cloud_run_service.adcamp_dashboard.location
+  service  = google_cloud_run_service.seedcamp_dashboard.name
+  location = google_cloud_run_service.seedcamp_dashboard.location
   role     = "roles/run.invoker"
   member   = "allUsers"
 }

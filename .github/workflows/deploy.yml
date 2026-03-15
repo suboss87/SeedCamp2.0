@@ -14,7 +14,7 @@ env:
   # BytePlus CR URL format: <instance>-<region>.cr.bytepluses.com
   # Set REGISTRY_INSTANCE secret to your BytePlus CR instance name
   REGISTRY: ${{ secrets.REGISTRY_INSTANCE }}-ap-southeast-1.cr.bytepluses.com
-  IMAGE_NAME: adcamp
+  IMAGE_NAME: seedcamp
 
 jobs:
   test:
@@ -102,13 +102,13 @@ jobs:
 
       - name: Update deployment image
         run: |
-          kubectl set image deployment/adcamp-api \
+          kubectl set image deployment/seedcamp-api \
             api=${{ env.REGISTRY }}/${{ secrets.REGISTRY_NAMESPACE }}/${{ env.IMAGE_NAME }}:main \
             -n staging
 
       - name: Wait for rollout
         run: |
-          kubectl rollout status deployment/adcamp-api -n staging --timeout=5m
+          kubectl rollout status deployment/seedcamp-api -n staging --timeout=5m
 
   deploy-production:
     name: Deploy to Production (VKE)
@@ -129,10 +129,10 @@ jobs:
 
       - name: Update deployment image
         run: |
-          kubectl set image deployment/adcamp-api \
+          kubectl set image deployment/seedcamp-api \
             api=${{ env.REGISTRY }}/${{ secrets.REGISTRY_NAMESPACE }}/${{ env.IMAGE_NAME }}:${GITHUB_REF#refs/tags/} \
             -n production
 
       - name: Wait for rollout
         run: |
-          kubectl rollout status deployment/adcamp-api -n production --timeout=5m
+          kubectl rollout status deployment/seedcamp-api -n production --timeout=5m

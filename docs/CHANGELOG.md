@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to AdCamp will be documented in this file.
+All notable changes to SeedCamp will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -15,8 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Comprehensive README with cost estimates (~$68-78/month)
   - Support for both Docker Hub and AWS ECR images
 - **Prometheus + Grafana Monitoring Stack**: Complete observability solution
-  - Pre-configured Prometheus scrape configs for AdCamp metrics
-  - Custom Grafana dashboard ("AdCamp Overview") with 12 panels
+  - Pre-configured Prometheus scrape configs for SeedCamp metrics
+  - Custom Grafana dashboard ("SeedCamp Overview") with 12 panels
   - AlertManager with critical/warning/info alert rules
   - Node Exporter for system metrics
   - cAdvisor for container metrics

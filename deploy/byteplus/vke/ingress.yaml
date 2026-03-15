@@ -1,23 +1,23 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: adcamp-ingress
-  namespace: adcamp
+  name: seedcamp-ingress
+  namespace: seedcamp
   labels:
-    app: adcamp
+    app: seedcamp
   annotations:
     # Adjust annotations based on your VKE ingress controller
     kubernetes.io/ingress.class: nginx
 spec:
   rules:
-  - host: adcamp.yourdomain.com  # Replace with your domain
+  - host: seedcamp.yourdomain.com  # Replace with your domain
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: adcamp-api
+            name: seedcamp-api
             port:
               number: 80
   - host: dashboard.yourdomain.com  # Replace with your domain
@@ -27,6 +27,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: adcamp-dashboard
+            name: seedcamp-dashboard
             port:
               number: 80

@@ -1,15 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: adcamp-dashboard
+  name: seedcamp-dashboard
   namespace: default
   labels:
-    app: adcamp
+    app: seedcamp
     component: dashboard
 spec:
   type: LoadBalancer
   selector:
-    app: adcamp
+    app: seedcamp
     component: dashboard
   ports:
   - name: http

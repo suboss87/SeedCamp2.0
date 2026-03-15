@@ -1,4 +1,4 @@
-"""Shared fixtures for AdCamp tests."""
+"""Shared fixtures for SeedCamp tests."""
 
 import pytest
 

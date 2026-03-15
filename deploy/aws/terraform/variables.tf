@@ -13,13 +13,13 @@ variable "ark_api_key" {
 variable "api_image" {
   description = "Docker image for API service"
   type        = string
-  default     = "your-registry/adcamp-api:latest"
+  default     = "your-registry/seedcamp-api:latest"
 }
 
 variable "dashboard_image" {
   description = "Docker image for Dashboard service"
   type        = string
-  default     = "your-registry/adcamp-dashboard:latest"
+  default     = "your-registry/seedcamp-dashboard:latest"
 }
 
 variable "api_cpu" {

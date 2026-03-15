@@ -1,14 +1,14 @@
 #!/bin/bash
 set -euo pipefail
 
-# AdCamp - Deploy to GCP Cloud Run
+# SeedCamp - Deploy to GCP Cloud Run
 # Usage: ./scripts/deploy-gcp.sh
 
 PROJECT_ID=${GCP_PROJECT_ID:-""}
 REGION=${GCP_REGION:-"asia-southeast1"}
-SERVICE_NAME="adcamp-api"
+SERVICE_NAME="seedcamp-api"
 
-echo "🚀 Deploying AdCamp to GCP Cloud Run..."
+echo "🚀 Deploying SeedCamp to GCP Cloud Run..."
 echo "   Region: $REGION"
 echo ""
 
@@ -45,29 +45,29 @@ else
     read -p "Enter your ModelArk API key: " ARK_API_KEY
 fi
 
-echo -n "$ARK_API_KEY" | gcloud secrets create adcamp-ark-api-key \
+echo -n "$ARK_API_KEY" | gcloud secrets create seedcamp-ark-api-key \
     --data-file=- \
     --replication-policy="automatic" \
     --project=$PROJECT_ID 2>/dev/null || \
-echo -n "$ARK_API_KEY" | gcloud secrets versions add adcamp-ark-api-key \
+echo -n "$ARK_API_KEY" | gcloud secrets versions add seedcamp-ark-api-key \
     --data-file=- \
     --project=$PROJECT_ID
 
 # Build and push Docker image
 echo "📦 Building Docker image..."
-docker build -t gcr.io/$PROJECT_ID/adcamp:latest .
+docker build -t gcr.io/$PROJECT_ID/seedcamp:latest .
 
 echo "📤 Pushing image to GCR..."
-docker push gcr.io/$PROJECT_ID/adcamp:latest
+docker push gcr.io/$PROJECT_ID/seedcamp:latest
 
 # Deploy to Cloud Run
 echo "☁️  Deploying to Cloud Run..."
 gcloud run deploy $SERVICE_NAME \
-    --image gcr.io/$PROJECT_ID/adcamp:latest \
+    --image gcr.io/$PROJECT_ID/seedcamp:latest \
     --platform managed \
     --region $REGION \
     --allow-unauthenticated \
-    --set-secrets=ARK_API_KEY=adcamp-ark-api-key:latest \
+    --set-secrets=ARK_API_KEY=seedcamp-ark-api-key:latest \
     --set-env-vars="ARK_BASE_URL=https://ark.ap-southeast.bytepluses.com/api/v3,OUTPUT_DIR=/app/output" \
     --cpu=2 \
     --memory=2Gi \

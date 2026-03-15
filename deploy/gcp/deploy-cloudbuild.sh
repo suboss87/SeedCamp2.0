@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# AdCamp - GCP Cloud Build Deployment (No local Docker needed)
+# SeedCamp - GCP Cloud Build Deployment (No local Docker needed)
 # Uses Google Cloud Build to build images in the cloud
 
 # Colors for output
@@ -12,7 +12,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 echo -e "${BLUE}╔════════════════════════════════════════════════════╗${NC}"
-echo -e "${BLUE}║     AdCamp - Cloud Build Deployment               ║${NC}"
+echo -e "${BLUE}║     SeedCamp - Cloud Build Deployment               ║${NC}"
 echo -e "${BLUE}╚════════════════════════════════════════════════════╝${NC}"
 echo ""
 
@@ -25,8 +25,8 @@ fi
 
 PROJECT_ID=$GCP_PROJECT_ID
 REGION="asia-southeast1"
-API_SERVICE="adcamp-api"
-DASHBOARD_SERVICE="adcamp-dashboard"
+API_SERVICE="seedcamp-api"
+DASHBOARD_SERVICE="seedcamp-dashboard"
 
 echo -e "${YELLOW}Configuration:${NC}"
 echo "  Project ID: $PROJECT_ID"
@@ -41,16 +41,16 @@ gcloud config set project $PROJECT_ID
 
 # Build API image using Cloud Build
 echo -e "${BLUE}[2/4] Building API image with Cloud Build...${NC}"
-gcloud builds submit --tag gcr.io/$PROJECT_ID/adcamp:latest --timeout=20m .
+gcloud builds submit --tag gcr.io/$PROJECT_ID/seedcamp:latest --timeout=20m .
 
 # Build Dashboard image using Cloud Build  
 echo -e "${BLUE}[3/4] Building Dashboard image with Cloud Build...${NC}"
 cat > /tmp/cloudbuild-dashboard.yaml <<EOF
 steps:
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'gcr.io/$PROJECT_ID/adcamp-dashboard:latest', '-f', 'deploy/docker/Dockerfile.dashboard', '.']
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/seedcamp-dashboard:latest', '-f', 'deploy/docker/Dockerfile.dashboard', '.']
 images:
-- 'gcr.io/$PROJECT_ID/adcamp-dashboard:latest'
+- 'gcr.io/$PROJECT_ID/seedcamp-dashboard:latest'
 timeout: 1200s
 EOF
 gcloud builds submit --config /tmp/cloudbuild-dashboard.yaml .
@@ -60,7 +60,7 @@ echo -e "${BLUE}[4/4] Deploying services to Cloud Run...${NC}"
 echo ""
 echo -e "${GREEN}Deploying API...${NC}"
 gcloud run deploy $API_SERVICE \
-  --image gcr.io/$PROJECT_ID/adcamp:latest \
+  --image gcr.io/$PROJECT_ID/seedcamp:latest \
   --platform managed \
   --region $REGION \
   --allow-unauthenticated \
@@ -70,7 +70,7 @@ gcloud run deploy $API_SERVICE \
   --memory 2Gi \
   --timeout 300 \
   --set-env-vars "ARK_BASE_URL=https://ark.ap-southeast.bytepluses.com/api/v3,OUTPUT_DIR=/app/output" \
-  --set-secrets "ARK_API_KEY=adcamp-ark-api-key:latest" \
+  --set-secrets "ARK_API_KEY=seedcamp-ark-api-key:latest" \
   --port 8000
 
 # Get API URL
@@ -81,7 +81,7 @@ echo ""
 # Deploy Dashboard with API URL
 echo -e "${GREEN}Deploying Dashboard...${NC}"
 gcloud run deploy $DASHBOARD_SERVICE \
-  --image gcr.io/$PROJECT_ID/adcamp-dashboard:latest \
+  --image gcr.io/$PROJECT_ID/seedcamp-dashboard:latest \
   --platform managed \
   --region $REGION \
   --allow-unauthenticated \

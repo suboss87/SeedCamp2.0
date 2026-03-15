@@ -1,6 +1,6 @@
 # Docker Compose Deployment
 
-Deploy AdCamp locally using Docker Compose for development, testing, or running on your own infrastructure.
+Deploy SeedCamp locally using Docker Compose for development, testing, or running on your own infrastructure.
 
 ## Prerequisites
 
@@ -78,7 +78,7 @@ Videos are stored in a Docker volume:
 docker-compose exec api ls -lh /app/output
 
 # Copy videos to host
-docker cp adcamp-api:/app/output ./local-videos
+docker cp seedcamp-api:/app/output ./local-videos
 ```
 
 ## Development Workflow

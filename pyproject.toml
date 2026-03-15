@@ -1,5 +1,5 @@
 [project]
-name = "adcamp"
+name = "seedcamp"
 version = "1.0.0"
 description = "AI Video Generation at Scale — Reference Architecture with Smart Cost Routing"
 readme = "README.md"

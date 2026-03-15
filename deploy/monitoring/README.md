@@ -1,6 +1,6 @@
-# AdCamp Monitoring Stack
+# SeedCamp Monitoring Stack
 
-Complete Prometheus + Grafana monitoring setup for AdCamp with pre-configured dashboards and alerts.
+Complete Prometheus + Grafana monitoring setup for SeedCamp with pre-configured dashboards and alerts.
 
 ## Components
 
@@ -33,13 +33,13 @@ Access:
 - **Prometheus**: http://localhost:9090
 - **AlertManager**: http://localhost:9093
 
-### With AdCamp API
+### With SeedCamp API
 
-Update `prometheus/prometheus.yml` to point to your AdCamp API:
+Update `prometheus/prometheus.yml` to point to your SeedCamp API:
 
 ```yaml
 scrape_configs:
-  - job_name: 'adcamp-api'
+  - job_name: 'seedcamp-api'
     static_configs:
       - targets: ['host.docker.internal:8000']  # macOS/Windows
       # - targets: ['172.17.0.1:8000']          # Linux
@@ -50,9 +50,9 @@ Then restart Prometheus:
 docker-compose restart prometheus
 ```
 
-## Metrics Exposed by AdCamp
+## Metrics Exposed by SeedCamp
 
-The AdCamp API exposes Prometheus metrics at `GET /metrics`:
+The SeedCamp API exposes Prometheus metrics at `GET /metrics`:
 
 ### Counters
 - `videos_generated_total` - Total videos successfully generated
@@ -98,7 +98,7 @@ total_cost_usd 13.89
 
 ## Grafana Dashboards
 
-### AdCamp Overview
+### SeedCamp Overview
 Pre-configured dashboard showing:
 - Total videos generated (success/failed)
 - Total cost (USD)
@@ -108,7 +108,7 @@ Pre-configured dashboard showing:
 - Hero vs Catalog video distribution
 - Success rate gauge
 
-**Import**: Automatically provisioned at `http://localhost:3000/d/adcamp-overview`
+**Import**: Automatically provisioned at `http://localhost:3000/d/seedcamp-overview`
 
 ### Creating Custom Dashboards
 
@@ -163,7 +163,7 @@ receivers:
   - name: 'critical'
     slack_configs:
       - api_url: 'https://hooks.slack.com/services/YOUR/WEBHOOK/URL'
-        channel: '#adcamp-alerts'
+        channel: '#seedcamp-alerts'
         title: 'Critical: {{ .GroupLabels.alertname }}'
         text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
 ```
@@ -264,16 +264,16 @@ storage:
 Create `prometheus/rules.yml`:
 ```yaml
 groups:
-  - name: adcamp_recording_rules
+  - name: seedcamp_recording_rules
     interval: 30s
     rules:
       # Pre-compute expensive queries
-      - record: adcamp:video_success_rate
+      - record: seedcamp:video_success_rate
         expr: |
           videos_generated_total / 
           (videos_generated_total + videos_failed_total) * 100
       
-      - record: adcamp:cost_per_video
+      - record: seedcamp:cost_per_video
         expr: total_cost_usd / videos_generated_total
 ```
 
@@ -297,7 +297,7 @@ Export dashboards for backup:
 ```bash
 # Via API
 curl -H "Authorization: Bearer YOUR_API_KEY" \
-  http://localhost:3000/api/dashboards/uid/adcamp-overview > backup.json
+  http://localhost:3000/api/dashboards/uid/seedcamp-overview > backup.json
 ```
 
 ## Troubleshooting
@@ -309,7 +309,7 @@ curl -H "Authorization: Bearer YOUR_API_KEY" \
 curl http://localhost:9090/api/v1/targets
 
 # Check if API is reachable from Prometheus container
-docker exec adcamp-prometheus wget -O- http://host.docker.internal:8000/metrics
+docker exec seedcamp-prometheus wget -O- http://host.docker.internal:8000/metrics
 ```
 
 ### Grafana Dashboard Not Loading
@@ -342,7 +342,7 @@ curl -H "Content-Type: application/json" \
 
 ```bash
 # Check Prometheus memory
-docker stats adcamp-prometheus
+docker stats seedcamp-prometheus
 
 # Reduce retention or add limits
 prometheus:

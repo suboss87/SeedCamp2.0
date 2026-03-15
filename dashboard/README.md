@@ -1,6 +1,6 @@
-# AdCamp Dashboard - Modern UI/UX
+# SeedCamp Dashboard - Modern UI/UX
 
-This dashboard provides a modern, intuitive interface for the AdCamp AI video generation pipeline.
+This dashboard provides a modern, intuitive interface for the SeedCamp AI video generation pipeline.
 
 ## 🎨 Design Philosophy
 
@@ -282,12 +282,12 @@ make deploy-gcp
 ```
 
 The dashboard will automatically connect to:
-- **Production API**: https://adcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app
-- **Dashboard URL**: https://adcamp-dashboard-YOUR_PROJECT_HASH.asia-southeast1.run.app
+- **Production API**: https://seedcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app
+- **Dashboard URL**: https://seedcamp-dashboard-YOUR_PROJECT_HASH.asia-southeast1.run.app
 
 **Environment Variables**:
 - `API_URL`: Set to override the default production API (optional)
-  - Default: `https://adcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app`
+  - Default: `https://seedcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app`
   - Local dev: `http://localhost:8000`
 
 ## 🔗 Integration Points

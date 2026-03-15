@@ -1,5 +1,5 @@
 """
-AdCamp — AI Video Ad Generation Dashboard
+SeedCamp — AI Video Ad Generation Dashboard
 """
 
 import streamlit as st
@@ -42,7 +42,7 @@ from config import (
 )
 
 st.set_page_config(
-    page_title="AdCamp",
+    page_title="SeedCamp",
     page_icon="▪",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -876,7 +876,7 @@ render_campaign_history()
 st.markdown(
     f"""
 <div class="ac-footer">
-    AdCamp v2.0 &middot; Powered by BytePlus ModelArk &middot;
+    SeedCamp v2.0 &middot; Powered by BytePlus ModelArk &middot;
     <a href="{API_BASE}/docs" target="_blank">API Docs</a>
 </div>
 """,

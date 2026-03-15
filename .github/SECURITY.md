@@ -2,7 +2,7 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in AdCamp, please report it privately:
+If you discover a security vulnerability in SeedCamp, please report it privately:
 
 **Email**: suboss87@users.noreply.github.com
 

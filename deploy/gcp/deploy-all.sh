@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# AdCamp - Complete GCP Cloud Run Deployment
+# SeedCamp - Complete GCP Cloud Run Deployment
 # Deploys both API and Dashboard to GCP Cloud Run
 
 # Colors for output
@@ -12,7 +12,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 echo -e "${BLUE}╔════════════════════════════════════════════════════╗${NC}"
-echo -e "${BLUE}║     AdCamp - GCP Cloud Run Deployment             ║${NC}"
+echo -e "${BLUE}║     SeedCamp - GCP Cloud Run Deployment             ║${NC}"
 echo -e "${BLUE}╚════════════════════════════════════════════════════╝${NC}"
 echo ""
 
@@ -25,8 +25,8 @@ fi
 
 PROJECT_ID=$GCP_PROJECT_ID
 REGION="asia-southeast1"
-API_SERVICE="adcamp-api"
-DASHBOARD_SERVICE="adcamp-dashboard"
+API_SERVICE="seedcamp-api"
+DASHBOARD_SERVICE="seedcamp-dashboard"
 
 echo -e "${YELLOW}Configuration:${NC}"
 echo "  Project ID: $PROJECT_ID"
@@ -41,26 +41,26 @@ gcloud config set project $PROJECT_ID
 
 # Build API image
 echo -e "${BLUE}[2/6] Building API Docker image...${NC}"
-docker build -t gcr.io/$PROJECT_ID/adcamp:latest -f Dockerfile .
+docker build -t gcr.io/$PROJECT_ID/seedcamp:latest -f Dockerfile .
 
 # Build Dashboard image
 echo -e "${BLUE}[3/6] Building Dashboard Docker image...${NC}"
-docker build -t gcr.io/$PROJECT_ID/adcamp-dashboard:latest -f deploy/docker/Dockerfile.dashboard .
+docker build -t gcr.io/$PROJECT_ID/seedcamp-dashboard:latest -f deploy/docker/Dockerfile.dashboard .
 
 # Push API image
 echo -e "${BLUE}[4/6] Pushing API image to GCR...${NC}"
-docker push gcr.io/$PROJECT_ID/adcamp:latest
+docker push gcr.io/$PROJECT_ID/seedcamp:latest
 
 # Push Dashboard image
 echo -e "${BLUE}[5/6] Pushing Dashboard image to GCR...${NC}"
-docker push gcr.io/$PROJECT_ID/adcamp-dashboard:latest
+docker push gcr.io/$PROJECT_ID/seedcamp-dashboard:latest
 
 # Deploy API
 echo -e "${BLUE}[6/6] Deploying services to Cloud Run...${NC}"
 echo ""
 echo -e "${GREEN}Deploying API...${NC}"
 gcloud run deploy $API_SERVICE \
-  --image gcr.io/$PROJECT_ID/adcamp:latest \
+  --image gcr.io/$PROJECT_ID/seedcamp:latest \
   --platform managed \
   --region $REGION \
   --allow-unauthenticated \
@@ -70,7 +70,7 @@ gcloud run deploy $API_SERVICE \
   --memory 2Gi \
   --timeout 300 \
   --set-env-vars "ARK_BASE_URL=https://ark.ap-southeast.bytepluses.com/api/v3,OUTPUT_DIR=/app/output" \
-  --set-secrets "ARK_API_KEY=adcamp-ark-api-key:latest" \
+  --set-secrets "ARK_API_KEY=seedcamp-ark-api-key:latest" \
   --port 8000
 
 # Get API URL
@@ -81,7 +81,7 @@ echo ""
 # Deploy Dashboard with API URL
 echo -e "${GREEN}Deploying Dashboard...${NC}"
 gcloud run deploy $DASHBOARD_SERVICE \
-  --image gcr.io/$PROJECT_ID/adcamp-dashboard:latest \
+  --image gcr.io/$PROJECT_ID/seedcamp-dashboard:latest \
   --platform managed \
   --region $REGION \
   --allow-unauthenticated \

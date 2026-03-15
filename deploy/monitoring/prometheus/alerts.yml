@@ -1,5 +1,5 @@
 groups:
-  - name: adcamp_api_alerts
+  - name: seedcamp_api_alerts
     interval: 30s
     rules:
       # High error rate
@@ -62,16 +62,16 @@ groups:
 
       # API health
       - alert: APIDown
-        expr: up{job="adcamp-api"} == 0
+        expr: up{job="seedcamp-api"} == 0
         for: 1m
         labels:
           severity: critical
           service: api
         annotations:
-          summary: "AdCamp API is down"
+          summary: "SeedCamp API is down"
           description: "API has been unreachable for more than 1 minute"
 
-  - name: adcamp_safety_alerts
+  - name: seedcamp_safety_alerts
     interval: 30s
     rules:
       # High safety block rate
@@ -100,7 +100,7 @@ groups:
           summary: "Safety evaluation is slow"
           description: "Average safety evaluation time is {{ $value }}s (threshold: 10s)"
 
-  - name: adcamp_model_alerts
+  - name: seedcamp_model_alerts
     interval: 30s
     rules:
       # Model-specific alerts

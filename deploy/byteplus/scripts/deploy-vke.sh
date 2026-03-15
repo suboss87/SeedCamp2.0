@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-# AdCamp - One-Command Deployment to BytePlus VKE (Vital Kubernetes Engine)
+# SeedCamp - One-Command Deployment to BytePlus VKE (Vital Kubernetes Engine)
 # Usage: ./scripts/deploy-vke.sh [environment]
 # Example: ./scripts/deploy-vke.sh production
 #
@@ -29,10 +29,10 @@ if [ -z "${REGISTRY_INSTANCE:-}" ]; then
 fi
 
 REGISTRY="${REGISTRY_INSTANCE}-${REGION}.cr.bytepluses.com"
-CR_NAMESPACE=${CR_NAMESPACE:-adcamp}
+CR_NAMESPACE=${CR_NAMESPACE:-seedcamp}
 IMAGE_URL="${REGISTRY}/${CR_NAMESPACE}/api:${IMAGE_TAG}"
 
-echo "Deploying AdCamp to BytePlus VKE (Vital Kubernetes Engine)"
+echo "Deploying SeedCamp to BytePlus VKE (Vital Kubernetes Engine)"
 echo "   Environment: $ENVIRONMENT"
 echo "   Namespace:   $NAMESPACE"
 echo "   Image:       $IMAGE_URL"
@@ -69,13 +69,13 @@ kubectl create namespace "$NAMESPACE" --dry-run=client -o yaml | kubectl apply -
 # Step 4: Create or update secret
 if [ -f "${SCRIPT_DIR}/../../.env" ]; then
     echo "[4/8] Creating secrets from .env file..."
-    kubectl create secret generic adcamp-secrets \
+    kubectl create secret generic seedcamp-secrets \
         --from-env-file="${SCRIPT_DIR}/../../.env" \
         --namespace="$NAMESPACE" \
         --dry-run=client -o yaml | kubectl apply -f -
 else
     echo "[4/8] No .env file found. Ensure secrets are configured:"
-    echo "   kubectl create secret generic adcamp-secrets \\"
+    echo "   kubectl create secret generic seedcamp-secrets \\"
     echo "     --from-literal=ARK_API_KEY=your-key \\"
     echo "     --from-literal=ARK_BASE_URL=https://ark.ap-southeast.bytepluses.com/api/v3 \\"
     echo "     --namespace=$NAMESPACE"
@@ -88,7 +88,7 @@ trap "rm -rf $TEMP_DIR" EXIT
 
 for manifest in "$VKE_DIR"/*.yaml; do
     filename=$(basename "$manifest")
-    sed "s|<instance>-ap-southeast-1.cr.bytepluses.com/adcamp/api:latest|${IMAGE_URL}|g" \
+    sed "s|<instance>-ap-southeast-1.cr.bytepluses.com/seedcamp/api:latest|${IMAGE_URL}|g" \
         "$manifest" > "$TEMP_DIR/$filename"
 done
 
@@ -98,8 +98,8 @@ kubectl apply -f "$TEMP_DIR" -n "$NAMESPACE"
 
 # Step 7: Wait for rollout
 echo "[7/8] Waiting for deployments to be ready..."
-kubectl rollout status deployment/adcamp-api -n "$NAMESPACE" --timeout=5m
-kubectl rollout status deployment/adcamp-dashboard -n "$NAMESPACE" --timeout=5m
+kubectl rollout status deployment/seedcamp-api -n "$NAMESPACE" --timeout=5m
+kubectl rollout status deployment/seedcamp-dashboard -n "$NAMESPACE" --timeout=5m
 
 # Step 8: Show status
 echo ""
@@ -114,10 +114,10 @@ kubectl get pods -n "$NAMESPACE"
 
 echo ""
 echo "Access:"
-echo "  API:       kubectl get svc adcamp-api -n $NAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].ip}'"
-echo "  Dashboard: kubectl get svc adcamp-dashboard -n $NAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].ip}'"
+echo "  API:       kubectl get svc seedcamp-api -n $NAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].ip}'"
+echo "  Dashboard: kubectl get svc seedcamp-dashboard -n $NAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].ip}'"
 
 echo ""
 echo "Logs:"
-echo "  kubectl logs -f deployment/adcamp-api -n $NAMESPACE"
-echo "  kubectl logs -f deployment/adcamp-dashboard -n $NAMESPACE"
+echo "  kubectl logs -f deployment/seedcamp-api -n $NAMESPACE"
+echo "  kubectl logs -f deployment/seedcamp-dashboard -n $NAMESPACE"

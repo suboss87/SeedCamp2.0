@@ -2,7 +2,7 @@
 
 # Default target
 help:
-	@echo "AdCamp - Available Commands"
+	@echo "SeedCamp - Available Commands"
 	@echo "============================"
 	@echo ""
 	@echo "Development:"
@@ -59,8 +59,8 @@ lint:
 # Docker targets
 docker-build:
 	@echo "🐳 Building Docker image..."
-	docker build -t adcamp:latest .
-	@echo "✅ Docker image built: adcamp:latest"
+	docker build -t seedcamp:latest .
+	@echo "✅ Docker image built: seedcamp:latest"
 
 docker-up:
 	@echo "🐳 Starting Docker Compose services..."

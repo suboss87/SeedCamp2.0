@@ -30,7 +30,7 @@ receivers:
     # Slack example:
     # slack_configs:
     #   - api_url: 'YOUR_SLACK_WEBHOOK_URL'
-    #     channel: '#adcamp-critical'
+    #     channel: '#seedcamp-critical'
     #     title: 'Critical Alert: {{ .GroupLabels.alertname }}'
     #     text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
     
@@ -50,7 +50,7 @@ receivers:
     # Warning alerts - example: Slack
     # slack_configs:
     #   - api_url: 'YOUR_SLACK_WEBHOOK_URL'
-    #     channel: '#adcamp-warnings'
+    #     channel: '#seedcamp-warnings'
     #     title: 'Warning: {{ .GroupLabels.alertname }}'
     #     text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
 

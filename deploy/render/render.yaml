@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: adcamp-api
+    name: seedcamp-api
     runtime: docker
     dockerfilePath: ./Dockerfile
     plan: starter

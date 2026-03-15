@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: adcamp-api
-  namespace: adcamp
+  name: seedcamp-api
+  namespace: seedcamp
   labels:
-    app: adcamp
+    app: seedcamp
     component: api
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: adcamp
+      app: seedcamp
       component: api
   strategy:
     type: RollingUpdate
@@ -20,13 +20,13 @@ spec:
   template:
     metadata:
       labels:
-        app: adcamp
+        app: seedcamp
         component: api
     spec:
       containers:
       - name: api
         # Replace <instance> with your BytePlus CR instance name
-        image: <instance>-ap-southeast-1.cr.bytepluses.com/adcamp/api:latest
+        image: <instance>-ap-southeast-1.cr.bytepluses.com/seedcamp/api:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
@@ -35,12 +35,12 @@ spec:
         - name: ARK_API_KEY
           valueFrom:
             secretKeyRef:
-              name: adcamp-secrets
+              name: seedcamp-secrets
               key: ARK_API_KEY
         - name: ARK_BASE_URL
           valueFrom:
             secretKeyRef:
-              name: adcamp-secrets
+              name: seedcamp-secrets
               key: ARK_BASE_URL
         - name: OUTPUT_DIR
           value: "/app/output"

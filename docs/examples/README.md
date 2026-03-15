@@ -1,6 +1,6 @@
 # Examples
 
-Runnable scripts demonstrating AdCamp API usage across industries.
+Runnable scripts demonstrating SeedCamp API usage across industries.
 
 ## Prerequisites
 
@@ -35,7 +35,7 @@ python3 docs/examples/batch_campaign.py
 
 ## Industry Examples
 
-These scripts demonstrate how AdCamp's tiered routing adapts to different verticals. Each one submits a batch of items with realistic briefs and prints a cost summary showing the hero/standard split.
+These scripts demonstrate how SeedCamp's tiered routing adapts to different verticals. Each one submits a batch of items with realistic briefs and prints a cost summary showing the hero/standard split.
 
 ### `automotive_dealer.py`
 

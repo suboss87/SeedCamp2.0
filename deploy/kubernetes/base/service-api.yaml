@@ -1,15 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: adcamp-api
+  name: seedcamp-api
   namespace: default
   labels:
-    app: adcamp
+    app: seedcamp
     component: api
 spec:
   type: LoadBalancer
   selector:
-    app: adcamp
+    app: seedcamp
     component: api
   ports:
   - name: http

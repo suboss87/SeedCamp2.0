@@ -1,4 +1,4 @@
-# AdCamp Video Generation Pipeline — Logical Architecture
+# SeedCamp Video Generation Pipeline — Logical Architecture
 
 ## Overview
 

@@ -1,7 +1,7 @@
 apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
-  name: adcamp-dashboard
+  name: seedcamp-dashboard
   annotations:
     run.googleapis.com/ingress: all
     run.googleapis.com/execution-environment: gen2
@@ -16,12 +16,12 @@ spec:
       containerConcurrency: 80
       timeoutSeconds: 120
       containers:
-      - image: gcr.io/PROJECT_ID/adcamp-dashboard:latest
+      - image: gcr.io/PROJECT_ID/seedcamp-dashboard:latest
         ports:
         - containerPort: 8501
         env:
         - name: API_URL
-          value: https://adcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app
+          value: https://seedcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app
         resources:
           limits:
             cpu: '1'

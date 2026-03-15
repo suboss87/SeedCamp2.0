@@ -1,6 +1,6 @@
 # Railway Deployment
 
-Deploy AdCamp to Railway for quick prototyping and demos with zero configuration.
+Deploy SeedCamp to Railway for quick prototyping and demos with zero configuration.
 
 ## Why Railway?
 
@@ -14,7 +14,7 @@ Deploy AdCamp to Railway for quick prototyping and demos with zero configuration
 ## Prerequisites
 
 - Railway account ([sign up free](https://railway.app))
-- GitHub account with adcamp repo
+- GitHub account with seedcamp repo
 - ModelArk API key
 
 ## Quick Deploy
@@ -23,7 +23,7 @@ Deploy AdCamp to Railway for quick prototyping and demos with zero configuration
 
 1. **Go to Railway**: [railway.app/new](https://railway.app/new)
 2. **Connect GitHub**: Authorize Railway to access your repos
-3. **Select repo**: Choose `suboss87/adcamp`
+3. **Select repo**: Choose `suboss87/seedcamp`
 4. **Add variables**:
    ```
    ARK_API_KEY=your_modelark_api_key

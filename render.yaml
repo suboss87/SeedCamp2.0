@@ -1,7 +1,7 @@
 # Render.com auto-detection — see deploy/render/ for full docs
 services:
   - type: web
-    name: adcamp-api
+    name: seedcamp-api
     runtime: docker
     dockerfilePath: ./Dockerfile
     plan: starter

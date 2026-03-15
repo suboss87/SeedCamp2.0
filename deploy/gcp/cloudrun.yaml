@@ -1,7 +1,7 @@
 apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
-  name: adcamp-api
+  name: seedcamp-api
   annotations:
     run.googleapis.com/ingress: all
     run.googleapis.com/execution-environment: gen2
@@ -17,14 +17,14 @@ spec:
       containerConcurrency: 80
       timeoutSeconds: 300
       containers:
-      - image: gcr.io/PROJECT_ID/adcamp:latest
+      - image: gcr.io/PROJECT_ID/seedcamp:latest
         ports:
         - containerPort: 8000
         env:
         - name: ARK_API_KEY
           valueFrom:
             secretKeyRef:
-              name: adcamp-secrets
+              name: seedcamp-secrets
               key: ARK_API_KEY
         - name: ARK_BASE_URL
           value: https://ark.ap-southeast.bytepluses.com/api/v3

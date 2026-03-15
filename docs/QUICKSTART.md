@@ -1,6 +1,6 @@
-# AdCamp — Quick Start (Go Live in 30 Minutes)
+# SeedCamp — Quick Start (Go Live in 30 Minutes)
 
-This guide gets AdCamp running in production **TODAY** using platforms that work with just your ModelArk API key.
+This guide gets SeedCamp running in production **TODAY** using platforms that work with just your ModelArk API key.
 
 ---
 
@@ -36,7 +36,7 @@ This guide gets AdCamp running in production **TODAY** using platforms that work
    railway domain
    ```
 
-That's it! Your API is live at `https://adcamp-production.up.railway.app`
+That's it! Your API is live at `https://seedcamp-production.up.railway.app`
 
 **API Docs**: `https://your-url/docs`
 
@@ -52,10 +52,10 @@ That's it! Your API is live at `https://adcamp-production.up.railway.app`
 
 2. **Click "New +" → "Web Service"**
 
-3. **Connect GitHub**: `suboss87/adcamp`
+3. **Connect GitHub**: `suboss87/seedcamp`
 
 4. **Settings**:
-   - Name: `adcamp-api`
+   - Name: `seedcamp-api`
    - Region: `Singapore`
    - Branch: `main`
    - Runtime: `Docker`
@@ -68,7 +68,7 @@ That's it! Your API is live at `https://adcamp-production.up.railway.app`
 
 6. **Deploy** — Render auto-deploys from `render.yaml`
 
-Your API will be live at `https://adcamp-api.onrender.com`
+Your API will be live at `https://seedcamp-api.onrender.com`
 
 ---
 
@@ -133,7 +133,7 @@ Expected response:
 ```json
 {
   "status": "ok",
-  "pipeline": "AdCamp Video Generation Pipeline",
+  "pipeline": "SeedCamp Video Generation Pipeline",
   "models": {
     "script": "seed-1-8-251228",
     "video_pro": "seedance-1-5-pro-251215",
@@ -238,4 +238,4 @@ When done:
 - Add custom domain
 - Set up CI/CD
 
-**Questions?** [GitHub Issues](https://github.com/suboss87/adcamp/issues)
+**Questions?** [GitHub Issues](https://github.com/suboss87/seedcamp/issues)

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: adcamp
+  name: seedcamp
   labels:
-    app: adcamp
+    app: seedcamp
     managed-by: vke

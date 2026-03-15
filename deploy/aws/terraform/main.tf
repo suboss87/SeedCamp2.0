@@ -23,7 +23,7 @@ resource "aws_vpc" "main" {
   enable_dns_support   = true
 
   tags = {
-    Name = "adcamp-vpc"
+    Name = "seedcamp-vpc"
   }
 }
 
@@ -37,7 +37,7 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "adcamp-public-${count.index + 1}"
+    Name = "seedcamp-public-${count.index + 1}"
   }
 }
 
@@ -50,7 +50,7 @@ resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "adcamp-igw"
+    Name = "seedcamp-igw"
   }
 }
 
@@ -64,7 +64,7 @@ resource "aws_route_table" "public" {
   }
 
   tags = {
-    Name = "adcamp-public-rt"
+    Name = "seedcamp-public-rt"
   }
 }
 
@@ -77,8 +77,8 @@ resource "aws_route_table_association" "public" {
 
 # Security Group for ALB
 resource "aws_security_group" "alb" {
-  name        = "adcamp-alb-sg"
-  description = "Security group for AdCamp ALB"
+  name        = "seedcamp-alb-sg"
+  description = "Security group for SeedCamp ALB"
   vpc_id      = aws_vpc.main.id
 
   ingress {
@@ -103,14 +103,14 @@ resource "aws_security_group" "alb" {
   }
 
   tags = {
-    Name = "adcamp-alb-sg"
+    Name = "seedcamp-alb-sg"
   }
 }
 
 # Security Group for ECS tasks
 resource "aws_security_group" "ecs_tasks" {
-  name        = "adcamp-ecs-tasks-sg"
-  description = "Security group for AdCamp ECS tasks"
+  name        = "seedcamp-ecs-tasks-sg"
+  description = "Security group for SeedCamp ECS tasks"
   vpc_id      = aws_vpc.main.id
 
   ingress {
@@ -135,26 +135,26 @@ resource "aws_security_group" "ecs_tasks" {
   }
 
   tags = {
-    Name = "adcamp-ecs-tasks-sg"
+    Name = "seedcamp-ecs-tasks-sg"
   }
 }
 
 # Application Load Balancer
 resource "aws_lb" "main" {
-  name               = "adcamp-alb"
+  name               = "seedcamp-alb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb.id]
   subnets            = aws_subnet.public[*].id
 
   tags = {
-    Name = "adcamp-alb"
+    Name = "seedcamp-alb"
   }
 }
 
 # Target Group for API
 resource "aws_lb_target_group" "api" {
-  name        = "adcamp-api-tg"
+  name        = "seedcamp-api-tg"
   port        = 8000
   protocol    = "HTTP"
   vpc_id      = aws_vpc.main.id
@@ -172,13 +172,13 @@ resource "aws_lb_target_group" "api" {
   }
 
   tags = {
-    Name = "adcamp-api-tg"
+    Name = "seedcamp-api-tg"
   }
 }
 
 # Target Group for Dashboard
 resource "aws_lb_target_group" "dashboard" {
-  name        = "adcamp-dashboard-tg"
+  name        = "seedcamp-dashboard-tg"
   port        = 8501
   protocol    = "HTTP"
   vpc_id      = aws_vpc.main.id
@@ -196,7 +196,7 @@ resource "aws_lb_target_group" "dashboard" {
   }
 
   tags = {
-    Name = "adcamp-dashboard-tg"
+    Name = "seedcamp-dashboard-tg"
   }
 }
 
@@ -231,11 +231,11 @@ resource "aws_lb_listener_rule" "dashboard" {
 
 # Secrets Manager for API Key
 resource "aws_secretsmanager_secret" "ark_api_key" {
-  name        = "adcamp-ark-api-key"
-  description = "BytePlus ModelArk API key for AdCamp"
+  name        = "seedcamp-ark-api-key"
+  description = "BytePlus ModelArk API key for SeedCamp"
 
   tags = {
-    Name = "adcamp-ark-api-key"
+    Name = "seedcamp-ark-api-key"
   }
 }
 
@@ -246,7 +246,7 @@ resource "aws_secretsmanager_secret_version" "ark_api_key" {
 
 # ECS Cluster
 resource "aws_ecs_cluster" "main" {
-  name = "adcamp-cluster"
+  name = "seedcamp-cluster"
 
   setting {
     name  = "containerInsights"
@@ -254,32 +254,32 @@ resource "aws_ecs_cluster" "main" {
   }
 
   tags = {
-    Name = "adcamp-cluster"
+    Name = "seedcamp-cluster"
   }
 }
 
 # CloudWatch Log Group
 resource "aws_cloudwatch_log_group" "api" {
-  name              = "/ecs/adcamp-api"
+  name              = "/ecs/seedcamp-api"
   retention_in_days = 7
 
   tags = {
-    Name = "adcamp-api-logs"
+    Name = "seedcamp-api-logs"
   }
 }
 
 resource "aws_cloudwatch_log_group" "dashboard" {
-  name              = "/ecs/adcamp-dashboard"
+  name              = "/ecs/seedcamp-dashboard"
   retention_in_days = 7
 
   tags = {
-    Name = "adcamp-dashboard-logs"
+    Name = "seedcamp-dashboard-logs"
   }
 }
 
 # IAM Role for ECS Task Execution
 resource "aws_iam_role" "ecs_task_execution" {
-  name = "adcamp-ecs-task-execution-role"
+  name = "seedcamp-ecs-task-execution-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -295,7 +295,7 @@ resource "aws_iam_role" "ecs_task_execution" {
   })
 
   tags = {
-    Name = "adcamp-ecs-task-execution-role"
+    Name = "seedcamp-ecs-task-execution-role"
   }
 }
 
@@ -307,7 +307,7 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution" {
 
 # IAM Policy for Secrets Manager access
 resource "aws_iam_policy" "secrets_access" {
-  name        = "adcamp-secrets-access"
+  name        = "seedcamp-secrets-access"
   description = "Allow ECS tasks to access Secrets Manager"
 
   policy = jsonencode({
@@ -331,7 +331,7 @@ resource "aws_iam_role_policy_attachment" "secrets_access" {
 
 # ECS Task Definition - API
 resource "aws_ecs_task_definition" "api" {
-  family                   = "adcamp-api"
+  family                   = "seedcamp-api"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = var.api_cpu
@@ -380,13 +380,13 @@ resource "aws_ecs_task_definition" "api" {
   ])
 
   tags = {
-    Name = "adcamp-api-task"
+    Name = "seedcamp-api-task"
   }
 }
 
 # ECS Service - API
 resource "aws_ecs_service" "api" {
-  name            = "adcamp-api-service"
+  name            = "seedcamp-api-service"
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.api.arn
   desired_count   = var.api_desired_count
@@ -407,13 +407,13 @@ resource "aws_ecs_service" "api" {
   depends_on = [aws_lb_listener.http]
 
   tags = {
-    Name = "adcamp-api-service"
+    Name = "seedcamp-api-service"
   }
 }
 
 # ECS Task Definition - Dashboard
 resource "aws_ecs_task_definition" "dashboard" {
-  family                   = "adcamp-dashboard"
+  family                   = "seedcamp-dashboard"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = var.dashboard_cpu
@@ -451,13 +451,13 @@ resource "aws_ecs_task_definition" "dashboard" {
   ])
 
   tags = {
-    Name = "adcamp-dashboard-task"
+    Name = "seedcamp-dashboard-task"
   }
 }
 
 # ECS Service - Dashboard
 resource "aws_ecs_service" "dashboard" {
-  name            = "adcamp-dashboard-service"
+  name            = "seedcamp-dashboard-service"
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.dashboard.arn
   desired_count   = var.dashboard_desired_count
@@ -478,6 +478,6 @@ resource "aws_ecs_service" "dashboard" {
   depends_on = [aws_lb_listener.http]
 
   tags = {
-    Name = "adcamp-dashboard-service"
+    Name = "seedcamp-dashboard-service"
   }
 }

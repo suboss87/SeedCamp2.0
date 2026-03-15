@@ -1,6 +1,6 @@
 # GCP Cloud Run Terraform Configuration
 
-This directory contains Terraform configuration for deploying AdCamp to Google Cloud Run.
+This directory contains Terraform configuration for deploying SeedCamp to Google Cloud Run.
 
 ## Prerequisites
 
@@ -84,8 +84,8 @@ api_max_instances = "5"
 Update image references in `terraform.tfvars`:
 
 ```hcl
-api_image       = "gcr.io/your-project/adcamp:v1.0.0"
-dashboard_image = "gcr.io/your-project/adcamp-dashboard:v1.0.0"
+api_image       = "gcr.io/your-project/seedcamp:v1.0.0"
+dashboard_image = "gcr.io/your-project/seedcamp-dashboard:v1.0.0"
 ```
 
 ## Managing Infrastructure
@@ -143,7 +143,7 @@ Use GCS backend:
 # Add to main.tf
 terraform {
   backend "gcs" {
-    bucket = "adcamp-terraform-state"
+    bucket = "seedcamp-terraform-state"
     prefix = "terraform/state"
   }
 }
@@ -151,8 +151,8 @@ terraform {
 
 Create the bucket:
 ```bash
-gsutil mb gs://adcamp-terraform-state
-gsutil versioning set on gs://adcamp-terraform-state
+gsutil mb gs://seedcamp-terraform-state
+gsutil versioning set on gs://seedcamp-terraform-state
 ```
 
 ## Troubleshooting
@@ -181,10 +181,10 @@ gcloud services enable \
 If the secret already exists from manual deployment:
 ```bash
 # Import existing secret
-terraform import google_secret_manager_secret.ark_api_key projects/your-gcp-project-id/secrets/adcamp-ark-api-key
+terraform import google_secret_manager_secret.ark_api_key projects/your-gcp-project-id/secrets/seedcamp-ark-api-key
 
 # Or delete and recreate
-gcloud secrets delete adcamp-ark-api-key
+gcloud secrets delete seedcamp-ark-api-key
 ```
 
 ## Files
@@ -208,4 +208,4 @@ After deployment:
 
 - [Terraform GCP Provider](https://registry.terraform.io/providers/hashicorp/google/latest/docs)
 - [Cloud Run Documentation](https://cloud.google.com/run/docs)
-- [AdCamp Deployment Guide](../README.md)
+- [SeedCamp Deployment Guide](../README.md)

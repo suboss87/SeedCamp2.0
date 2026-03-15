@@ -3,7 +3,7 @@ services:
     build:
       context: ../..
       dockerfile: Dockerfile
-    container_name: adcamp-api
+    container_name: seedcamp-api
     ports:
       - "8000:8000"
     environment:
@@ -24,7 +24,7 @@ services:
     build:
       context: ../..
       dockerfile: deploy/docker/Dockerfile.dashboard
-    container_name: adcamp-dashboard
+    container_name: seedcamp-dashboard
     command: ["streamlit", "run", "dashboard/app.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
     ports:
       - "8501:8501"

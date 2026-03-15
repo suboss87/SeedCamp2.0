@@ -1,8 +1,8 @@
-# AdCamp Market Research — February 2026
+# SeedCamp Market Research — February 2026
 
 ## Executive Summary
 
-AdCamp's product-market fit is **video operations infrastructure for inventory-scale businesses** — not another video generator. The gap: businesses with 100s-1000s of items that each need video can't afford traditional production, and every existing AI tool breaks at bulk.
+SeedCamp's product-market fit is **video operations infrastructure for inventory-scale businesses** — not another video generator. The gap: businesses with 100s-1000s of items that each need video can't afford traditional production, and every existing AI tool breaks at bulk.
 
 ---
 
@@ -42,8 +42,8 @@ AI video drops cost to $0.08–$0.13 per video, but existing tools lack the oper
 
 | Model | Cost | Notes |
 |-------|------|-------|
-| **Seedance Pro Fast (AdCamp)** | **~$0.08** | Cost-optimized tier |
-| **Seedance Pro (AdCamp)** | **~$0.13** | Premium tier |
+| **Seedance Pro Fast (SeedCamp)** | **~$0.08** | Cost-optimized tier |
+| **Seedance Pro (SeedCamp)** | **~$0.13** | Premium tier |
 | Runway Gen-4 Turbo | $0.50 | 16-sec max clips |
 | Sora 2 (720p) | $1.00 | Moderation issues |
 | Google Veo 3 Fast | $1.50 | Expensive premium tier |
@@ -63,9 +63,9 @@ From G2 analysis of 1,236 verified reviews (Oct 2024 – Apr 2025):
 
 > "The work doesn't end at video creation, but the platforms do. Users are hacking together post-publish workflows because the tools don't help them do it natively." — G2
 
-### What AdCamp Has That No Competitor Offers
+### What SeedCamp Has That No Competitor Offers
 
-| Capability | AdCamp | Competitors |
+| Capability | SeedCamp | Competitors |
 |-----------|--------|-------------|
 | Smart cost routing (Hero/Standard) | Yes | One model, one price |
 | Budget enforcement mid-batch | Yes | Credits vanish with no guardrails |
@@ -158,7 +158,7 @@ BytePlus operates a formal Partner Network at byteplus.com/en/partners:
 
 ### Key Finding: No Public Reference Architecture Program
 
-Unlike AWS (Partner Solutions) or Google Cloud (Architecture Center), BytePlus has **no visible solution gallery or reference architecture showcase**. AdCamp could be the first.
+Unlike AWS (Partner Solutions) or Google Cloud (Architecture Center), BytePlus has **no visible solution gallery or reference architecture showcase**. SeedCamp could be the first.
 
 ### Precedent: Gaxos.ai Deal (Feb 2026)
 
@@ -167,7 +167,7 @@ Gaxos.ai (NASDAQ: GXAI) signed a deal with BytePlus for:
 - Early access to new model releases
 - Public co-announcement (GlobeNewsWire, Benzinga coverage)
 
-This is the closest precedent to the partnership AdCamp is targeting.
+This is the closest precedent to the partnership SeedCamp is targeting.
 
 ### Competitive Positioning vs. Hyperscaler AI Platforms
 
@@ -185,7 +185,7 @@ This is the closest precedent to the partnership AdCamp is targeting.
 
 Worth noting: NIQ/CES 2025 study (2,000+ participants with EEG monitoring) found consumers rate AI-generated ads as more "annoying," "boring," and "confusing" than traditional ads. Low-quality AI visuals increase cognitive effort.
 
-**Mitigation:** AdCamp's quality evaluation step (5-dimension scoring) directly addresses this by catching poor output before delivery.
+**Mitigation:** SeedCamp's quality evaluation step (5-dimension scoring) directly addresses this by catching poor output before delivery.
 
 ---
 

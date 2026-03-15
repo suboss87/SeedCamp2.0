@@ -1,4 +1,4 @@
-# AdCamp Video Generation Pipeline — Physical Architecture
+# SeedCamp Video Generation Pipeline — Physical Architecture
 
 ## Overview
 

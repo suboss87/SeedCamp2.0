@@ -1,27 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: adcamp-dashboard
-  namespace: adcamp
+  name: seedcamp-dashboard
+  namespace: seedcamp
   labels:
-    app: adcamp
+    app: seedcamp
     component: dashboard
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: adcamp
+      app: seedcamp
       component: dashboard
   template:
     metadata:
       labels:
-        app: adcamp
+        app: seedcamp
         component: dashboard
     spec:
       containers:
       - name: dashboard
         # Replace <instance> with your BytePlus CR instance name
-        image: <instance>-ap-southeast-1.cr.bytepluses.com/adcamp/api:latest
+        image: <instance>-ap-southeast-1.cr.bytepluses.com/seedcamp/api:latest
         imagePullPolicy: Always
         command: ["streamlit", "run", "dashboard/app.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
         ports:
@@ -29,7 +29,7 @@ spec:
           name: http
         env:
         - name: API_URL
-          value: "http://adcamp-api.adcamp.svc.cluster.local"
+          value: "http://seedcamp-api.seedcamp.svc.cluster.local"
         resources:
           requests:
             cpu: "250m"

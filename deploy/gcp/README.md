@@ -1,6 +1,6 @@
 # GCP Cloud Run Deployment
 
-Deploy AdCamp to Google Cloud Platform's serverless container platform with automatic scaling, HTTPS, and pay-per-use pricing.
+Deploy SeedCamp to Google Cloud Platform's serverless container platform with automatic scaling, HTTPS, and pay-per-use pricing.
 
 ## Why Cloud Run?
 
@@ -71,12 +71,12 @@ gcloud services enable \
 
 ```bash
 # Create secret
-echo -n "YOUR_ARK_API_KEY" | gcloud secrets create adcamp-ark-api-key \
+echo -n "YOUR_ARK_API_KEY" | gcloud secrets create seedcamp-ark-api-key \
   --data-file=- \
   --replication-policy="automatic"
 
 # Grant Cloud Run access to secret
-gcloud secrets add-iam-policy-binding adcamp-ark-api-key \
+gcloud secrets add-iam-policy-binding seedcamp-ark-api-key \
   --member="serviceAccount:$(gcloud projects describe $(gcloud config get-value project) --format='value(projectNumber)')-compute@developer.gserviceaccount.com" \
   --role="roles/secretmanager.secretAccessor"
 ```
@@ -87,7 +87,7 @@ gcloud secrets add-iam-policy-binding adcamp-ark-api-key \
 
 ```bash
 # From repo root
-gcloud builds submit --tag gcr.io/$(gcloud config get-value project)/adcamp \
+gcloud builds submit --tag gcr.io/$(gcloud config get-value project)/seedcamp \
   --timeout=10m
 ```
 
@@ -95,24 +95,24 @@ gcloud builds submit --tag gcr.io/$(gcloud config get-value project)/adcamp \
 
 ```bash
 # Build locally
-docker build -t gcr.io/$(gcloud config get-value project)/adcamp .
+docker build -t gcr.io/$(gcloud config get-value project)/seedcamp .
 
 # Configure Docker for GCR
 gcloud auth configure-docker
 
 # Push image
-docker push gcr.io/$(gcloud config get-value project)/adcamp
+docker push gcr.io/$(gcloud config get-value project)/seedcamp
 ```
 
 #### 5. Deploy to Cloud Run
 
 ```bash
-gcloud run deploy adcamp-api \
-  --image gcr.io/$(gcloud config get-value project)/adcamp:latest \
+gcloud run deploy seedcamp-api \
+  --image gcr.io/$(gcloud config get-value project)/seedcamp:latest \
   --platform managed \
   --region asia-southeast1 \
   --allow-unauthenticated \
-  --set-secrets=ARK_API_KEY=adcamp-ark-api-key:latest \
+  --set-secrets=ARK_API_KEY=seedcamp-ark-api-key:latest \
   --set-env-vars="ARK_BASE_URL=https://ark.ap-southeast.bytepluses.com/api/v3,OUTPUT_DIR=/tmp/output" \
   --cpu=2 \
   --memory=2Gi \
@@ -125,7 +125,7 @@ gcloud run deploy adcamp-api \
 #### 6. Get Service URL
 
 ```bash
-gcloud run services describe adcamp-api \
+gcloud run services describe seedcamp-api \
   --platform managed \
   --region asia-southeast1 \
   --format 'value(status.url)'
@@ -138,7 +138,7 @@ gcloud run services describe adcamp-api \
 Set via `--set-env-vars` flag:
 
 ```bash
-gcloud run services update adcamp-api \
+gcloud run services update seedcamp-api \
   --set-env-vars="LOG_LEVEL=DEBUG,MAX_CONCURRENT_GENERATIONS=10"
 ```
 
@@ -155,7 +155,7 @@ Update API key:
 
 ```bash
 # Add new version
-echo -n "NEW_API_KEY" | gcloud secrets versions add adcamp-ark-api-key \
+echo -n "NEW_API_KEY" | gcloud secrets versions add seedcamp-ark-api-key \
   --data-file=-
 
 # Cloud Run automatically uses latest version
@@ -167,13 +167,13 @@ Adjust CPU/memory for your workload:
 
 ```bash
 # Scale up for high traffic
-gcloud run services update adcamp-api \
+gcloud run services update seedcamp-api \
   --cpu=4 \
   --memory=4Gi \
   --max-instances=100
 
 # Scale down for cost optimization
-gcloud run services update adcamp-api \
+gcloud run services update seedcamp-api \
   --cpu=1 \
   --memory=1Gi \
   --max-instances=5
@@ -183,13 +183,13 @@ gcloud run services update adcamp-api \
 
 ```bash
 # Always keep 1 instance warm (reduces cold start latency)
-gcloud run services update adcamp-api --min-instances=1
+gcloud run services update seedcamp-api --min-instances=1
 
 # Handle traffic spikes
-gcloud run services update adcamp-api --max-instances=50
+gcloud run services update seedcamp-api --max-instances=50
 
 # Concurrent requests per instance
-gcloud run services update adcamp-api --concurrency=80
+gcloud run services update seedcamp-api --concurrency=80
 ```
 
 ## Custom Domain
@@ -199,7 +199,7 @@ gcloud run services update adcamp-api --concurrency=80
 ```bash
 # Map your domain to the service
 gcloud run domain-mappings create \
-  --service adcamp-api \
+  --service seedcamp-api \
   --domain api.yourdomain.com \
   --region asia-southeast1
 ```
@@ -225,17 +225,17 @@ curl https://api.yourdomain.com/health
 **CLI**:
 ```bash
 # Tail logs
-gcloud run services logs read adcamp-api --follow
+gcloud run services logs read seedcamp-api --follow
 
 # Filter by severity
-gcloud run services logs read adcamp-api --log-filter="severity>=ERROR"
+gcloud run services logs read seedcamp-api --log-filter="severity>=ERROR"
 ```
 
 ### View Metrics
 
 ```bash
 # Request count, latency, error rate
-gcloud monitoring dashboards describe adcamp-api
+gcloud monitoring dashboards describe seedcamp-api
 ```
 
 **Cloud Console**: Automatic dashboards for request rate, latency, error rate
@@ -247,7 +247,7 @@ Create alert for error rate:
 ```bash
 gcloud alpha monitoring policies create \
   --notification-channels=YOUR_CHANNEL_ID \
-  --display-name="AdCamp High Error Rate" \
+  --display-name="SeedCamp High Error Rate" \
   --condition-display-name="Error rate > 5%" \
   --condition-threshold-value=5 \
   --condition-threshold-duration=300s
@@ -278,7 +278,7 @@ Required secrets in GitHub:
 ```bash
 # Connect GitHub repo
 gcloud alpha builds triggers create github \
-  --repo-name=adcamp \
+  --repo-name=seedcamp \
   --repo-owner=suboss87 \
   --branch-pattern="^main$" \
   --build-config=cloudbuild.yaml
@@ -289,16 +289,16 @@ Create `cloudbuild.yaml` in repo root:
 ```yaml
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/adcamp', '.']
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/seedcamp', '.']
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/adcamp']
+    args: ['push', 'gcr.io/$PROJECT_ID/seedcamp']
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
       - run
       - deploy
-      - adcamp-api
-      - --image=gcr.io/$PROJECT_ID/adcamp
+      - seedcamp-api
+      - --image=gcr.io/$PROJECT_ID/seedcamp
       - --region=asia-southeast1
       - --platform=managed
 ```
@@ -361,7 +361,7 @@ terraform apply
 gcloud builds list --limit=5
 
 # Check service status
-gcloud run services describe adcamp-api
+gcloud run services describe seedcamp-api
 ```
 
 ### Cold Start Latency
@@ -383,11 +383,11 @@ gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
 
 ```bash
 # Verify secret exists
-gcloud secrets describe adcamp-ark-api-key
+gcloud secrets describe seedcamp-ark-api-key
 
 # Grant service account access
 PROJECT_NUMBER=$(gcloud projects describe $(gcloud config get-value project) --format='value(projectNumber)')
-gcloud secrets add-iam-policy-binding adcamp-ark-api-key \
+gcloud secrets add-iam-policy-binding seedcamp-ark-api-key \
   --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
   --role="roles/secretmanager.secretAccessor"
 ```
@@ -396,7 +396,7 @@ gcloud secrets add-iam-policy-binding adcamp-ark-api-key \
 
 ```bash
 # Get service URL
-SERVICE_URL=$(gcloud run services describe adcamp-api --format 'value(status.url)')
+SERVICE_URL=$(gcloud run services describe seedcamp-api --format 'value(status.url)')
 
 # Test health endpoint
 curl $SERVICE_URL/health
@@ -417,13 +417,13 @@ curl -X POST $SERVICE_URL/api/generate \
 
 ```bash
 # Delete service
-gcloud run services delete adcamp-api --region asia-southeast1
+gcloud run services delete seedcamp-api --region asia-southeast1
 
 # Delete secret
-gcloud secrets delete adcamp-ark-api-key
+gcloud secrets delete seedcamp-ark-api-key
 
 # Delete images
-gcloud container images delete gcr.io/$(gcloud config get-value project)/adcamp
+gcloud container images delete gcr.io/$(gcloud config get-value project)/seedcamp
 ```
 
 ## Next Steps

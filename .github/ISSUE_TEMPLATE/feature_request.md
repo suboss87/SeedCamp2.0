@@ -1,6 +1,6 @@
 ---
 name: Feature Request
-about: Suggest an enhancement to AdCamp
+about: Suggest an enhancement to SeedCamp
 title: "[Feature] "
 labels: enhancement
 ---

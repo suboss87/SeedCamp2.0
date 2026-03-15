@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Report a bug in the AdCamp pipeline
+about: Report a bug in the SeedCamp pipeline
 title: "[Bug] "
 labels: bug
 ---

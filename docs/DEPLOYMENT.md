@@ -1,6 +1,6 @@
-# AdCamp Deployment Guide
+# SeedCamp Deployment Guide
 
-This guide covers deploying the AdCamp Video Generation Pipeline to production using **BytePlus VKE (Vital Kubernetes Engine)** and other cloud platforms.
+This guide covers deploying the SeedCamp Video Generation Pipeline to production using **BytePlus VKE (Vital Kubernetes Engine)** and other cloud platforms.
 
 ## Table of Contents
 - [BytePlus VKE Deployment (Recommended)](#byteplus-vke-deployment-recommended)
@@ -32,18 +32,18 @@ BytePlus [VKE (Vital Kubernetes Engine)](https://docs.byteplus.com/en/docs/vke/W
 docker login <instance>-ap-southeast-1.cr.bytepluses.com
 
 # Build the Docker image
-docker build -t <instance>-ap-southeast-1.cr.bytepluses.com/your-namespace/adcamp:latest .
+docker build -t <instance>-ap-southeast-1.cr.bytepluses.com/your-namespace/seedcamp:latest .
 
 # Push to BytePlus CR
-docker push <instance>-ap-southeast-1.cr.bytepluses.com/your-namespace/adcamp:latest
+docker push <instance>-ap-southeast-1.cr.bytepluses.com/your-namespace/seedcamp:latest
 ```
 
 #### Option B: Using Docker Hub
 
 ```bash
 # Build and push to Docker Hub
-docker build -t your-dockerhub-username/adcamp:latest .
-docker push your-dockerhub-username/adcamp:latest
+docker build -t your-dockerhub-username/seedcamp:latest .
+docker push your-dockerhub-username/seedcamp:latest
 ```
 
 ### Step 2: Create VKE Cluster
@@ -74,7 +74,7 @@ kubectl get nodes
 
 ```bash
 # Create secret from command line
-kubectl create secret generic adcamp-secrets \
+kubectl create secret generic seedcamp-secrets \
   --from-literal=ARK_API_KEY=your-api-key-here \
   --from-literal=ARK_BASE_URL=https://ark.ap-southeast.bytepluses.com/api/v3
 
@@ -87,7 +87,7 @@ kubectl apply -f deploy/kubernetes/base/secret.yaml
 Edit `deploy/kubernetes/base/deployment-api.yaml` and `deploy/kubernetes/base/deployment-dashboard.yaml`:
 
 ```yaml
-image: <instance>-ap-southeast-1.cr.bytepluses.com/your-namespace/adcamp:latest
+image: <instance>-ap-southeast-1.cr.bytepluses.com/your-namespace/seedcamp:latest
 ```
 
 ### Step 6: Deploy to VKE
@@ -101,19 +101,19 @@ kubectl get pods
 kubectl get services
 
 # Get external IP (LoadBalancer)
-kubectl get svc adcamp-api
-kubectl get svc adcamp-dashboard
+kubectl get svc seedcamp-api
+kubectl get svc seedcamp-dashboard
 ```
 
 ### Step 7: Access Your Application
 
 ```bash
 # Get API external IP
-API_IP=$(kubectl get svc adcamp-api -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+API_IP=$(kubectl get svc seedcamp-api -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 echo "API: http://$API_IP"
 
 # Get Dashboard external IP
-DASHBOARD_IP=$(kubectl get svc adcamp-dashboard -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+DASHBOARD_IP=$(kubectl get svc seedcamp-dashboard -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 echo "Dashboard: http://$DASHBOARD_IP"
 ```
 
@@ -121,10 +121,10 @@ echo "Dashboard: http://$DASHBOARD_IP"
 
 ```bash
 # View API logs
-kubectl logs -f deployment/adcamp-api
+kubectl logs -f deployment/seedcamp-api
 
 # View dashboard logs
-kubectl logs -f deployment/adcamp-dashboard
+kubectl logs -f deployment/seedcamp-dashboard
 
 # Check resource usage
 kubectl top pods
@@ -134,10 +134,10 @@ kubectl top pods
 
 ```bash
 # Scale API replicas
-kubectl scale deployment adcamp-api --replicas=5
+kubectl scale deployment seedcamp-api --replicas=5
 
 # Enable autoscaling
-kubectl autoscale deployment adcamp-api --cpu-percent=70 --min=2 --max=10
+kubectl autoscale deployment seedcamp-api --cpu-percent=70 --min=2 --max=10
 ```
 
 ---
@@ -155,8 +155,8 @@ For quick local or VM deployment using Docker Compose:
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/suboss87/adcamp.git
-   cd adcamp
+   git clone https://github.com/suboss87/seedcamp.git
+   cd seedcamp
    ```
 
 2. **Set environment variables**:
@@ -198,8 +198,8 @@ For quick local or VM deployment using Docker Compose:
 
 1. **Clone and navigate to the project**:
    ```bash
-   git clone https://github.com/suboss87/adcamp.git
-   cd adcamp
+   git clone https://github.com/suboss87/seedcamp.git
+   cd seedcamp
    ```
 
 2. **Create virtual environment**:
@@ -331,4 +331,4 @@ For issues or questions:
 
 - **BytePlus VKE**: [VKE Documentation](https://docs.byteplus.com/vke)
 - **ModelArk**: [ModelArk Documentation](https://docs.byteplus.com/modelark)
-- **Project Issues**: [GitHub Issues](https://github.com/suboss87/adcamp/issues)
+- **Project Issues**: [GitHub Issues](https://github.com/suboss87/seedcamp/issues)

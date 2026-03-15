@@ -6,8 +6,8 @@ region     = "asia-southeast1"
 ark_api_key = "your-modelark-api-key-here"
 
 # Docker Images (update after building new images)
-api_image       = "gcr.io/your-gcp-project-id/adcamp:latest"
-dashboard_image = "gcr.io/your-gcp-project-id/adcamp-dashboard:latest"
+api_image       = "gcr.io/your-gcp-project-id/seedcamp:latest"
+dashboard_image = "gcr.io/your-gcp-project-id/seedcamp-dashboard:latest"
 
 # API Service Configuration
 api_cpu           = "2"

@@ -61,7 +61,7 @@ async def _send_slack(event: NotificationEvent, payload: dict):
     message = payload.get("message", event.value)
 
     slack_payload = {
-        "text": f"{emoji} *AdCamp — {event.value.replace('_', ' ').title()}*\n"
+        "text": f"{emoji} *SeedCamp — {event.value.replace('_', ' ').title()}*\n"
         f"Campaign: {campaign}\n{message}",
     }
 

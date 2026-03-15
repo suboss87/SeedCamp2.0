@@ -1,21 +1,21 @@
 output "api_url" {
   description = "URL of the deployed API service"
-  value       = google_cloud_run_service.adcamp_api.status[0].url
+  value       = google_cloud_run_service.seedcamp_api.status[0].url
 }
 
 output "dashboard_url" {
   description = "URL of the deployed dashboard service"
-  value       = google_cloud_run_service.adcamp_dashboard.status[0].url
+  value       = google_cloud_run_service.seedcamp_dashboard.status[0].url
 }
 
 output "api_service_name" {
   description = "Name of the API Cloud Run service"
-  value       = google_cloud_run_service.adcamp_api.name
+  value       = google_cloud_run_service.seedcamp_api.name
 }
 
 output "dashboard_service_name" {
   description = "Name of the dashboard Cloud Run service"
-  value       = google_cloud_run_service.adcamp_dashboard.name
+  value       = google_cloud_run_service.seedcamp_dashboard.name
 }
 
 output "secret_id" {

@@ -1,5 +1,5 @@
 """
-Generate a single product video via the AdCamp API.
+Generate a single product video via the SeedCamp API.
 
 Usage:
     # Start the API first

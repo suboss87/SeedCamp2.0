@@ -1,6 +1,6 @@
 # BytePlus VKE Deployment (Recommended)
 
-Deploy AdCamp to [BytePlus VKE (Vital Kubernetes Engine)](https://docs.byteplus.com/en/docs/vke/What-is-Vital-Kubernetes-Engine) — the managed Kubernetes service from BytePlus. Co-locating with ModelArk gives you the lowest possible API latency and a single-vendor stack.
+Deploy SeedCamp to [BytePlus VKE (Vital Kubernetes Engine)](https://docs.byteplus.com/en/docs/vke/What-is-Vital-Kubernetes-Engine) — the managed Kubernetes service from BytePlus. Co-locating with ModelArk gives you the lowest possible API latency and a single-vendor stack.
 
 ## Why BytePlus VKE?
 
@@ -28,13 +28,13 @@ BytePlus Cloud — ap-southeast-1 (Singapore)
 ┌──────────────────────────────────────────────┐
 │  VKE Cluster (Vital Kubernetes Engine)       │
 │  ┌────────────────────────────────────────┐  │
-│  │  Namespace: adcamp                     │  │
+│  │  Namespace: seedcamp                     │  │
 │  │                                        │  │
-│  │  adcamp-api (2 replicas)               │  │
+│  │  seedcamp-api (2 replicas)               │  │
 │  │    ├── Script gen  → Seed 1.8          │──┼──> ModelArk API
 │  │    └── Video gen   → Seedance Pro/Fast │  │    ark.ap-southeast.bytepluses.com
 │  │                                        │  │    (same-region, ultra-low latency)
-│  │  adcamp-dashboard (1 replica)          │  │
+│  │  seedcamp-dashboard (1 replica)          │  │
 │  │    └── Streamlit UI                    │  │
 │  └────────────────────────────────────────┘  │
 │                                              │
@@ -73,10 +73,10 @@ kubectl get nodes
 docker login <instance>-ap-southeast-1.cr.bytepluses.com
 
 # Build
-docker build -t <instance>-ap-southeast-1.cr.bytepluses.com/adcamp/api:latest .
+docker build -t <instance>-ap-southeast-1.cr.bytepluses.com/seedcamp/api:latest .
 
 # Push
-docker push <instance>-ap-southeast-1.cr.bytepluses.com/adcamp/api:latest
+docker push <instance>-ap-southeast-1.cr.bytepluses.com/seedcamp/api:latest
 ```
 
 > **CR URL format**: `<instance>-<region>.cr.bytepluses.com/<namespace>/<repo>:<tag>`
@@ -90,10 +90,10 @@ docker push <instance>-ap-southeast-1.cr.bytepluses.com/adcamp/api:latest
 kubectl apply -f vke/namespace.yaml
 
 # Create secret with your ModelArk API key
-kubectl create secret generic adcamp-secrets \
+kubectl create secret generic seedcamp-secrets \
   --from-literal=ARK_API_KEY=your_modelark_api_key_here \
   --from-literal=ARK_BASE_URL=https://ark.ap-southeast.bytepluses.com/api/v3 \
-  --namespace=adcamp
+  --namespace=seedcamp
 ```
 
 ### 5. Update Image URL and Deploy
@@ -106,18 +106,18 @@ kubectl create secret generic adcamp-secrets \
 kubectl apply -f vke/
 
 # Watch rollout
-kubectl rollout status deployment/adcamp-api -n adcamp --timeout=5m
-kubectl rollout status deployment/adcamp-dashboard -n adcamp --timeout=5m
+kubectl rollout status deployment/seedcamp-api -n seedcamp --timeout=5m
+kubectl rollout status deployment/seedcamp-dashboard -n seedcamp --timeout=5m
 ```
 
 ### 6. Get Service URL
 
 ```bash
 # Get LoadBalancer external IP (may take 1-2 minutes)
-kubectl get svc -n adcamp
+kubectl get svc -n seedcamp
 
 # Test
-API_IP=$(kubectl get svc adcamp-api -n adcamp -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+API_IP=$(kubectl get svc seedcamp-api -n seedcamp -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 curl http://$API_IP/health
 ```
 
@@ -133,7 +133,7 @@ export REGISTRY_INSTANCE=your-cr-instance
 
 | File | Purpose |
 |------|---------|
-| `vke/namespace.yaml` | Creates `adcamp` namespace |
+| `vke/namespace.yaml` | Creates `seedcamp` namespace |
 | `vke/secret.yaml` | API key template (use `kubectl create secret` instead) |
 | `vke/deployment-api.yaml` | API server — 2 replicas, health checks, resource limits |
 | `vke/deployment-dashboard.yaml` | Streamlit dashboard — 1 replica |
@@ -147,39 +147,39 @@ export REGISTRY_INSTANCE=your-cr-instance
 
 ```bash
 # Manual scale
-kubectl scale deployment adcamp-api --replicas=5 -n adcamp
+kubectl scale deployment seedcamp-api --replicas=5 -n seedcamp
 
 # Horizontal Pod Autoscaler (CPU-based)
-kubectl autoscale deployment adcamp-api \
-  --cpu-percent=70 --min=2 --max=10 -n adcamp
+kubectl autoscale deployment seedcamp-api \
+  --cpu-percent=70 --min=2 --max=10 -n seedcamp
 ```
 
 ### Rolling Updates
 
 ```bash
 # Update image tag
-kubectl set image deployment/adcamp-api \
-  api=<instance>-ap-southeast-1.cr.bytepluses.com/adcamp/api:v2 \
-  -n adcamp
+kubectl set image deployment/seedcamp-api \
+  api=<instance>-ap-southeast-1.cr.bytepluses.com/seedcamp/api:v2 \
+  -n seedcamp
 
 # Watch rollout
-kubectl rollout status deployment/adcamp-api -n adcamp
+kubectl rollout status deployment/seedcamp-api -n seedcamp
 
 # Rollback if needed
-kubectl rollout undo deployment/adcamp-api -n adcamp
+kubectl rollout undo deployment/seedcamp-api -n seedcamp
 ```
 
 ### Logs and Monitoring
 
 ```bash
 # API logs
-kubectl logs -f deployment/adcamp-api -n adcamp
+kubectl logs -f deployment/seedcamp-api -n seedcamp
 
 # Dashboard logs
-kubectl logs -f deployment/adcamp-dashboard -n adcamp
+kubectl logs -f deployment/seedcamp-dashboard -n seedcamp
 
 # Resource usage
-kubectl top pods -n adcamp
+kubectl top pods -n seedcamp
 kubectl top nodes
 ```
 
@@ -210,15 +210,15 @@ VKE also provides built-in monitoring via the console: **VKE Console → Cluster
 ### Pods Not Starting
 
 ```bash
-kubectl describe pod <POD_NAME> -n adcamp
-kubectl get events -n adcamp --sort-by='.lastTimestamp'
+kubectl describe pod <POD_NAME> -n seedcamp
+kubectl get events -n seedcamp --sort-by='.lastTimestamp'
 ```
 
 ### Image Pull Errors
 
 Verify your CR instance is accessible and image exists:
 ```bash
-docker pull <instance>-ap-southeast-1.cr.bytepluses.com/adcamp/api:latest
+docker pull <instance>-ap-southeast-1.cr.bytepluses.com/seedcamp/api:latest
 ```
 
 If pulling from VKE nodes fails, ensure the VKE cluster VPC can reach the CR instance. See [CR FAQ](https://docs.byteplus.com/en/docs/cr/How-do-I-address-a-Docker-login-failure).
@@ -227,14 +227,14 @@ If pulling from VKE nodes fails, ensure the VKE cluster VPC can reach the CR ins
 
 VKE automatically provisions a CLB (Cloud Load Balancer). Allow 1-3 minutes. Check:
 ```bash
-kubectl describe service adcamp-api -n adcamp
+kubectl describe service seedcamp-api -n seedcamp
 ```
 
 ### ModelArk API Unreachable
 
 Verify DNS resolution from inside the cluster:
 ```bash
-kubectl exec -it deployment/adcamp-api -n adcamp -- \
+kubectl exec -it deployment/seedcamp-api -n seedcamp -- \
   curl -s https://ark.ap-southeast.bytepluses.com/api/v3
 ```
 

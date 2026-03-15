@@ -6,7 +6,7 @@ Demonstrates tiered routing for an agency with 500+ listings:
   - Standard listings -> Fast model (quick virtual tour)
 
 Only 9% of agents currently make listing videos, despite listings with
-video receiving 403% more inquiries. AdCamp makes it economical to
+video receiving 403% more inquiries. SeedCamp makes it economical to
 create video for every listing.
 
 Usage:
@@ -123,7 +123,7 @@ async def main():
     print(f"  vs. traditional:    ${200 * 300:.0f} - ${200 * 500:.0f}")
     print(f"\n  Listings with video get 403% more inquiries.")
     print(f"  Only 9% of agents currently make listing videos.")
-    print(f"  AdCamp makes full-inventory video coverage economical.")
+    print(f"  SeedCamp makes full-inventory video coverage economical.")
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
-# Contributing to AdCamp
+# Contributing to SeedCamp
 
-Thank you for your interest in contributing to AdCamp! This document provides guidelines for contributing to the project.
+Thank you for your interest in contributing to SeedCamp! This document provides guidelines for contributing to the project.
 
 ## Code of Conduct
 
@@ -11,8 +11,8 @@ Be respectful, inclusive, and professional in all interactions.
 1. **Fork the repository** on GitHub
 2. **Clone your fork**:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/adcamp.git
-   cd adcamp
+   git clone https://github.com/YOUR_USERNAME/seedcamp.git
+   cd seedcamp
    ```
 3. **Set up development environment**:
    ```bash
@@ -136,7 +136,7 @@ Prefixes:
 ## Areas for Contribution
 
 ### Bug Fixes
-- Check [Issues](https://github.com/suboss87/adcamp/issues) for bugs
+- Check [Issues](https://github.com/suboss87/seedcamp/issues) for bugs
 - Reproduce the bug
 - Write a test that fails
 - Fix the bug
@@ -166,7 +166,7 @@ Prefixes:
 
 ## Good First Issues
 
-New to AdCamp? These are self-contained tasks that don't require deep knowledge of the codebase:
+New to SeedCamp? These are self-contained tasks that don't require deep knowledge of the codebase:
 
 | Task | Difficulty | Files | Description |
 |------|-----------|-------|-------------|
@@ -181,12 +181,12 @@ New to AdCamp? These are self-contained tasks that don't require deep knowledge 
 | **CSV validation error messages** | Easy | `app/services/csv_parser.py` | Improve error messages when CSV upload fails validation (row numbers, specific field errors). |
 | **API rate limit headers** | Easy | `app/main.py` | Add `X-RateLimit-Remaining` and `X-RateLimit-Reset` response headers. |
 
-Look for issues tagged [`good first issue`](https://github.com/suboss87/adcamp/labels/good%20first%20issue) on GitHub.
+Look for issues tagged [`good first issue`](https://github.com/suboss87/seedcamp/labels/good%20first%20issue) on GitHub.
 
 ## Project Structure
 
 ```
-adcamp/
+seedcamp/
 ├── app/                    # FastAPI backend
 │   ├── services/          # Core business logic
 │   ├── models/            # Pydantic schemas
@@ -233,4 +233,4 @@ By contributing, you agree that your contributions will be licensed under the MI
 
 ---
 
-Thank you for making AdCamp better! 🎉
+Thank you for making SeedCamp better! 🎉

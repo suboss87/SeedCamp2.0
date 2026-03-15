@@ -1,6 +1,6 @@
 # AWS ECS Fargate Deployment with Terraform
 
-This directory contains Terraform configurations for deploying AdCamp to AWS ECS Fargate with Application Load Balancer.
+This directory contains Terraform configurations for deploying SeedCamp to AWS ECS Fargate with Application Load Balancer.
 
 ## Architecture
 
@@ -48,19 +48,19 @@ brew install terraform  # macOS
 3. **Docker images pushed to registry**:
 ```bash
 # Option 1: Docker Hub (public)
-docker build -t your-registry/adcamp-api:latest .
-docker build -t your-registry/adcamp-dashboard:latest -f deploy/docker/Dockerfile.dashboard .
-docker push your-registry/adcamp-api:latest
-docker push your-registry/adcamp-dashboard:latest
+docker build -t your-registry/seedcamp-api:latest .
+docker build -t your-registry/seedcamp-dashboard:latest -f deploy/docker/Dockerfile.dashboard .
+docker push your-registry/seedcamp-api:latest
+docker push your-registry/seedcamp-dashboard:latest
 
 # Option 2: AWS ECR (private)
-aws ecr create-repository --repository-name adcamp-api
-aws ecr create-repository --repository-name adcamp-dashboard
+aws ecr create-repository --repository-name seedcamp-api
+aws ecr create-repository --repository-name seedcamp-dashboard
 aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin <account-id>.dkr.ecr.ap-southeast-1.amazonaws.com
-docker tag your-registry/adcamp-api:latest <account-id>.dkr.ecr.ap-southeast-1.amazonaws.com/adcamp-api:latest
-docker tag your-registry/adcamp-dashboard:latest <account-id>.dkr.ecr.ap-southeast-1.amazonaws.com/adcamp-dashboard:latest
-docker push <account-id>.dkr.ecr.ap-southeast-1.amazonaws.com/adcamp-api:latest
-docker push <account-id>.dkr.ecr.ap-southeast-1.amazonaws.com/adcamp-dashboard:latest
+docker tag your-registry/seedcamp-api:latest <account-id>.dkr.ecr.ap-southeast-1.amazonaws.com/seedcamp-api:latest
+docker tag your-registry/seedcamp-dashboard:latest <account-id>.dkr.ecr.ap-southeast-1.amazonaws.com/seedcamp-dashboard:latest
+docker push <account-id>.dkr.ecr.ap-southeast-1.amazonaws.com/seedcamp-api:latest
+docker push <account-id>.dkr.ecr.ap-southeast-1.amazonaws.com/seedcamp-dashboard:latest
 ```
 
 ## Deployment
@@ -84,8 +84,8 @@ region = "ap-southeast-1"
 ark_api_key = "your-actual-api-key"  # REQUIRED
 
 # If using ECR, update image URIs:
-api_image = "<account-id>.dkr.ecr.ap-southeast-1.amazonaws.com/adcamp-api:latest"
-dashboard_image = "<account-id>.dkr.ecr.ap-southeast-1.amazonaws.com/adcamp-dashboard:latest"
+api_image = "<account-id>.dkr.ecr.ap-southeast-1.amazonaws.com/seedcamp-api:latest"
+dashboard_image = "<account-id>.dkr.ecr.ap-southeast-1.amazonaws.com/seedcamp-dashboard:latest"
 ```
 
 ### 3. Review plan
@@ -110,9 +110,9 @@ terraform apply
 
 Deployment takes ~5-10 minutes. Output will include:
 ```
-alb_dns_name = "adcamp-alb-123456789.ap-southeast-1.elb.amazonaws.com"
-api_url = "http://adcamp-alb-123456789.ap-southeast-1.elb.amazonaws.com"
-dashboard_url = "http://adcamp-alb-123456789.ap-southeast-1.elb.amazonaws.com/dashboard"
+alb_dns_name = "seedcamp-alb-123456789.ap-southeast-1.elb.amazonaws.com"
+api_url = "http://seedcamp-alb-123456789.ap-southeast-1.elb.amazonaws.com"
+dashboard_url = "http://seedcamp-alb-123456789.ap-southeast-1.elb.amazonaws.com/dashboard"
 ```
 
 ### 5. Verify deployment
@@ -122,10 +122,10 @@ dashboard_url = "http://adcamp-alb-123456789.ap-southeast-1.elb.amazonaws.com/da
 curl http://<alb-dns-name>/health
 
 # View ECS services
-aws ecs list-services --cluster adcamp-cluster --region ap-southeast-1
+aws ecs list-services --cluster seedcamp-cluster --region ap-southeast-1
 
 # View logs
-aws logs tail /ecs/adcamp-api --follow --region ap-southeast-1
+aws logs tail /ecs/seedcamp-api --follow --region ap-southeast-1
 ```
 
 Access the dashboard at: `http://<alb-dns-name>/dashboard`
@@ -144,11 +144,11 @@ terraform apply
 
 ```bash
 # Build and push new images
-docker build -t your-registry/adcamp-api:v2 .
-docker push your-registry/adcamp-api:v2
+docker build -t your-registry/seedcamp-api:v2 .
+docker push your-registry/seedcamp-api:v2
 
 # Update terraform.tfvars
-api_image = "your-registry/adcamp-api:v2"
+api_image = "your-registry/seedcamp-api:v2"
 
 # Apply changes (triggers ECS service update)
 terraform apply
@@ -167,24 +167,24 @@ terraform apply
 
 ```bash
 # API logs
-aws logs tail /ecs/adcamp-api --follow --region ap-southeast-1
+aws logs tail /ecs/seedcamp-api --follow --region ap-southeast-1
 
 # Dashboard logs
-aws logs tail /ecs/adcamp-dashboard --follow --region ap-southeast-1
+aws logs tail /ecs/seedcamp-dashboard --follow --region ap-southeast-1
 
 # Filter for errors
-aws logs tail /ecs/adcamp-api --filter-pattern "ERROR" --region ap-southeast-1
+aws logs tail /ecs/seedcamp-api --filter-pattern "ERROR" --region ap-southeast-1
 ```
 
 ### Access ECS task
 
 ```bash
 # List tasks
-aws ecs list-tasks --cluster adcamp-cluster --region ap-southeast-1
+aws ecs list-tasks --cluster seedcamp-cluster --region ap-southeast-1
 
 # Execute command in task (requires Session Manager plugin)
 aws ecs execute-command \
-  --cluster adcamp-cluster \
+  --cluster seedcamp-cluster \
   --task <task-id> \
   --container api \
   --interactive \
@@ -211,8 +211,8 @@ terraform state rm aws_cloudwatch_log_group.dashboard
 ```bash
 # Check service events
 aws ecs describe-services \
-  --cluster adcamp-cluster \
-  --services adcamp-api-service \
+  --cluster seedcamp-cluster \
+  --services seedcamp-api-service \
   --region ap-southeast-1 \
   --query 'services[0].events[0:5]'
 
@@ -241,8 +241,8 @@ aws elbv2 describe-target-health \
 ```bash
 # Check ECS service utilization
 aws ecs describe-services \
-  --cluster adcamp-cluster \
-  --services adcamp-api-service adcamp-dashboard-service \
+  --cluster seedcamp-cluster \
+  --services seedcamp-api-service seedcamp-dashboard-service \
   --region ap-southeast-1
 
 # Optimize:
@@ -259,7 +259,7 @@ aws ecs describe-services \
 ```hcl
 # In main.tf, add:
 resource "aws_acm_certificate" "main" {
-  domain_name       = "adcamp.yourdomain.com"
+  domain_name       = "seedcamp.yourdomain.com"
   validation_method = "DNS"
 }
 
@@ -307,7 +307,7 @@ resource "aws_appautoscaling_policy" "api_cpu" {
 
 ```hcl
 resource "aws_s3_bucket" "videos" {
-  bucket = "adcamp-videos-${data.aws_caller_identity.current.account_id}"
+  bucket = "seedcamp-videos-${data.aws_caller_identity.current.account_id}"
 }
 
 # Add IAM policy for ECS tasks to write to S3
@@ -318,7 +318,7 @@ resource "aws_s3_bucket" "videos" {
 
 ```hcl
 resource "aws_cloudwatch_metric_alarm" "api_cpu_high" {
-  alarm_name          = "adcamp-api-cpu-high"
+  alarm_name          = "seedcamp-api-cpu-high"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 2
   metric_name         = "CPUUtilization"

@@ -1,5 +1,5 @@
 """
-AdCamp — FastAPI Application
+SeedCamp — FastAPI Application
 AI-Powered Video Generation at Scale with BytePlus ModelArk.
 Implements the 5-step pipeline: Input → Script Gen → Smart Router → Video Gen → Output.
 """
@@ -51,7 +51,7 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Validate configuration and initialize services on startup."""
-    logger.info("Starting AdCamp Video Generation Pipeline...")
+    logger.info("Starting SeedCamp Video Generation Pipeline...")
 
     if settings.dry_run:
         logger.info("DRY_RUN mode enabled — API calls will be simulated")
@@ -110,11 +110,11 @@ async def lifespan(app: FastAPI):
 
     yield  # App runs here
 
-    logger.info("Shutting down AdCamp...")
+    logger.info("Shutting down SeedCamp...")
 
 
 app = FastAPI(
-    title="AdCamp: AI Content Generation Pipeline",
+    title="SeedCamp: AI Content Generation Pipeline",
     lifespan=lifespan,
     description="""
     Reference architecture for cost-optimized AI video generation at scale,
@@ -138,8 +138,8 @@ app = FastAPI(
     """,
     version="1.0.0",
     contact={
-        "name": "AdCamp Support",
-        "url": "https://github.com/suboss87/adcamp",
+        "name": "SeedCamp Support",
+        "url": "https://github.com/suboss87/seedcamp",
     },
     license_info={
         "name": "MIT",
@@ -235,7 +235,7 @@ def _track_success_metrics(cost_usd: float, sku_tier: SKUTier):
 async def health():
     return {
         "status": "ok",
-        "pipeline": "AdCamp Video Generation Pipeline",
+        "pipeline": "SeedCamp Video Generation Pipeline",
         "models": {
             "script": settings.script_model,
             "video_pro": settings.video_model_pro,

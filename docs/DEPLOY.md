@@ -1,6 +1,6 @@
-# AdCamp - Deployment Guide
+# SeedCamp - Deployment Guide
 
-Quick guide for deploying AdCamp to GCP Cloud Run with the modernized dashboard.
+Quick guide for deploying SeedCamp to GCP Cloud Run with the modernized dashboard.
 
 ## 🚀 Quick Deploy (GCP Cloud Run)
 
@@ -33,7 +33,7 @@ This single command will:
 ### What Gets Deployed
 
 #### API Service
-- **URL**: `https://adcamp-api-[hash].asia-southeast1.run.app`
+- **URL**: `https://seedcamp-api-[hash].asia-southeast1.run.app`
 - **Resources**: 2 vCPU, 2GB RAM
 - **Scaling**: 0-10 instances
 - **Timeout**: 300 seconds
@@ -41,7 +41,7 @@ This single command will:
 - **Secrets**: ARK_API_KEY from Secret Manager
 
 #### Dashboard Service  
-- **URL**: `https://adcamp-dashboard-[hash].asia-southeast1.run.app`
+- **URL**: `https://seedcamp-dashboard-[hash].asia-southeast1.run.app`
 - **Resources**: 1 vCPU, 512MB RAM
 - **Scaling**: 0-5 instances
 - **Timeout**: 120 seconds
@@ -58,22 +58,22 @@ After deployment completes, you'll see:
 ╚════════════════════════════════════════════════════╝
 
 Access your services:
-  🚀 API:       https://adcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app
-  📊 Dashboard: https://adcamp-dashboard-YOUR_PROJECT_HASH.asia-southeast1.run.app
-  📖 API Docs:  https://adcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app/docs
+  🚀 API:       https://seedcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app
+  📊 Dashboard: https://seedcamp-dashboard-YOUR_PROJECT_HASH.asia-southeast1.run.app
+  📖 API Docs:  https://seedcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app/docs
 ```
 
 ### Test Your Deployment
 
 ```bash
 # Test API health
-curl https://adcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app/health
+curl https://seedcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app/health
 
 # Open dashboard in browser
-open https://adcamp-dashboard-YOUR_PROJECT_HASH.asia-southeast1.run.app
+open https://seedcamp-dashboard-YOUR_PROJECT_HASH.asia-southeast1.run.app
 
 # View API documentation
-open https://adcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app/docs
+open https://seedcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app/docs
 ```
 
 ## 🔧 Configuration
@@ -84,16 +84,16 @@ The modernized dashboard automatically connects to your production API:
 
 ```python
 # Default (production)
-API_URL = "https://adcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app"
+API_URL = "https://seedcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app"
 
 # Override via environment variable
-API_URL = os.getenv("API_URL", "https://adcamp-api-...")
+API_URL = os.getenv("API_URL", "https://seedcamp-api-...")
 ```
 
 **To use a different API**:
 ```bash
 # Update deployment
-gcloud run services update adcamp-dashboard \
+gcloud run services update seedcamp-dashboard \
   --region asia-southeast1 \
   --set-env-vars "API_URL=https://your-custom-api-url.com"
 ```
@@ -104,10 +104,10 @@ The API key is stored in GCP Secret Manager:
 
 ```bash
 # View secret
-gcloud secrets versions access latest --secret="adcamp-ark-api-key"
+gcloud secrets versions access latest --secret="seedcamp-ark-api-key"
 
 # Update secret
-echo -n "new-api-key" | gcloud secrets versions add adcamp-ark-api-key --data-file=-
+echo -n "new-api-key" | gcloud secrets versions add seedcamp-ark-api-key --data-file=-
 
 # Cloud Run will automatically use the latest version
 ```
@@ -122,10 +122,10 @@ echo -n "new-api-key" | gcloud secrets versions add adcamp-ark-api-key --data-fi
 ### Logs
 ```bash
 # View API logs
-gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=adcamp-api" --limit 50 --format json
+gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=seedcamp-api" --limit 50 --format json
 
 # View Dashboard logs
-gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=adcamp-dashboard" --limit 50 --format json
+gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=seedcamp-dashboard" --limit 50 --format json
 
 # Follow logs in real-time
 gcloud logging tail "resource.type=cloud_run_revision"
@@ -159,12 +159,12 @@ make deploy-gcp
 
 ```bash
 # List revisions
-gcloud run revisions list --service adcamp-api --region asia-southeast1
+gcloud run revisions list --service seedcamp-api --region asia-southeast1
 
 # Rollback to previous revision
-gcloud run services update-traffic adcamp-api \
+gcloud run services update-traffic seedcamp-api \
   --region asia-southeast1 \
-  --to-revisions adcamp-api-00002-abc=100
+  --to-revisions seedcamp-api-00002-abc=100
 ```
 
 ## 💰 Cost Management
@@ -223,13 +223,13 @@ To require authentication:
 
 ```bash
 # Remove public access
-gcloud run services remove-iam-policy-binding adcamp-dashboard \
+gcloud run services remove-iam-policy-binding seedcamp-dashboard \
   --region=asia-southeast1 \
   --member="allUsers" \
   --role="roles/run.invoker"
 
 # Add specific users
-gcloud run services add-iam-policy-binding adcamp-dashboard \
+gcloud run services add-iam-policy-binding seedcamp-dashboard \
   --region=asia-southeast1 \
   --member="user:your-email@example.com" \
   --role="roles/run.invoker"
@@ -247,21 +247,21 @@ gcloud run services add-iam-policy-binding adcamp-dashboard \
 
 ```bash
 # Check dashboard environment
-gcloud run services describe adcamp-dashboard --region asia-southeast1 --format="value(spec.template.spec.containers[0].env)"
+gcloud run services describe seedcamp-dashboard --region asia-southeast1 --format="value(spec.template.spec.containers[0].env)"
 
-# Should see: API_URL=https://adcamp-api-...
+# Should see: API_URL=https://seedcamp-api-...
 
 # Update if needed
-gcloud run services update adcamp-dashboard \
+gcloud run services update seedcamp-dashboard \
   --region asia-southeast1 \
-  --set-env-vars "API_URL=https://adcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app"
+  --set-env-vars "API_URL=https://seedcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app"
 ```
 
 ### API Returns 500 Errors
 
 ```bash
 # Check logs for errors
-gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=adcamp-api AND severity=ERROR" --limit 10
+gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=seedcamp-api AND severity=ERROR" --limit 10
 
 # Common issues:
 # - Invalid API key (check Secret Manager)
@@ -284,7 +284,7 @@ gcloud services list --enabled
 
 ## 🎉 Success!
 
-Your AdCamp deployment is now live with:
+Your SeedCamp deployment is now live with:
 - ✅ Modern, production-ready dashboard
 - ✅ Scalable Cloud Run infrastructure  
 - ✅ Secure secret management
@@ -292,7 +292,7 @@ Your AdCamp deployment is now live with:
 - ✅ Auto-scaling (0-10 instances)
 
 **Current Deployment**:
-- API: https://adcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app
-- Dashboard: https://adcamp-dashboard-YOUR_PROJECT_HASH.asia-southeast1.run.app
+- API: https://seedcamp-api-YOUR_PROJECT_HASH.asia-southeast1.run.app
+- Dashboard: https://seedcamp-dashboard-YOUR_PROJECT_HASH.asia-southeast1.run.app
 
 Start generating videos! 🎬

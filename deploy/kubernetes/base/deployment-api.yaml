@@ -1,26 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: adcamp-api
+  name: seedcamp-api
   namespace: default
   labels:
-    app: adcamp
+    app: seedcamp
     component: api
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: adcamp
+      app: seedcamp
       component: api
   template:
     metadata:
       labels:
-        app: adcamp
+        app: seedcamp
         component: api
     spec:
       containers:
       - name: api
-        image: adcamp:latest  # Replace with your container registry URL
+        image: seedcamp:latest  # Replace with your container registry URL
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
@@ -29,12 +29,12 @@ spec:
         - name: ARK_API_KEY
           valueFrom:
             secretKeyRef:
-              name: adcamp-secrets
+              name: seedcamp-secrets
               key: ARK_API_KEY
         - name: ARK_BASE_URL
           valueFrom:
             secretKeyRef:
-              name: adcamp-secrets
+              name: seedcamp-secrets
               key: ARK_BASE_URL
         - name: OUTPUT_DIR
           value: "/app/output"

@@ -1,9 +1,9 @@
 apiVersion: 1
 
 providers:
-  - name: 'AdCamp Dashboards'
+  - name: 'SeedCamp Dashboards'
     orgId: 1
-    folder: 'AdCamp'
+    folder: 'SeedCamp'
     type: file
     disableDeletion: false
     updateIntervalSeconds: 10
