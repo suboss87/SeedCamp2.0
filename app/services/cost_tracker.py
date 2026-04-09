@@ -11,7 +11,16 @@ from app.models.schemas import CostBreakdown, CostSummary, SKUTier
 logger = logging.getLogger(__name__)
 
 # In-memory store — safe under single-process asyncio (cooperative multitasking).
-# For multi-worker deployments, replace with a database or shared store.
+#
+# ⚠️  MULTI-WORKER LIMITATION
+# When running with multiple uvicorn workers (e.g. `uvicorn --workers 4`,
+# K8s replicas > 1, gunicorn with multiple workers), each worker keeps its
+# own `_history` list. `/api/cost-summary` then returns partial data from
+# whichever worker handled the request. For accurate aggregate cost tracking
+# in production either:
+#   - deploy with a single worker (fine up to a few RPS), OR
+#   - back this store with Redis/Firestore (see docs/DEPLOYMENT.md).
+# A startup warning is emitted in app/main.py when workers > 1 is detected.
 _history: list[dict] = []
 
 

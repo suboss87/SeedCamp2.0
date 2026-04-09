@@ -76,6 +76,20 @@ async def lifespan(app: FastAPI):
             "For durable metrics, deploy Prometheus scraping /metrics endpoint."
         )
 
+        # Multi-worker cost tracker warning
+        try:
+            workers = int(os.environ.get("WEB_CONCURRENCY") or os.environ.get("WORKERS") or "1")
+        except ValueError:
+            workers = 1
+        if workers > 1:
+            logger.warning(
+                "Multi-worker deployment detected (workers=%d). The in-memory cost "
+                "tracker is per-worker — /api/cost-summary will return partial data. "
+                "Use a single worker or back cost_tracker with Redis/Firestore for "
+                "accurate aggregate costs. See docs/DEPLOYMENT.md.",
+                workers,
+            )
+
     # Validate API key (skip in dry-run mode)
     if settings.dry_run:
         logger.info("Skipping API key validation (dry-run mode)")

@@ -190,6 +190,29 @@ When done:
 
 ---
 
+## Security Checklist (read before going public)
+
+SeedCamp ships as a **reference architecture**. Before exposing it to the
+internet, do all of the following:
+
+1. **Set `API_KEY`** — the `/api/*` endpoints only require auth if this env
+   var is set. Without it, anyone who can reach the service can generate
+   videos on your ModelArk budget.
+2. **Tighten `CORS_ORIGINS`** — default is `*`. Set it to your dashboard's
+   exact origin in production.
+3. **Streamlit dashboard has no built-in auth.** Do **not** expose port
+   `8501` directly to the internet. Put it behind:
+   - a reverse proxy with basic auth (nginx, Caddy), or
+   - an identity-aware proxy (Cloudflare Access, GCP IAP, Tailscale), or
+   - a private network only.
+4. **Rate limit** — confirm `RATE_LIMIT` is set to something sane for your
+   budget (default `60/minute` per IP).
+5. **Cost tracker is per-worker.** If you run with `WORKERS>1`, aggregate
+   cost numbers in `/api/cost-summary` will be partial. Either run with a
+   single worker or back the store with Redis/Firestore.
+
+---
+
 ## Cost Comparison
 
 | Platform | Monthly Cost | Scaling | Setup Time |
