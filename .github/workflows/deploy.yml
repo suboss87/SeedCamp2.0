@@ -1,14 +1,9 @@
 name: Build and Deploy
 
 on:
-  push:
-    branches:
-      - main
-    tags:
-      - 'v*'
-  pull_request:
-    branches:
-      - main
+  # Manual trigger only — enable push/tag triggers once REGISTRY_* and
+  # KUBECONFIG_* secrets are configured for your deployment target.
+  workflow_dispatch:
 
 env:
   # BytePlus CR URL format: <instance>-<region>.cr.bytepluses.com
