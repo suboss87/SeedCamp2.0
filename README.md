@@ -1,6 +1,6 @@
 # SeedCamp
 
-**Production-grade Python kit for generating AI video at scale.** Retry, routing, cost control, safety gates, and batch orchestration — the parts you don't want to rebuild.
+**Open-source framework for AI video generation at scale.** Tiered model routing, retry logic, cost tracking, safety evaluation, and batch orchestration — so you build your product, not the infrastructure.
 
 [![CI](https://github.com/suboss87/SeedCamp2.0/actions/workflows/ci.yml/badge.svg)](https://github.com/suboss87/SeedCamp2.0/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/) [![Seedance 2.0](https://img.shields.io/badge/Seedance-2.0-ff7a59)](https://seed.bytedance.com/en/seedance2_0) [![Deploy](https://img.shields.io/badge/deploy-7%20platforms-orange)](#deploy-anywhere)
 
