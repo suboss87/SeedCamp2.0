@@ -4,7 +4,8 @@
 
 [![CI](https://github.com/suboss87/SeedCamp2.0/actions/workflows/ci.yml/badge.svg)](https://github.com/suboss87/SeedCamp2.0/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/) [![Seedance 2.0](https://img.shields.io/badge/Seedance-2.0-ff7a59)](https://seed.bytedance.com/en/seedance2_0) [![Deploy](https://img.shields.io/badge/deploy-7%20platforms-orange)](#deploy-anywhere)
 
-> **April 2026:** [Seedance 2.0](https://seed.bytedance.com/en/seedance2_0) is now in public beta, ranked #2 on Artificial Analysis with native audio and 15s multi-shot. [Sora shuts down April 26.](docs/MIGRATE_FROM_SORA.md) SeedCamp ships with Seedance 2.0 model IDs and a migration path from Sora.
+> **April 2026:** [Seedance 2.0](https://seed.bytedance.com/en/seedance2_0) is now in public beta, ranked #2 on Artificial Analysis with native audio and 15s multi-shot.
+> [Sora shuts down April 26.](docs/MIGRATE_FROM_SORA.md) SeedCamp ships with Seedance 2.0 model IDs and a migration path from Sora.
 
 ---
 
