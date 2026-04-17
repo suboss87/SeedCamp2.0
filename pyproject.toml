@@ -5,7 +5,8 @@ description = "Open-source reference architecture for AI video generation at sca
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"
-authors = [{ name = "Subash Natarajan" }]
+authors = [{ name = "Subash Natarajan", email = "suboss87@gmail.com" }]
+urls = { Homepage = "https://github.com/suboss87/SeedCamp2.0", Documentation = "https://github.com/suboss87/SeedCamp2.0/tree/main/docs" }
 keywords = ["ai", "video-generation", "modelark", "byteplus", "fastapi"]
 classifiers = [
     "Development Status :: 4 - Beta",
