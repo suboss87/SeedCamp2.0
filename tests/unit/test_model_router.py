@@ -11,8 +11,9 @@ class TestModelRouter:
 
     def test_hero_routes_to_pro(self):
         model_id, cost = route(SKUTier.hero)
-        assert "pro" in model_id.lower()
+        # Seedance 2.0: dreamina-seedance-2-0-260128 (standard, no "fast" suffix)
         assert "fast" not in model_id.lower()
+        assert "seedance" in model_id.lower() or "dreamina" in model_id.lower()
 
     def test_catalog_routes_to_fast(self):
         model_id, cost = route(SKUTier.catalog)
