@@ -108,8 +108,8 @@ HERO_SKU_THRESHOLD=0.20            # Top 20% = hero SKUs
 
 ### ModelArk API Costs (Shared across all platforms)
 - Script generation (Seed 1.8): $0.25 per 1M input tokens, $2.00 per 1M output tokens
-- Video generation (Seedance Pro): $1.20 per 1M tokens (~$0.13/video at 5s 720p)
-- Video generation (Seedance Pro Fast): $0.70 per 1M tokens (~$0.08/video at 5s 720p)
+- Video generation (Seedance 2.0): $4.30 per 1M tokens (~$0.04–0.08/video at 5s 720p)
+- Video generation (Seedance 2.0 Fast): $3.30 per 1M tokens (~$0.03–0.04/video at 5s 720p)
 
 **Blended average**: ~$0.09/video (20% hero SKUs, 80% catalog SKUs)
 
@@ -179,8 +179,8 @@ Adapt this for GitLab CI, CircleCI, Jenkins, or your preferred CI/CD platform. A
 ## Support
 
 - **Documentation**: See [docs/](../docs/) for detailed guides
-- **Issues**: Report bugs at https://github.com/suboss87/seedcamp/issues
-- **Discussions**: Ask questions at https://github.com/suboss87/seedcamp/discussions
+- **Issues**: Report bugs at https://github.com/suboss87/SeedCamp2.0/issues
+- **Discussions**: Ask questions at https://github.com/suboss87/SeedCamp2.0/discussions
 
 ## Next Steps
 

@@ -239,12 +239,12 @@
           {
             "expr": "rate(hero_videos[5m]) * 60",
             "refId": "A",
-            "legendFormat": "Hero (Seedance 1.5 Pro)"
+            "legendFormat": "Hero (Seedance 2.0)"
           },
           {
             "expr": "rate(catalog_videos[5m]) * 60",
             "refId": "B",
-            "legendFormat": "Catalog (Seedance 1.0 Pro Fast)"
+            "legendFormat": "Catalog (Seedance 2.0 Fast)"
           }
         ],
         "yaxes": [

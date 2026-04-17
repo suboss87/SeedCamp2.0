@@ -52,7 +52,7 @@ That's it! Your API is live at `https://seedcamp-production.up.railway.app`
 
 2. **Click "New +" → "Web Service"**
 
-3. **Connect GitHub**: `suboss87/seedcamp`
+3. **Connect GitHub**: `suboss87/SeedCamp2.0`
 
 4. **Settings**:
    - Name: `seedcamp-api`
@@ -136,8 +136,8 @@ Expected response:
   "pipeline": "SeedCamp Video Generation Pipeline",
   "models": {
     "script": "seed-1-8-251228",
-    "video_pro": "seedance-1-5-pro-251215",
-    "video_fast": "seedance-1-0-pro-fast-251015"
+    "video_pro": "dreamina-seedance-2-0-260128",
+    "video_fast": "dreamina-seedance-2-0-fast-260128"
   }
 }
 ```
@@ -261,4 +261,4 @@ internet, do all of the following:
 - Add custom domain
 - Set up CI/CD
 
-**Questions?** [GitHub Issues](https://github.com/suboss87/seedcamp/issues)
+**Questions?** [GitHub Issues](https://github.com/suboss87/SeedCamp2.0/issues)

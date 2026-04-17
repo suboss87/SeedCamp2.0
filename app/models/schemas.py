@@ -6,8 +6,8 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class SKUTier(str, Enum):
-    hero = "hero"  # Top 20% — Seedance 1.5 Pro
-    catalog = "catalog"  # 80% — Seedance 1.0 Pro Fast
+    hero = "hero"  # Top 20% — Seedance 2.0
+    catalog = "catalog"  # 80% — Seedance 2.0 Fast
 
 
 class Platform(str, Enum):
@@ -34,7 +34,7 @@ class GenerateRequest(BaseModel):
         default=[Platform.tiktok],
         description="Target platforms for post-processing",
     )
-    duration: int = Field(8, ge=2, le=12)
+    duration: int = Field(8, ge=2, le=15)
     resolution: str = "720p"
     sound: bool = Field(default=True, description="Enable native audio in generated video")
 

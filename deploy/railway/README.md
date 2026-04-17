@@ -23,7 +23,7 @@ Deploy SeedCamp to Railway for quick prototyping and demos with zero configurati
 
 1. **Go to Railway**: [railway.app/new](https://railway.app/new)
 2. **Connect GitHub**: Authorize Railway to access your repos
-3. **Select repo**: Choose `suboss87/seedcamp`
+3. **Select repo**: Choose `suboss87/SeedCamp2.0`
 4. **Add variables**:
    ```
    ARK_API_KEY=your_modelark_api_key

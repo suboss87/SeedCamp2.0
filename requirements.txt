@@ -1,11 +1,11 @@
 fastapi==0.135.1
 uvicorn==0.34.0
 python-dotenv==1.2.2
-python-multipart==0.0.22
+python-multipart==0.0.26
 httpx==0.28.1
 pydantic==2.10.4
 pydantic-settings==2.13.1
 streamlit==1.55.0
 openai==1.59.9
-Pillow==11.1.0
+Pillow==12.2.0
 slowapi==0.1.9

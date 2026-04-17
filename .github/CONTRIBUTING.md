@@ -136,7 +136,7 @@ Prefixes:
 ## Areas for Contribution
 
 ### Bug Fixes
-- Check [Issues](https://github.com/suboss87/seedcamp/issues) for bugs
+- Check [Issues](https://github.com/suboss87/SeedCamp2.0/issues) for bugs
 - Reproduce the bug
 - Write a test that fails
 - Fix the bug
@@ -181,7 +181,7 @@ New to SeedCamp? These are self-contained tasks that don't require deep knowledg
 | **CSV validation error messages** | Easy | `app/services/csv_parser.py` | Improve error messages when CSV upload fails validation (row numbers, specific field errors). |
 | **API rate limit headers** | Easy | `app/main.py` | Add `X-RateLimit-Remaining` and `X-RateLimit-Reset` response headers. |
 
-Look for issues tagged [`good first issue`](https://github.com/suboss87/seedcamp/labels/good%20first%20issue) on GitHub.
+Look for issues tagged [`good first issue`](https://github.com/suboss87/SeedCamp2.0/labels/good%20first%20issue) on GitHub.
 
 ## Project Structure
 

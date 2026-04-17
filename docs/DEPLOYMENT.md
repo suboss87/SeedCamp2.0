@@ -155,7 +155,7 @@ For quick local or VM deployment using Docker Compose:
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/suboss87/seedcamp.git
+   git clone https://github.com/suboss87/SeedCamp2.0.git
    cd seedcamp
    ```
 
@@ -198,7 +198,7 @@ For quick local or VM deployment using Docker Compose:
 
 1. **Clone and navigate to the project**:
    ```bash
-   git clone https://github.com/suboss87/seedcamp.git
+   git clone https://github.com/suboss87/SeedCamp2.0.git
    cd seedcamp
    ```
 
@@ -252,8 +252,8 @@ For quick local or VM deployment using Docker Compose:
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `SCRIPT_MODEL` | Script generation model | `seed-1-8-251228` |
-| `VIDEO_MODEL_PRO` | Hero SKU video model | `seedance-1-5-pro-251215` |
-| `VIDEO_MODEL_FAST` | Catalog SKU video model | `seedance-1-0-pro-fast-251015` |
+| `VIDEO_MODEL_PRO` | Hero SKU video model | `dreamina-seedance-2-0-260128` |
+| `VIDEO_MODEL_FAST` | Catalog SKU video model | `dreamina-seedance-2-0-fast-260128` |
 | `POLL_TIMEOUT` | Video generation timeout (seconds) | `300` |
 | `POLL_INTERVAL` | Polling interval (seconds) | `5` |
 
@@ -331,4 +331,4 @@ For issues or questions:
 
 - **BytePlus VKE**: [VKE Documentation](https://docs.byteplus.com/vke)
 - **ModelArk**: [ModelArk Documentation](https://docs.byteplus.com/modelark)
-- **Project Issues**: [GitHub Issues](https://github.com/suboss87/seedcamp/issues)
+- **Project Issues**: [GitHub Issues](https://github.com/suboss87/SeedCamp2.0/issues)

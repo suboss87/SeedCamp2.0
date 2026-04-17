@@ -57,8 +57,8 @@ The SeedCamp API exposes Prometheus metrics at `GET /metrics`:
 ### Counters
 - `videos_generated_total` - Total videos successfully generated
 - `videos_failed_total` - Total videos that failed to generate
-- `hero_videos` - Videos generated with Seedance 1.5 Pro (hero tier)
-- `catalog_videos` - Videos generated with Seedance 1.0 Pro Fast (catalog tier)
+- `hero_videos` - Videos generated with Seedance 2.0 (hero tier)
+- `catalog_videos` - Videos generated with Seedance 2.0 Fast (catalog tier)
 
 ### Gauges
 - `script_generation_avg_seconds` - Average script generation time

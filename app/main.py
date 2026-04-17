@@ -143,8 +143,8 @@ app = FastAPI(
 
     ## Models
     - **Seed 1.8**: Script/copy generation (OpenAI-compatible)
-    - **Seedance Pro**: Premium-tier video ($1.20/M tokens)
-    - **Seedance Pro Fast**: Standard-tier video ($0.70/M tokens)
+    - **Seedance 2.0**: Premium-tier video ($4.30/M tokens)
+    - **Seedance 2.0 Fast**: Standard-tier video ($3.30/M tokens)
 
     ## Adapt for Your Use Case
     Replace tiers, model IDs, and the video generation step to match your
@@ -153,7 +153,7 @@ app = FastAPI(
     version="1.0.0",
     contact={
         "name": "SeedCamp Support",
-        "url": "https://github.com/suboss87/seedcamp",
+        "url": "https://github.com/suboss87/SeedCamp2.0",
     },
     license_info={
         "name": "MIT",
@@ -351,7 +351,7 @@ async def generate_ad(request: Request, req: GenerateRequest):
     Video Generation Pipeline:
     1. INPUT:        Campaign brief + product image + SKU tier
     2. SCRIPT GEN:   Seed 1.8 generates copy + Seedance prompt
-    3. SMART ROUTER: Hero → Seedance Pro | Catalog → Pro Fast
+    3. SMART ROUTER: Hero → Seedance 2.0 | Catalog → Seedance 2.0 Fast
     4. VIDEO GEN:    Async video generation with polling
     """
     monitoring.increment_counter("api_requests_total")
@@ -511,7 +511,7 @@ async def generate_ad_stream(request: Request, req: GenerateRequest):
             if result.get("safety"):
                 safety = result["safety"]
                 safety_msg = f" (safety: {safety.risk_level})"
-            model_name = "Seedance 1.5 Pro" if "1-5" in model_id else "Seedance 1.0 Pro Fast"
+            model_name = "Seedance 2.0 Fast" if "fast" in model_id.lower() else "Seedance 2.0"
             yield f"data: {json.dumps({'step': 2, 'status': 'complete', 'message': f'Script generated{safety_msg}', 'progress': 35, 'data': {'script': script.model_dump(), 'tokens': {'input': result['in_tokens'], 'output': result['out_tokens']}}})}\n\n"
             yield f"data: {json.dumps({'step': 3, 'status': 'complete', 'message': f'Routed to {model_name}', 'progress': 45, 'data': {'model': model_id, 'cost_per_m': result['cost_per_m']}})}\n\n"
             yield f"data: {json.dumps({'step': 4, 'status': 'complete', 'message': 'Video task created', 'progress': 55, 'data': {'task_id': task_id}})}\n\n"

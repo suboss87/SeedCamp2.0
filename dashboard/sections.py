@@ -18,7 +18,7 @@ from config import (
     step_indicator,
 )
 
-_MODEL_DISPLAY = {"catalog": "Seedance 1.0 Pro Fast", "hero": "Seedance 1.5 Pro"}
+_MODEL_DISPLAY = {"catalog": "Seedance 2.0 Fast", "hero": "Seedance 2.0"}
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # DATA FETCHERS

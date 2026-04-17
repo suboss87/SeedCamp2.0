@@ -42,9 +42,9 @@ The logical architecture describes the **business logic flow** — what happens 
 │                              ▼                ▼                     │
 │                 ┌──────────────────┐ ┌──────────────────┐           │
 │                 │ 4a. SEEDANCE     │ │ 4b. SEEDANCE     │           │
-│                 │  1.5 PRO         │ │  1.0 PRO FAST    │           │
+│                 │  2.0             │ │  2.0 FAST        │           │
 │                 │  (Cinematic)     │ │  (Cost-optimized) │          │
-│                 │  $1.20/M tokens  │ │  $0.70/M tokens  │           │
+│                 │  $4.30/M tokens  │ │  $3.30/M tokens  │           │
 │                 └────────┬─────────┘ └────────┬─────────┘           │
 │                          └────────┬───────────┘                     │
 │                                   ▼                                 │
@@ -71,9 +71,9 @@ The logical architecture describes the **business logic flow** — what happens 
 
 ```
 if sku_tier == "hero":       # Top 20% high-value products
-    model = Seedance 1.5 Pro         # $1.20/M tokens — cinematic quality
+    model = Seedance 2.0         # $4.30/M tokens — cinematic quality
 else:                         # Catalog 80%
-    model = Seedance 1.0 Pro Fast    # $0.70/M tokens — 3x faster, 72% cheaper
+    model = Seedance 2.0 Fast    # $3.30/M tokens — 3x faster
 ```
 
 **Business rationale:** Hero SKUs (flagship products, campaign heroes) justify higher spend for premium video quality. Catalog SKUs (long-tail products) need volume at low cost — Pro Fast delivers acceptable quality at 3x the speed and 72% lower cost.

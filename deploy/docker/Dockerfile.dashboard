@@ -3,7 +3,7 @@ FROM python:3.10-slim
 WORKDIR /app
 
 # Dashboard-only dependencies (lightweight)
-RUN pip install --no-cache-dir streamlit==1.41.1 requests Pillow==11.1.0
+RUN pip install --no-cache-dir streamlit==1.41.1 requests Pillow==12.2.0
 
 # Copy only dashboard code
 COPY dashboard/ ./dashboard/
