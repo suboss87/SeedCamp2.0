@@ -64,16 +64,17 @@ video_url = response.url
 **After (SeedCamp):**
 ```python
 from app.services.pipeline import run_pipeline
-from app.models.schemas import GenerateRequest, SKUTier
+from app.models.schemas import SKUTier
 
-result = await run_pipeline(GenerateRequest(
+result = await run_pipeline(
     sku_id="product-001",
     brief="Product showcase on white background, slow rotation",
     sku_tier=SKUTier.hero,  # or SKUTier.catalog for cost-optimized
-))
-video_url = result.video.url
-cost = result.cost.total_usd
-safety = result.safety.risk_level  # "safe", "low_risk", "high_risk", "blocked"
+)
+# result is a dict with keys: script, model_id, task_id, cost, safety, quality
+task_id = result["task_id"]        # poll /api/status/{task_id} for the video URL
+cost = result["cost"].total_cost_usd
+safety = result["safety"].risk_level if result["safety"] else "safe"
 ```
 
 **Via HTTP API:**
@@ -115,19 +116,33 @@ If you have a CSV of Sora prompts:
 
 ```python
 # Convert sora-prompts.csv → SeedCamp batch
+# Note: run_batch() is async — wrap with asyncio.run() for scripts.
+import asyncio
 import csv
+import uuid
+
+from app.models.campaign_schemas import Campaign, Product
 from app.services.batch_generator import run_batch
 
 products = []
 with open("sora-prompts.csv") as f:
     for row in csv.DictReader(f):
-        products.append({
-            "sku_id": row["id"],
-            "brief": row["prompt"],
-            "sku_tier": "hero" if row.get("priority") == "high" else "catalog",
-        })
+        products.append(Product(
+            id=uuid.uuid4().hex[:12],
+            campaign_id="sora-migration",
+            sku_id=row["id"],
+            product_name=row.get("name", row["id"]),
+            description=row["prompt"],
+            sku_tier="hero" if row.get("priority") == "high" else "catalog",
+        ))
 
-results = await run_batch(campaign_id="sora-migration", products=products)
+campaign = Campaign(
+    id="sora-migration",
+    name="Sora Migration",
+    theme="Migrated Sora prompts",
+    total_products=len(products),
+)
+asyncio.run(run_batch(campaign=campaign, products=products))
 ```
 
 ---

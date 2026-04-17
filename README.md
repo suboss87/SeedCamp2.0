@@ -23,15 +23,16 @@ That's 2-3 weeks of plumbing. **SeedCamp is that plumbing, already written.**
 
 ```python
 from app.services.pipeline import run_pipeline
-from app.models.schemas import GenerateRequest, SKUTier
+from app.models.schemas import SKUTier
 
 # Route one hero SKU to Seedance 2.0 Standard (cinematic + audio).
-result = await run_pipeline(GenerateRequest(
+result = await run_pipeline(
     sku_id="SUV-001",
     brief="Luxury SUV on mountain pass at golden hour, cinematic walkaround",
     sku_tier=SKUTier.hero,
-))
-print(result.video.url, result.cost.total_usd)  # → https://..., 0.0421
+)
+# result is a dict: script, model_id, task_id, cost (CostBreakdown), safety, quality
+print(result["task_id"], result["cost"].total_cost_usd)  # → "task-abc123", 0.0421
 ```
 
 One pipeline, five production-grade patterns, seven deploy targets. Ready for Seedance 2.0 on day one.
@@ -95,7 +96,7 @@ SeedCamp is the shortest path:
 response = openai.videos.generate(prompt=brief, model="sora-2")
 
 # SeedCamp on Seedance 2.0
-result = await run_pipeline(GenerateRequest(sku_id="x", brief=brief, sku_tier=SKUTier.hero))
+result = await run_pipeline(sku_id="x", brief=brief, sku_tier=SKUTier.hero)
 ```
 
 - **~10x cheaper** per second (Seedance 2.0 Fast vs Sora 2 Pro)
