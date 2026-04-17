@@ -8,24 +8,33 @@ class Settings(BaseSettings):
     ark_api_key: str = ""
     ark_base_url: str = "https://ark.ap-southeast.bytepluses.com/api/v3"
 
-    # --- Model IDs ---
-    # Seed 1.8: script generation + video review
+    # --- Model IDs (April 2026) ---
+    # Seed 1.8: script generation + safety/quality evaluators
     script_model: str = "seed-1-8-251228"
-    # Seedance 1.5 Pro: hero SKU video (top 20%, cinematic quality)
-    video_model_pro: str = "seedance-1-5-pro-251215"
-    # Seedance 1.0 Pro Fast: catalog SKU video (80%, cost-optimized)
-    video_model_fast: str = "seedance-1-0-pro-fast-251015"
+    # Seedance 2.0 (Dreamina) — hero tier: cinematic + native audio + lip-sync
+    # Ranked #2 on Artificial Analysis T2V & I2V leaderboards (April 2026),
+    # ahead of Veo 3, Kling 3.0, Runway Gen-4.5.
+    video_model_pro: str = "dreamina-seedance-2-0-260128"
+    # Seedance 2.0 Fast — catalog tier: 720p, cost-optimized, still top-10 quality
+    video_model_fast: str = "dreamina-seedance-2-0-fast-260128"
 
-    # --- Cost per million tokens (USD) ---
+    # --- Cost per million tokens (USD) — BytePlus ModelArk, April 2026 ---
+    # Source: https://docs.byteplus.com/en/docs/ModelArk/1544106
+    # tokens = (in_duration_s + out_duration_s) × width × height × fps / 1024
+    # Offline (async batch) mode = 50% of online rates — set video_offline=True.
     cost_per_m_seed18_input: float = 0.25
     cost_per_m_seed18_output: float = 2.00
-    cost_per_m_seedance_pro: float = 1.20
-    cost_per_m_seedance_fast: float = 1.00
+    # Seedance 2.0 Standard: $4.30 (no-video-in, 480p/720p) → $7.70 (1080p + video-in)
+    cost_per_m_seedance_pro: float = 4.30
+    # Seedance 2.0 Fast: $3.30 (no-video-in) → $5.60 (with video-in). No 1080p.
+    cost_per_m_seedance_fast: float = 3.30
 
     # --- Video defaults ---
-    video_duration: int = 8  # seconds (2-12)
-    video_resolution: str = "720p"
-    video_sound: bool = True
+    video_duration: int = 8  # seconds; Seedance 2.0 supports up to 15s multi-shot
+    video_resolution: str = "720p"  # Seedance 2.0 Standard supports up to 1080p
+    video_sound: bool = True  # Seedance 2.0 native audio (dialogue + music + foley)
+    video_audio_enabled: bool = True  # Generate audio jointly with video (2.0 only)
+    video_offline: bool = False  # Async batch mode = 50% cheaper, slower turnaround
     poll_interval: int = 5
     poll_timeout: int = 300
 

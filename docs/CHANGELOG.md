@@ -5,6 +5,31 @@ All notable changes to SeedCamp will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2026-04-17
+
+### Upgraded
+- **Seedance 2.0 support** — new model IDs: `dreamina-seedance-2-0-260128` (Standard) and `dreamina-seedance-2-0-fast-260128` (Fast)
+- Updated pricing to April 2026 ModelArk rates (Standard $4.30–7.70/M tok, Fast $3.30–5.60/M tok)
+- Native audio generation config (`video_audio_enabled`), offline batch mode (`video_offline`)
+- Seedance 2.0 ranked **#2 on Artificial Analysis** (T2V and I2V, April 2026)
+
+### Added
+- **Sora migration guide** (`docs/MIGRATE_FROM_SORA.md`) — code diffs, pricing comparison, timeline for Sora shutdown (app Apr 26, API Sep 24)
+- "Is SeedCamp for you?" section in README — honest trade-offs, when NOT to use it
+- Security Checklist in QUICKSTART — API_KEY, CORS, dashboard auth, rate limit, cost tracker
+- Multi-worker startup warning when `WORKERS>1` detected in production
+- `pip-audit` security scanning in CI
+- CI installs `requirements.txt` alongside `requirements-dev.txt` (fixes slowapi import)
+- Deploy workflow set to manual trigger until registry secrets configured
+
+### Changed
+- README rewritten for developer ICP — leads with "the plumbing you don't want to rebuild" pitch
+- Market research updated with April 2026 data: Sora shutdown, AA rankings, competitive landscape, BytePlus/TikTok USDS de-risking
+- Real estate de-prioritized (virtual tours serve that market better)
+- Cost tracker documented multi-worker limitation in source with specific mitigation paths
+
+---
+
 ## [Unreleased]
 
 ### Added
