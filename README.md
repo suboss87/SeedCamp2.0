@@ -11,9 +11,9 @@
 
 ## What is SeedCamp?
 
-SeedCamp is an open-source Python codebase that handles the hard parts of generating AI videos at scale. You give it a product brief and a tier (premium or standard), and it handles the rest: writing the script, checking for unsafe content, picking the right model, generating the video, tracking the cost, and managing failures.
+SeedCamp is an open-source Python reference architecture that handles the hard parts of generating AI videos at scale. You give it a product brief and a tier (premium or standard), and it handles the rest: writing the script, checking for unsafe content, picking the right model, generating the video, tracking the cost, and managing failures.
 
-It is not a managed service or a SaaS product. It is a reference architecture: a working system you can study, fork, and adapt for your own use case.
+It is not a managed service or a SaaS product. It is a working system you can study, fork, and adapt for your own use case.
 
 **The problem:** Generating one AI video is simple. Generating thousands is an engineering project. You need to handle:
 
