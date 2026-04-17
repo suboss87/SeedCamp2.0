@@ -1,5 +1,5 @@
 """
-Asset Backup — Video URL Permanence
+Asset Backup -- Video URL Permanence
 Downloads generated videos from BytePlus CDN and uploads to GCS
 for permanent storage. Non-blocking: backup failure doesn't affect delivery.
 """

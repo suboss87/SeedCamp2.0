@@ -62,7 +62,7 @@ async def main():
             completed = progress["completed_videos"]
             total = progress["total_products"]
             pct = progress["progress_pct"]
-            print(f"  {completed}/{total} complete ({pct:.0f}%) — ${progress['total_cost_usd']:.3f}")
+            print(f"  {completed}/{total} complete ({pct:.0f}%) -- ${progress['total_cost_usd']:.3f}")
 
             if progress["status"] in ("completed", "partial", "failed"):
                 print(f"\nFinal status: {progress['status']}")

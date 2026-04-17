@@ -1,8 +1,8 @@
-# SeedCamp Video Generation Pipeline — Physical Architecture
+# SeedCamp Video Generation Pipeline -- Physical Architecture
 
 ## Overview
 
-The physical architecture describes **what runs where** — processes, ports, protocols, APIs, and infrastructure components.
+The physical architecture describes **what runs where** -- processes, ports, protocols, APIs, and infrastructure components.
 
 ## Deployment Diagram
 
@@ -48,7 +48,7 @@ The physical architecture describes **what runs where** — processes, ports, pr
 │  │                                                             │    │
 │  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────────┐  │    │
 │  │  │  SEED 1.8    │  │ SEEDANCE     │  │ SEEDANCE         │  │    │
-│  │  │              │  │ 1.5 PRO      │  │ 1.0 PRO FAST     │  │    │
+│  │  │              │  │ 2.0          │  │ 2.0 FAST         │  │    │
 │  │  │ /chat/       │  │              │  │                  │  │    │
 │  │  │ completions  │  │ /video/      │  │ /video/          │  │    │
 │  │  │              │  │ generations  │  │ generations      │  │    │
@@ -65,7 +65,7 @@ The physical architecture describes **what runs where** — processes, ports, pr
 
 ## Component Details
 
-### Frontend — Streamlit Dashboard
+### Frontend -- Streamlit Dashboard
 | Property | Value |
 |----------|-------|
 | File | `dashboard/app.py` |
@@ -74,7 +74,7 @@ The physical architecture describes **what runs where** — processes, ports, pr
 | Role | User interface for campaign input, video preview, cost tracking |
 | Dependencies | `requests` (HTTP client to FastAPI backend) |
 
-### Backend — FastAPI Application
+### Backend -- FastAPI Application
 | Property | Value |
 |----------|-------|
 | File | `app/main.py` |
@@ -83,7 +83,7 @@ The physical architecture describes **what runs where** — processes, ports, pr
 | Role | Pipeline orchestration, model routing, cost calculation |
 | Dependencies | `openai` (Seed 1.8), `httpx` (Seedance API), `asyncio` (polling) |
 
-### External API — BytePlus ModelArk
+### External API -- BytePlus ModelArk
 | Property | Value |
 |----------|-------|
 | Base URL | `https://ark.ap-southeast.bytepluses.com/api/v3` |
@@ -91,7 +91,7 @@ The physical architecture describes **what runs where** — processes, ports, pr
 | Region | ap-southeast |
 | Protocol | HTTPS REST |
 
-### Storage — Local File System
+### Storage -- Local File System
 | Property | Value |
 |----------|-------|
 | Directory | `output/` |
@@ -100,7 +100,7 @@ The physical architecture describes **what runs where** — processes, ports, pr
 
 ## API Contracts
 
-### Seed 1.8 — Synchronous
+### Seed 1.8 -- Synchronous
 ```
 POST /chat/completions
 ├── Request:  { model, messages, temperature, max_tokens }
@@ -108,7 +108,7 @@ POST /chat/completions
 └── Latency:  ~2-5 seconds
 ```
 
-### Seedance — Asynchronous (2-step)
+### Seedance -- Asynchronous (2-step)
 ```
 Step 1: POST /video/generations
 ├── Request:  { model, content: [{type, text/image_url}] }

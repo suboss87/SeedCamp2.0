@@ -1,5 +1,5 @@
 """
-Video Generation — Seedance 2.0 / 2.0 Fast
+Video Generation -- Seedance 2.0 / 2.0 Fast
 Step 4 of the Pipeline: asynchronous video generation with polling.
 Model is selected by the Smart Router (step 3).
 """

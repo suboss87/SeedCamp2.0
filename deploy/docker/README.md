@@ -126,7 +126,7 @@ docker-compose exec api pip list
 curl -X POST http://localhost:8000/api/generate \
   -H "Content-Type: application/json" \
   -d '{
-    "brief": "Premium organic coffee beans — rich, bold, fair trade certified",
+    "brief": "Premium organic coffee beans, rich, bold, fair trade certified",
     "sku_id": "COFFEE-001",
     "sku_tier": "catalog",
     "platforms": ["tiktok"],

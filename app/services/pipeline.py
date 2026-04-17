@@ -1,5 +1,5 @@
 """
-Pipeline — Core video generation logic
+Pipeline -- Core video generation logic
 Extracted from main.py so it can be called by both single-video
 endpoints and the batch generator.
 """
@@ -60,7 +60,7 @@ async def run_pipeline(
         platforms = ["tiktok"]
 
     # Step 2: Script generation via Seed 1.8
-    logger.info("Step 2: Seed 1.8 — Generating ad script for SKU %s...", sku_id)
+    logger.info("Step 2: Seed 1.8 -- Generating ad script for SKU %s...", sku_id)
     script_start = time.time()
     script, in_tokens, out_tokens = await script_writer.generate_script(brief)
     monitoring.record_duration("script_generation_duration_seconds", time.time() - script_start)
@@ -104,7 +104,7 @@ async def run_pipeline(
     # Step 4: Video generation via Seedance
     primary_platform = platforms[0] if platforms else "tiktok"
     ratio = video_gen.RATIO_MAP.get(primary_platform, "16:9")
-    logger.info("Step 4: Seedance — Creating video task with %s (ratio=%s)...", model_id, ratio)
+    logger.info("Step 4: Seedance -- Creating video task with %s (ratio=%s)...", model_id, ratio)
     video_start = time.time()
     task_id = await video_gen.create_video_task(
         prompt=script.video_prompt,
@@ -146,7 +146,7 @@ async def run_pipeline(
             cost.total_cost_usd = round(cost.total_cost_usd + quality_result.eval_cost_usd, 6)
         except Exception:
             logger.exception(
-                "Quality eval failed for SKU %s — continuing without quality data", sku_id
+                "Quality eval failed for SKU %s -- continuing without quality data", sku_id
             )
 
     return {

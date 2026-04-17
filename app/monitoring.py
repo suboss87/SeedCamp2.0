@@ -9,7 +9,7 @@ from typing import Any
 
 _start_time = time.time()
 
-# In-memory metrics store — safe under single-process asyncio (cooperative multitasking).
+# In-memory metrics store -- safe under single-process asyncio (cooperative multitasking).
 # WARNING: Not safe with multi-process workers (e.g., gunicorn -w 4). Use Redis or
 # prometheus_client for multi-worker deployments.
 # Cost and per-tier video counts are tracked by cost_tracker (single source of truth).

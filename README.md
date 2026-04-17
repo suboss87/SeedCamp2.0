@@ -25,6 +25,7 @@ Most teams spend 2-3 weeks building this from scratch. SeedCamp gives you a test
 
 ```python
 from app.services.pipeline import run_pipeline
+from app.services.video_gen import wait_for_video
 from app.models.schemas import SKUTier
 
 result = await run_pipeline(
@@ -32,7 +33,9 @@ result = await run_pipeline(
     brief="Luxury SUV on mountain pass at golden hour, cinematic walkaround",
     sku_tier=SKUTier.hero,
 )
-print(result["task_id"], result["cost"].total_cost_usd)
+# Pipeline returns a task_id; poll until the video is ready
+video = await wait_for_video(result["task_id"], result["model_id"])
+print(video.video_url, result["cost"].total_cost_usd)
 ```
 
 ---

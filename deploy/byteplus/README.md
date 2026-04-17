@@ -1,13 +1,13 @@
 # BytePlus VKE Deployment (Recommended)
 
-Deploy SeedCamp to [BytePlus VKE (Vital Kubernetes Engine)](https://docs.byteplus.com/en/docs/vke/What-is-Vital-Kubernetes-Engine) — the managed Kubernetes service from BytePlus. Co-locating with ModelArk gives you the lowest possible API latency and a single-vendor stack.
+Deploy SeedCamp to [BytePlus VKE (Vital Kubernetes Engine)](https://docs.byteplus.com/en/docs/vke/What-is-Vital-Kubernetes-Engine) -- the managed Kubernetes service from BytePlus. Co-locating with ModelArk gives you the lowest possible API latency and a single-vendor stack.
 
 ## Why BytePlus VKE?
 
-- **Co-located with ModelArk** — Same network as the Seed/Seedance API. Lowest latency, no cross-cloud egress fees.
-- **Unified platform** — Compute, container registry, Kubernetes, and AI inference on one console ([console.byteplus.com](https://console.byteplus.com)).
-- **Enterprise Kubernetes** — Managed control plane, HPA, cluster autoscaler, Karpenter, VCI (serverless pods).
-- **Integrated observability** — Built-in pod monitoring, log collection, and resource metrics via VKE console.
+- **Co-located with ModelArk** -- Same network as the Seed/Seedance API. Lowest latency, no cross-cloud egress fees.
+- **Unified platform** -- Compute, container registry, Kubernetes, and AI inference on one console ([console.byteplus.com](https://console.byteplus.com)).
+- **Enterprise Kubernetes** -- Managed control plane, HPA, cluster autoscaler, Karpenter, VCI (serverless pods).
+- **Integrated observability** -- Built-in pod monitoring, log collection, and resource metrics via VKE console.
 
 **Estimated cost**: ~$200/year infrastructure (excludes ModelArk API usage).
 
@@ -24,7 +24,7 @@ Deploy SeedCamp to [BytePlus VKE (Vital Kubernetes Engine)](https://docs.byteplu
 ## Architecture
 
 ```
-BytePlus Cloud — ap-southeast-1 (Singapore)
+BytePlus Cloud -- ap-southeast-1 (Singapore)
 ┌──────────────────────────────────────────────┐
 │  VKE Cluster (Vital Kubernetes Engine)       │
 │  ┌────────────────────────────────────────┐  │
@@ -50,7 +50,7 @@ BytePlus Cloud — ap-southeast-1 (Singapore)
 **Via [VKE Console](https://console.byteplus.com/vke):**
 
 1. Click **Create Cluster**
-2. Region: `ap-southeast-1` (Singapore) — same region as ModelArk
+2. Region: `ap-southeast-1` (Singapore) -- same region as ModelArk
 3. Kubernetes version: 1.28+ (1.30 recommended)
 4. Node pool: 2 nodes, `ecs.g3i.xlarge` (4 vCPU / 16 GB)
 5. Network: VPC with internet access enabled
@@ -135,11 +135,11 @@ export REGISTRY_INSTANCE=your-cr-instance
 |------|---------|
 | `vke/namespace.yaml` | Creates `seedcamp` namespace |
 | `vke/secret.yaml` | API key template (use `kubectl create secret` instead) |
-| `vke/deployment-api.yaml` | API server — 2 replicas, health checks, resource limits |
-| `vke/deployment-dashboard.yaml` | Streamlit dashboard — 1 replica |
+| `vke/deployment-api.yaml` | API server -- 2 replicas, health checks, resource limits |
+| `vke/deployment-dashboard.yaml` | Streamlit dashboard -- 1 replica |
 | `vke/service-api.yaml` | LoadBalancer for API (port 80 → 8000) |
 | `vke/service-dashboard.yaml` | LoadBalancer for dashboard (port 80 → 8501) |
-| `vke/ingress.yaml` | Optional — custom domain routing |
+| `vke/ingress.yaml` | Optional -- custom domain routing |
 
 ## Operations
 
@@ -200,10 +200,10 @@ VKE also provides built-in monitoring via the console: **VKE Console → Cluster
 
 ### Cost Optimization Tips
 
-1. **Right-size nodes** — Start with `ecs.g3i.large` (2 vCPU / 8 GB) if traffic is low
-2. **Cluster autoscaler** — Scale nodes down during off-hours
-3. **Spot instances** — Use for non-production workloads (up to 70% savings)
-4. **VCI (serverless pods)** — Burst to [Vital Container Instance](https://docs.byteplus.com/en/docs/vke/VCI-benefits) for spiky workloads without pre-provisioning nodes
+1. **Right-size nodes** -- Start with `ecs.g3i.large` (2 vCPU / 8 GB) if traffic is low
+2. **Cluster autoscaler** -- Scale nodes down during off-hours
+3. **Spot instances** -- Use for non-production workloads (up to 70% savings)
+4. **VCI (serverless pods)** -- Burst to [Vital Container Instance](https://docs.byteplus.com/en/docs/vke/VCI-benefits) for spiky workloads without pre-provisioning nodes
 
 ## Troubleshooting
 

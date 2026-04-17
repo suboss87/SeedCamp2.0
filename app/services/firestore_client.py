@@ -1,5 +1,5 @@
 """
-Firestore Client — Persistence Layer
+Firestore Client -- Persistence Layer
 CRUD operations for campaigns, products, and video results.
 Uses AsyncClient for consistency with the async codebase.
 """
@@ -19,11 +19,11 @@ from app.models.campaign_schemas import (
 
 logger = logging.getLogger(__name__)
 
-# Lazy-loaded in init() — allows this module to be imported without google-cloud-firestore
+# Lazy-loaded in init() -- allows this module to be imported without google-cloud-firestore
 firestore = None  # noqa: E305
 AsyncClient = None
 
-# Lazily initialized — call init() during app startup
+# Lazily initialized -- call init() during app startup
 _db: AsyncClient | None = None
 
 
@@ -46,7 +46,7 @@ def init():
 
 def _get_db() -> AsyncClient:
     if _db is None:
-        raise RuntimeError("Firestore not initialized — call firestore_client.init() on startup")
+        raise RuntimeError("Firestore not initialized -- call firestore_client.init() on startup")
     return _db
 
 

@@ -128,7 +128,7 @@ async def start_batch_generation(
     campaign_id: str, req: BatchGenerateRequest = BatchGenerateRequest()
 ):
     """Start batch video generation for all pending products in a campaign.
-    Returns immediately — poll /progress for status.
+    Returns immediately -- poll /progress for status.
     """
     from app.services import batch_generator
 
@@ -163,7 +163,7 @@ async def start_batch_generation(
 
 @router.get("/{campaign_id}/progress", response_model=BatchProgress)
 async def get_batch_progress(campaign_id: str):
-    """Poll batch generation progress (lightweight — reads one campaign doc)."""
+    """Poll batch generation progress (lightweight -- reads one campaign doc)."""
     campaign = await db.get_campaign(campaign_id)
     if not campaign:
         raise HTTPException(status_code=404, detail="Campaign not found")

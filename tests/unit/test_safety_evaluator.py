@@ -1,6 +1,6 @@
 """Tests for the Responsible AI content safety evaluator.
 
-All tests mock the OpenAI client — no real API calls.
+All tests mock the OpenAI client -- no real API calls.
 Verifies: risk classification, token/cost tracking, pipeline integration,
 disabled-safety bypass, and category scoring.
 """

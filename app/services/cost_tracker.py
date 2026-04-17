@@ -10,7 +10,7 @@ from app.models.schemas import CostBreakdown, CostSummary, SKUTier
 
 logger = logging.getLogger(__name__)
 
-# In-memory store — safe under single-process asyncio (cooperative multitasking).
+# In-memory store -- safe under single-process asyncio (cooperative multitasking).
 #
 # ⚠️  MULTI-WORKER LIMITATION
 # When running with multiple uvicorn workers (e.g. `uvicorn --workers 4`,

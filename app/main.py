@@ -1,5 +1,5 @@
 """
-SeedCamp — FastAPI Application
+SeedCamp -- FastAPI Application
 AI-Powered Video Generation at Scale with BytePlus ModelArk.
 Implements the 5-step pipeline: Input → Script Gen → Smart Router → Video Gen → Output.
 """
@@ -54,7 +54,7 @@ async def lifespan(app: FastAPI):
     logger.info("Starting SeedCamp Video Generation Pipeline...")
 
     if settings.dry_run:
-        logger.info("DRY_RUN mode enabled — API calls will be simulated")
+        logger.info("DRY_RUN mode enabled -- API calls will be simulated")
 
     # Initialize persistence backend
     try:
@@ -65,14 +65,14 @@ async def lifespan(app: FastAPI):
     # Warn about ephemeral backends in production
     if settings.production and settings.persistence_backend == "memory":
         logger.warning(
-            "PRODUCTION mode with in-memory persistence — "
+            "PRODUCTION mode with in-memory persistence -- "
             "all campaign data will be lost on restart. "
             "Set PERSISTENCE_BACKEND=firestore for durable storage."
         )
 
     if settings.production:
         logger.warning(
-            "Metrics are in-memory only — counters reset on restart. "
+            "Metrics are in-memory only -- counters reset on restart. "
             "For durable metrics, deploy Prometheus scraping /metrics endpoint."
         )
 
@@ -84,7 +84,7 @@ async def lifespan(app: FastAPI):
         if workers > 1:
             logger.warning(
                 "Multi-worker deployment detected (workers=%d). The in-memory cost "
-                "tracker is per-worker — /api/cost-summary will return partial data. "
+                "tracker is per-worker -- /api/cost-summary will return partial data. "
                 "Use a single worker or back cost_tracker with Redis/Firestore for "
                 "accurate aggregate costs. See docs/DEPLOYMENT.md.",
                 workers,
@@ -108,7 +108,7 @@ async def lifespan(app: FastAPI):
         except Exception as e:
             logger.warning(
                 "Could not validate API key at startup (network issue or endpoint unreachable). "
-                "The API key may still be valid — pipeline calls will fail if it is not. Error: %s",
+                "The API key may still be valid -- pipeline calls will fail if it is not. Error: %s",
                 e,
             )
 
@@ -148,7 +148,7 @@ app = FastAPI(
 
     ## Adapt for Your Use Case
     Replace tiers, model IDs, and the video generation step to match your
-    industry and AI provider — the pipeline patterns remain the same.
+    industry and AI provider -- the pipeline patterns remain the same.
     """,
     version="1.0.0",
     contact={
@@ -316,7 +316,7 @@ async def upload_image(request: Request, file: UploadFile = File(...)):
                 detail="Content-Type header does not match actual file content",
             )
 
-        # Upload to GCS — use UUID to prevent directory traversal
+        # Upload to GCS -- use UUID to prevent directory traversal
         try:
             from google.cloud import storage
         except ImportError:

@@ -1,5 +1,5 @@
 """
-CSV Parser — Product Catalog Import
+CSV Parser -- Product Catalog Import
 Validates and parses CSV files into ProductCreate objects.
 Required columns: sku_id, product_name, description
 Optional columns: image_url, sku_tier, category
@@ -30,7 +30,7 @@ _TIER_MAP = {
 
 def parse_csv(text: str) -> tuple[list[ProductCreate], list[str]]:
     """Parse CSV text into validated ProductCreate objects.
-    Returns (products, errors) — partial success is allowed.
+    Returns (products, errors) -- partial success is allowed.
     """
     products: list[ProductCreate] = []
     errors: list[str] = []

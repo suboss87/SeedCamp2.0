@@ -1,5 +1,5 @@
 """
-Script Writer — Seed 1.8
+Script Writer -- Seed 1.8
 Step 2 of the Pipeline: converts campaign brief into
 ad copy, scene descriptions, and optimized Seedance video prompts.
 """
@@ -15,7 +15,7 @@ from app.utils.retry import retry_with_backoff
 
 logger = logging.getLogger(__name__)
 
-# Client created at import time — API key is captured once. This module is only
+# Client created at import time -- API key is captured once. This module is only
 # imported when dry_run=False, so the key is always valid at import time.
 _client = AsyncOpenAI(
     api_key=settings.ark_api_key,

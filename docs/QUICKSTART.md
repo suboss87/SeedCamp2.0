@@ -1,4 +1,4 @@
-# SeedCamp — Quick Start (Go Live in 30 Minutes)
+# SeedCamp -- Quick Start (Go Live in 30 Minutes)
 
 This guide gets SeedCamp running in production **TODAY** using platforms that work with just your ModelArk API key.
 
@@ -66,7 +66,7 @@ That's it! Your API is live at `https://seedcamp-production.up.railway.app`
    ARK_API_KEY = your-api-key-here
    ```
 
-6. **Deploy** — Render auto-deploys from `render.yaml`
+6. **Deploy** -- Render auto-deploys from `render.yaml`
 
 Your API will be live at `https://seedcamp-api.onrender.com`
 
@@ -102,7 +102,7 @@ curl -X POST http://localhost:8000/api/generate \
 
 ## Option 4: BytePlus VKE (Recommended for Production)
 
-**Cost**: Pay-as-you-go | **Time**: 30 minutes | **Best for**: Production — co-located with ModelArk
+**Cost**: Pay-as-you-go | **Time**: 30 minutes | **Best for**: Production -- co-located with ModelArk
 
 [BytePlus VKE (Vital Kubernetes Engine)](https://docs.byteplus.com/en/docs/vke/What-is-Vital-Kubernetes-Engine) runs your workload on the same network as the ModelArk API, giving you the lowest latency and a single-vendor stack.
 
@@ -195,17 +195,17 @@ When done:
 SeedCamp ships as a **reference architecture**. Before exposing it to the
 internet, do all of the following:
 
-1. **Set `API_KEY`** — the `/api/*` endpoints only require auth if this env
+1. **Set `API_KEY`** -- the `/api/*` endpoints only require auth if this env
    var is set. Without it, anyone who can reach the service can generate
    videos on your ModelArk budget.
-2. **Tighten `CORS_ORIGINS`** — default is `*`. Set it to your dashboard's
+2. **Tighten `CORS_ORIGINS`** -- default is `*`. Set it to your dashboard's
    exact origin in production.
 3. **Streamlit dashboard has no built-in auth.** Do **not** expose port
    `8501` directly to the internet. Put it behind:
    - a reverse proxy with basic auth (nginx, Caddy), or
    - an identity-aware proxy (Cloudflare Access, GCP IAP, Tailscale), or
    - a private network only.
-4. **Rate limit** — confirm `RATE_LIMIT` is set to something sane for your
+4. **Rate limit** -- confirm `RATE_LIMIT` is set to something sane for your
    budget (default `60/minute` per IP).
 5. **Cost tracker is per-worker.** If you run with `WORKERS>1`, aggregate
    cost numbers in `/api/cost-summary` will be partial. Either run with a

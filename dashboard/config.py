@@ -1,12 +1,12 @@
 """
-Dashboard Configuration — Design system, API base, and helpers.
+Dashboard Configuration -- Design system, API base, and helpers.
 """
 
 import os
 
 API_BASE = os.getenv("API_URL", "http://localhost:8000")
 
-# ── Color System (Enterprise — Blue→Violet) ──────────────────────
+# ── Color System (Enterprise -- Blue→Violet) ──────────────────────
 ACCENT = "#3B82F6"
 ACCENT_HOVER = "#2563EB"
 ACCENT_LIGHT = "rgba(59, 130, 246, 0.06)"

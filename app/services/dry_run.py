@@ -1,5 +1,5 @@
 """
-Dry-Run Stubs — Simulate API Calls Without a ModelArk Key
+Dry-Run Stubs -- Simulate API Calls Without a ModelArk Key
 When DRY_RUN=true, these functions replace the real script_writer,
 video_gen, and safety_evaluator to let you explore the full pipeline
 (routing, cost tracking, batching) with zero API cost and no credentials.
@@ -82,7 +82,7 @@ async def create_video_task(
 
 
 async def get_video_status(task_id: str, model_used: str = "") -> VideoTaskStatus:
-    """Simulate checking video status — always returns Succeeded."""
+    """Simulate checking video status -- always returns Succeeded."""
     return VideoTaskStatus(
         task_id=task_id,
         status="Succeeded",
@@ -92,7 +92,7 @@ async def get_video_status(task_id: str, model_used: str = "") -> VideoTaskStatu
 
 
 async def wait_for_video(task_id: str, model_used: str = "") -> VideoTaskStatus:
-    """Simulate waiting for video — returns after a short delay."""
+    """Simulate waiting for video -- returns after a short delay."""
     logger.info("[DRY-RUN] Simulating video generation wait for %s", task_id)
     await asyncio.sleep(1.0)  # Simulate some wait time
     return await get_video_status(task_id, model_used)
@@ -104,7 +104,7 @@ async def wait_for_video(task_id: str, model_used: str = "") -> VideoTaskStatus:
 async def evaluate_content_safety(
     script: AdScript,
 ) -> tuple[SafetyEvalResult, int, int]:
-    """Simulate content safety evaluation — always returns safe."""
+    """Simulate content safety evaluation -- always returns safe."""
     logger.info("[DRY-RUN] Simulating safety evaluation")
     await asyncio.sleep(0.1)
 
@@ -142,7 +142,7 @@ async def evaluate_video_quality(
     brief: str = "",
     platforms: list[str] | None = None,
 ) -> tuple[QualityEvalResult, int, int]:
-    """Simulate quality evaluation — always returns good quality."""
+    """Simulate quality evaluation -- always returns good quality."""
     logger.info("[DRY-RUN] Simulating quality evaluation")
     await asyncio.sleep(0.1)
 
@@ -210,5 +210,5 @@ async def generate_brief(
 
 
 async def notify(event: str, payload: dict):
-    """Simulate notification — just logs."""
-    logger.info("[DRY-RUN] Notification: %s — %s", event, payload.get("message", ""))
+    """Simulate notification -- just logs."""
+    logger.info("[DRY-RUN] Notification: %s -- %s", event, payload.get("message", ""))

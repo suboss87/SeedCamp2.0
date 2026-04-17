@@ -1,5 +1,5 @@
 """
-SeedCamp — AI Video Ad Generation Dashboard
+SeedCamp -- AI Video Ad Generation Dashboard
 """
 
 import streamlit as st
@@ -106,7 +106,7 @@ p, span, div {{ font-family: 'Inter', sans-serif !important; }}
     color: {TEXT} !important;
 }}
 
-/* ── SIDEBAR — Deep violet-black ─────────────────────── */
+/* ── SIDEBAR -- Deep violet-black ─────────────────────── */
 section[data-testid="stSidebar"] {{
     background: {SIDEBAR_BG} !important;
     border-right: 1px solid rgba(139, 92, 246, 0.08) !important;
@@ -120,7 +120,7 @@ section[data-testid="stSidebar"] [data-testid="stVerticalBlockBorderWrapper"] {{
     box-shadow: none !important;
     background: transparent !important;
 }}
-/* ── Sidebar toggle arrows — ALWAYS visible ────────── */
+/* ── Sidebar toggle arrows -- ALWAYS visible ────────── */
 section[data-testid="stSidebar"] button[kind="header"],
 section[data-testid="stSidebar"] [data-testid="baseButton-header"] {{
     background: rgba(139, 92, 246, 0.12) !important;
@@ -464,7 +464,7 @@ ul[role="listbox"] [aria-selected="true"],
     color: {TEXT} !important;
 }}
 
-/* ── Primary button — Solid, confident ───────────────── */
+/* ── Primary button -- Solid, confident ───────────────── */
 .stButton > button[kind="primary"] {{
     background: {ACCENT} !important;
     color: #FFFFFF !important;

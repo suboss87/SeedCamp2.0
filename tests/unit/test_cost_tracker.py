@@ -1,7 +1,7 @@
 """Tests for token-aware cost tracking (Pattern 3).
 
 Verifies: cost calculation formula, tier tracking, history aggregation, summary stats.
-All pure functions — no mocks needed.
+All pure functions -- no mocks needed.
 """
 
 import pytest

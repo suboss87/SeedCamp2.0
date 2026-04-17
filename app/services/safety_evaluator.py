@@ -1,5 +1,5 @@
 """
-Safety Evaluator — Responsible AI Content Safety Layer
+Safety Evaluator -- Responsible AI Content Safety Layer
 Step 2.5 of the Pipeline: evaluates generated ad scripts for safety concerns
 before routing to video generation. Uses Seed 1.8 as a safety classifier.
 """
@@ -16,7 +16,7 @@ from app.utils.retry import retry_with_backoff
 
 logger = logging.getLogger(__name__)
 
-# Client created at import time — API key is captured once. This module is only
+# Client created at import time -- API key is captured once. This module is only
 # imported when dry_run=False, so the key is always valid at import time.
 _client = AsyncOpenAI(
     api_key=settings.ark_api_key,
@@ -129,7 +129,7 @@ async def evaluate_content_safety(
                 {
                     "name": cat,
                     "score": 0.0,
-                    "explanation": "Parse error — defaulting to safe",
+                    "explanation": "Parse error -- defaulting to safe",
                 }
                 for cat in SAFETY_CATEGORIES
             ],

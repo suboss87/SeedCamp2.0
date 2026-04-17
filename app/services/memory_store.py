@@ -1,6 +1,6 @@
 """
 In-Memory Persistence Backend
-Drop-in replacement for firestore_client — stores campaigns, products, and
+Drop-in replacement for firestore_client -- stores campaigns, products, and
 video results in memory. Used by default so the project runs without GCP.
 
 Data is lost on restart. For production persistence, set PERSISTENCE_BACKEND=firestore.

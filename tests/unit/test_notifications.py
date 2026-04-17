@@ -1,6 +1,6 @@
 """Tests for the notification service.
 
-All tests mock httpx — no real network calls.
+All tests mock httpx -- no real network calls.
 Verifies: event routing, webhook payload, Slack formatting, disabled state.
 """
 

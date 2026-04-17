@@ -27,7 +27,7 @@ python3 docs/examples/generate_single_video.py
 
 Full campaign workflow: create a campaign, upload a product CSV, trigger batch generation, and monitor progress.
 
-**Requires Firestore** — set `GOOGLE_APPLICATION_CREDENTIALS` or run in a GCP environment.
+**Requires Firestore** -- set `GOOGLE_APPLICATION_CREDENTIALS` or run in a GCP environment.
 
 ```bash
 python3 docs/examples/batch_campaign.py

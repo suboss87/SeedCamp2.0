@@ -1,5 +1,5 @@
 """
-Auto-Brief Engine — Core Value Proposition
+Auto-Brief Engine -- Core Value Proposition
 Stage A of the two-stage approach:
   campaign_theme + product_data → optimized brief → (existing script_writer → AdScript)
 
@@ -17,7 +17,7 @@ from app.utils.retry import retry_with_backoff
 
 logger = logging.getLogger(__name__)
 
-# Client created at import time — API key is captured once. This module is only
+# Client created at import time -- API key is captured once. This module is only
 # imported when dry_run=False, so the key is always valid at import time.
 _client = AsyncOpenAI(
     api_key=settings.ark_api_key,
@@ -33,7 +33,7 @@ and product details, write a focused advertising brief (2-4 sentences) that:
 3. Suggests a visual direction (setting, lighting, motion)
 4. Matches the product's tier (hero = premium/cinematic, catalog = punchy/efficient)
 
-Write ONLY the brief text — no labels, no JSON, no markdown. Just the brief.
+Write ONLY the brief text -- no labels, no JSON, no markdown. Just the brief.
 Keep it under 100 words. Be specific and visual.
 """
 

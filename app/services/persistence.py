@@ -1,5 +1,5 @@
 """
-Persistence — Backend Selector
+Persistence -- Backend Selector
 Routes all database operations to the configured backend:
   - "memory" (default): In-memory store, no external dependencies
   - "firestore": Google Cloud Firestore (requires google-cloud-firestore)

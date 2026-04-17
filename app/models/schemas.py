@@ -6,8 +6,8 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class SKUTier(str, Enum):
-    hero = "hero"  # Top 20% — Seedance 2.0
-    catalog = "catalog"  # 80% — Seedance 2.0 Fast
+    hero = "hero"  # Top 20% -- Seedance 2.0
+    catalog = "catalog"  # 80% -- Seedance 2.0 Fast
 
 
 class Platform(str, Enum):

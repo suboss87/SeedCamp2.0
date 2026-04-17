@@ -1,8 +1,8 @@
-# SeedCamp Market Research — April 2026 (updated)
+# SeedCamp Market Research -- April 2026 (updated)
 
 ## Executive Summary
 
-SeedCamp's product-market fit is **video operations infrastructure for inventory-scale businesses** — not another video generator. The gap: businesses with 100s-1000s of items that each need video can't afford traditional production, and every existing AI tool breaks at bulk.
+SeedCamp's product-market fit is **video operations infrastructure for inventory-scale businesses** -- not another video generator. The gap: businesses with 100s-1000s of items that each need video can't afford traditional production, and every existing AI tool breaks at bulk.
 
 ---
 
@@ -20,7 +20,7 @@ SeedCamp's product-market fit is **video operations infrastructure for inventory
 
 ---
 
-## 2. The Problem — The "500 SKU Wall"
+## 2. The Problem -- The "500 SKU Wall"
 
 Traditional video production costs $500–$5,000 per video. At inventory scale:
 
@@ -30,7 +30,7 @@ Traditional video production costs $500–$5,000 per video. At inventory scale:
 | 1,000 items | $500K–$5M | Only hero items get video |
 | 10,000 items | $5M–$50M | Nobody attempts this |
 
-> "For a brand managing 500 SKUs, producing video for each one through traditional methods would require coordinating hundreds of shoots. By the time the last video is finished, the first ones need updating. The cycle never closes, so most brands simply don't attempt full coverage." — WinSavvy
+> "For a brand managing 500 SKUs, producing video for each one through traditional methods would require coordinating hundreds of shoots. By the time the last video is finished, the first ones need updating. The cycle never closes, so most brands simply don't attempt full coverage." -- WinSavvy
 
 AI video drops cost to $0.08–$0.13 per video, but existing tools lack the operational layer for bulk.
 
@@ -38,7 +38,7 @@ AI video drops cost to $0.08–$0.13 per video, but existing tools lack the oper
 
 ## 3. Competitor Landscape
 
-### Pricing Comparison (API, per 10-second video — April 2026)
+### Pricing Comparison (API, per 10-second video -- April 2026)
 
 | Model | Cost | AA Rank (T2V) | Status |
 |-------|------|---------------|--------|
@@ -50,7 +50,7 @@ AI video drops cost to $0.08–$0.13 per video, but existing tools lack the oper
 | Google Veo 3 | ~$4.00 | #9 | GA |
 | Sora 2 Pro (1080p) | ~$5.00 | Absent | **Shutting down Apr 26 / Sep 24** |
 
-> **April 2026 update:** Sora is shutting down — app Apr 26, API Sep 24. Reported $15M/day inference costs, <8% 30-day retention. Disney's ~$1B partnership is dead. OpenAI redirecting compute to coding tools. ([source](https://techcrunch.com/2026/03/29/why-openai-really-shut-down-sora/))
+> **April 2026 update:** Sora is shutting down -- app Apr 26, API Sep 24. Reported $15M/day inference costs, <8% 30-day retention. Disney's ~$1B partnership is dead. OpenAI redirecting compute to coding tools. ([source](https://techcrunch.com/2026/03/29/why-openai-really-shut-down-sora/))
 
 ### Why Competitors Break at Scale
 
@@ -58,12 +58,12 @@ From G2 analysis of 1,236 verified reviews (Oct 2024 – Apr 2025):
 
 | Tool | How It Breaks |
 |------|--------------|
-| **Synthesia** | API gated behind opaque Enterprise tier. Content moderation inconsistent — "videos approved, then identical versions flagged without explanation" |
+| **Synthesia** | API gated behind opaque Enterprise tier. Content moderation inconsistent -- "videos approved, then identical versions flagged without explanation" |
 | **HeyGen** | "Unlimited" plan slashed to 120 min/mo overnight. Avatar IV uses 6x standard credits. Translation locked behind $5,000/yr paywall |
 | **Runway** | Failed generations still consume credits. 16-sec max. "Unpredictable costs and account termination risks make it unsuitable for professional deliverables" |
-| **Sora** | Removed free tier Jan 2026. Moderation "absurd" — simple prompts fail. **Now shutting down entirely (Apr/Sep 2026).** |
+| **Sora** | Removed free tier Jan 2026. Moderation "absurd" -- simple prompts fail. **Now shutting down entirely (Apr/Sep 2026).** |
 
-> "The work doesn't end at video creation, but the platforms do. Users are hacking together post-publish workflows because the tools don't help them do it natively." — G2
+> "The work doesn't end at video creation, but the platforms do. Users are hacking together post-publish workflows because the tools don't help them do it natively." -- G2
 
 ### What SeedCamp Has That No Competitor Offers
 
@@ -83,7 +83,7 @@ From G2 analysis of 1,236 verified reviews (Oct 2024 – Apr 2025):
 
 ### Tier 1: Automotive Dealerships
 
-**Signal strength: STRONG** — Funded competitor (Phyron, $11M) validates demand.
+**Signal strength: STRONG** -- Funded competitor (Phyron, $11M) validates demand.
 
 | Data Point | Source |
 |-----------|--------|
@@ -99,7 +99,7 @@ From G2 analysis of 1,236 verified reviews (Oct 2024 – Apr 2025):
 
 ### Tier 2: E-commerce Catalogs (500+ SKUs)
 
-**Signal strength: STRONG** — Largest market, universal pain.
+**Signal strength: STRONG** -- Largest market, universal pain.
 
 | Data Point | Source |
 |-----------|--------|
@@ -113,7 +113,7 @@ From G2 analysis of 1,236 verified reviews (Oct 2024 – Apr 2025):
 
 ### Tier 3: Real Estate Agencies
 
-**Signal strength: MODERATE** — Clear demand gap, lower price point.
+**Signal strength: MODERATE** -- Clear demand gap, lower price point.
 
 | Data Point | Source |
 |-----------|--------|
@@ -128,7 +128,7 @@ From G2 analysis of 1,236 verified reviews (Oct 2024 – Apr 2025):
 
 ### Tier 4: Education & Training
 
-**Signal strength: MODERATE** — Strong ROI data, different use case (talking head vs. product video).
+**Signal strength: MODERATE** -- Strong ROI data, different use case (talking head vs. product video).
 
 | Data Point | Source |
 |-----------|--------|
@@ -138,7 +138,7 @@ From G2 analysis of 1,236 verified reviews (Oct 2024 – Apr 2025):
 
 ### Tier 5: Restaurant / Food Service
 
-**Signal strength: WEAK** — Market focused on digital signage, not per-item video. Early stage.
+**Signal strength: WEAK** -- Market focused on digital signage, not per-item video. Early stage.
 
 ---
 
@@ -147,19 +147,19 @@ From G2 analysis of 1,236 verified reviews (Oct 2024 – Apr 2025):
 ### Position (April 2026 update)
 
 - BytePlus is ByteDance's B2B enterprise arm (launched 2021)
-- Revenue estimated $25–50M — growth mode, receptive to partnerships
-- **Seedance 2.0 ranks #2 on Artificial Analysis** (Apr 2026) — behind only HappyHorse-1.0 (Alibaba, new Apr 7)
+- Revenue estimated $25–50M -- growth mode, receptive to partnerships
+- **Seedance 2.0 ranks #2 on Artificial Analysis** (Apr 2026) -- behind only HappyHorse-1.0 (Alibaba, new Apr 7)
 - Seedance 2.0 public beta opened **April 14, 2026** on ModelArk
 - Native joint audio-video generation, lip-sync (8+ languages), up to 15s multi-shot
-- **TikTok USDS JV** (Oracle + Silver Lake + MGX) took control of TikTok US on Jan 22, 2026 — this de-risks BytePlus US enterprise sales (ByteDance retains minority, data under American control)
-- BytePlus Gold Sponsor at **Hong Kong Web3 Festival 2026** — expanding APAC enterprise footprint
+- **TikTok USDS JV** (Oracle + Silver Lake + MGX) took control of TikTok US on Jan 22, 2026 -- this de-risks BytePlus US enterprise sales (ByteDance retains minority, data under American control)
+- BytePlus Gold Sponsor at **Hong Kong Web3 Festival 2026** -- expanding APAC enterprise footprint
 
 ### Partner Program
 
 BytePlus operates a formal Partner Network at byteplus.com/en/partners:
-- **Reseller** — resells BytePlus solutions
-- **Agency** — refers customer prospects
-- **Distributor** — recruits and supports sub-partners
+- **Reseller** -- resells BytePlus solutions
+- **Agency** -- refers customer prospects
+- **Distributor** -- recruits and supports sub-partners
 
 ### Key Finding: No Public Reference Architecture Program
 
@@ -196,7 +196,7 @@ Worth noting: NIQ/CES 2025 study (2,000+ participants with EEG monitoring) found
 
 ---
 
-## 7. Competitive Landscape (April 2026 — new section)
+## 7. Competitive Landscape (April 2026 -- new section)
 
 ### Direct competitors / closest analogues
 
@@ -220,8 +220,8 @@ Worth noting: NIQ/CES 2025 study (2,000+ participants with EEG monitoring) found
 1. ~~Are there competitors beyond Phyron solving inventory-scale video?~~ **Answered:** Oxolo, Creatify, OpenMontage. None combine all 5 patterns.
 2. ~~Is the automotive signal real?~~ **Answered:** Yes. Phyron EUR 10M Series B, 2,500 dealers, FT1000.
 3. Is 80/20 routing novel? **Partially answered:** Novel for video (Martian/RouteLLM exist for LLMs, nobody does it for video).
-4. Should SeedCamp go model-agnostic? **Recommended for v1.1** — keeps BytePlus-native for launch, adds provider abstraction later.
-5. Does BytePlus want reference architectures? **Unknown** — Gaxos deal is the only precedent.
+4. Should SeedCamp go model-agnostic? **Recommended for v1.1** -- keeps BytePlus-native for launch, adds provider abstraction later.
+5. Does BytePlus want reference architectures? **Unknown** -- Gaxos deal is the only precedent.
 6. Will Seedance 2.0 copyright controversy affect viability? **Monitoring.**
 7. **NEW:** With Sora dead and HappyHorse-1.0 (#1 AA) emerging from Alibaba, does BytePlus lose the quality crown? Monitor closely.
 
@@ -229,17 +229,17 @@ Worth noting: NIQ/CES 2025 study (2,000+ participants with EEG monitoring) found
 
 ## Sources
 
-- Fortune Business Insights — AI Video Generator Market Report
-- Grand View Research — AI Video Generator Market Analysis
-- Market.us — AI Video Market Report
-- G2 — AI Video Generator Review Insights (1,236 reviews)
+- Fortune Business Insights -- AI Video Generator Market Report
+- Grand View Research -- AI Video Generator Market Analysis
+- Market.us -- AI Video Market Report
+- G2 -- AI Video Generator Review Insights (1,236 reviews)
 - Synthesia, HeyGen, Runway, Sora, Veo pricing pages
 - Phyron case studies (Ken Garff, Adevinta, Renault Renew, Motorpoint)
-- Resimpli — Real Estate Video Statistics
-- DealerRefresh — Automotive dealer forums
-- WinSavvy — E-commerce Video Production Guide
-- Ecommerce Fastlane — Scale Video Content Strategy
-- BytePlus Partner Network — byteplus.com/en/partners
-- Gaxos.ai / BytePlus deal — GlobeNewsWire, Benzinga (Feb 2026)
-- NIQ / CES 2025 — Consumer Attitudes Toward AI Ads
+- Resimpli -- Real Estate Video Statistics
+- DealerRefresh -- Automotive dealer forums
+- WinSavvy -- E-commerce Video Production Guide
+- Ecommerce Fastlane -- Scale Video Content Strategy
+- BytePlus Partner Network -- byteplus.com/en/partners
+- Gaxos.ai / BytePlus deal -- GlobeNewsWire, Benzinga (Feb 2026)
+- NIQ / CES 2025 -- Consumer Attitudes Toward AI Ads
 - BytePlus ModelArk documentation and pricing

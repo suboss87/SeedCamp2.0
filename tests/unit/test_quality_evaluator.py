@@ -1,6 +1,6 @@
 """Tests for the quality evaluator service.
 
-All tests mock the OpenAI client — no real API calls.
+All tests mock the OpenAI client -- no real API calls.
 Verifies: grade classification, token/cost tracking, pipeline integration,
 disabled-quality bypass, and dimension scoring.
 """

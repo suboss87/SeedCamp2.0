@@ -278,7 +278,7 @@ Required secrets in GitHub:
 ```bash
 # Connect GitHub repo
 gcloud alpha builds triggers create github \
-  --repo-name=seedcamp \
+  --repo-name=SeedCamp2.0 \
   --repo-owner=suboss87 \
   --branch-pattern="^main$" \
   --build-config=cloudbuild.yaml

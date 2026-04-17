@@ -11,8 +11,8 @@ Be respectful, inclusive, and professional in all interactions.
 1. **Fork the repository** on GitHub
 2. **Clone your fork**:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/seedcamp.git
-   cd seedcamp
+   git clone https://github.com/YOUR_USERNAME/SeedCamp2.0.git
+   cd SeedCamp2.0
    ```
 3. **Set up development environment**:
    ```bash

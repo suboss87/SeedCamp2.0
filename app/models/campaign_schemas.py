@@ -26,7 +26,7 @@ class ProductStatus(str, Enum):
     generating = "generating"
     completed = "completed"
     failed = "failed"
-    skipped = "skipped"  # Budget exceeded — not processed
+    skipped = "skipped"  # Budget exceeded -- not processed
     approved = "approved"
     rejected = "rejected"
     regenerating = "regenerating"
@@ -48,7 +48,7 @@ class CampaignCreate(BaseModel):
     duration: int = Field(default=8, ge=2, le=15)
     resolution: str = Field(default="720p")
     budget_limit_usd: float | None = Field(
-        None, ge=0.01, description="Optional budget cap in USD — batch stops when exceeded"
+        None, ge=0.01, description="Optional budget cap in USD -- batch stops when exceeded"
     )
 
 

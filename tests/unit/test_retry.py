@@ -1,7 +1,7 @@
 """Tests for resilient API integration (Pattern 5).
 
 Verifies: error classification, retry vs no-retry behavior, backoff exhaustion.
-Uses httpx.Response mocks — no real network calls.
+Uses httpx.Response mocks -- no real network calls.
 """
 
 import httpx

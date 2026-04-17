@@ -6,7 +6,7 @@ This directory contains deployment configurations for multiple cloud platforms a
 
 | Platform | Free Tier | Setup Time | Best For | Estimated Cost* | Guide |
 |----------|-----------|------------|----------|----------------|-------|
-| **BytePlus VKE** (recommended) | ❌ Pay-as-you-go | 30 min | Production — co-located with ModelArk | ~$200/yr | [byteplus/](./byteplus/) |
+| **BytePlus VKE** (recommended) | ❌ Pay-as-you-go | 30 min | Production -- co-located with ModelArk | ~$200/yr | [byteplus/](./byteplus/) |
 | **Docker Compose** | ✅ Yes | 5 min | Local dev & testing | $0 | [docker/](./docker/) |
 | **Railway** | ❌ No ($5/mo) | 10 min | Quick demos & prototypes | ~$60/yr | [railway/](./railway/) |
 | **Render** | ✅ Yes | 15 min | Side projects & MVPs | Free tier available | [render/](./render/) |
@@ -25,11 +25,11 @@ This directory contains deployment configurations for multiple cloud platforms a
 ### For Production
 
 #### Choose **BytePlus VKE** (recommended) if you want:
-- ✅ Co-location with ModelArk APIs — lowest latency, no cross-cloud egress
+- ✅ Co-location with ModelArk APIs -- lowest latency, no cross-cloud egress
 - ✅ Single vendor for compute + AI inference + container registry
 - ✅ Enterprise Kubernetes with managed control plane, HPA, and VCI
 - ✅ Built-in monitoring and log collection
-- ⚠️ No free tier — pay-as-you-go pricing
+- ⚠️ No free tier -- pay-as-you-go pricing
 
 #### Choose **GCP Cloud Run** if you want:
 - ✅ Generous free tier (2M requests/month)
@@ -186,7 +186,7 @@ Adapt this for GitLab CI, CircleCI, Jenkins, or your preferred CI/CD platform. A
 
 1. Start with [Docker Compose](./docker/) for local development
 2. Deploy to [Railway](./railway/) or [Render](./render/) for staging
-3. Graduate to [BytePlus VKE](./byteplus/) for production (recommended — co-located with ModelArk)
+3. Graduate to [BytePlus VKE](./byteplus/) for production (recommended -- co-located with ModelArk)
 4. Or use [GCP Cloud Run](./gcp/) / [AWS ECS](./aws/) if you prefer those clouds
 5. Add monitoring with [Prometheus + Grafana](./monitoring/)
 6. Set up CI/CD for automated deployments

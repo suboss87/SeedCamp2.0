@@ -1,7 +1,7 @@
 """Tests for the pipeline orchestration (Patterns 1-3 together).
 
 Verifies: token estimation formula, routing integration, cost recording, end-to-end flow.
-Mocks script_writer and video_gen (external API calls) — tests the glue logic.
+Mocks script_writer and video_gen (external API calls) -- tests the glue logic.
 """
 
 from unittest.mock import AsyncMock, patch

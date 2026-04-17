@@ -3,7 +3,7 @@
 OpenAI announced the Sora shutdown in March 2026:
 - **App/web** closes **April 26, 2026**
 - **API** closes **September 24, 2026**
-- Export your data before the deadlines — [OpenAI help article](https://help.openai.com/en/articles/20001152-what-to-know-about-the-sora-discontinuation)
+- Export your data before the deadlines -- [OpenAI help article](https://help.openai.com/en/articles/20001152-what-to-know-about-the-sora-discontinuation)
 
 This guide walks you through migrating a Sora integration to SeedCamp on Seedance 2.0.
 
@@ -116,7 +116,7 @@ If you have a CSV of Sora prompts:
 
 ```python
 # Convert sora-prompts.csv → SeedCamp batch
-# Note: run_batch() is async — wrap with asyncio.run() for scripts.
+# Note: run_batch() is async -- wrap with asyncio.run() for scripts.
 import asyncio
 import csv
 import uuid

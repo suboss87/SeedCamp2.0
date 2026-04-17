@@ -1,5 +1,5 @@
 """
-Dashboard sections — rendering functions for sidebar, quick video,
+Dashboard sections -- rendering functions for sidebar, quick video,
 campaign batch, and campaign history.
 """
 
@@ -218,7 +218,7 @@ def render_sidebar_analytics():
 def _run_sse_generation(
     payload, progress_area, script_area, cost_area, video_area, variant_label=""
 ) -> dict:
-    header = f"Pipeline Progress — {variant_label}" if variant_label else "Pipeline Progress"
+    header = f"Pipeline Progress -- {variant_label}" if variant_label else "Pipeline Progress"
 
     with progress_area:
         st.markdown(f"#### {header}")
@@ -271,7 +271,7 @@ def _run_sse_generation(
                 if "script" in final_data:
                     s = final_data["script"]
                     label = (
-                        f"View Generated Script — {variant_label}"
+                        f"View Generated Script -- {variant_label}"
                         if variant_label
                         else "View Generated Script"
                     )
@@ -714,7 +714,7 @@ def render_campaign_batch():
             min_value=0.0,
             value=0.0,
             step=0.50,
-            help="Optional — batch stops when total cost exceeds this limit. Set to 0 for no limit.",
+            help="Optional -- batch stops when total cost exceeds this limit. Set to 0 for no limit.",
             key="cb_budget",
         )
 
@@ -836,7 +836,7 @@ def render_campaign_batch():
         with st.container(border=True):
             for p in products[:15]:
                 tier = "Hero" if p.get("sku_tier") == "hero" else "Catalog"
-                st.markdown(f"`{p['sku_id']}` {p['product_name']} — {tier}")
+                st.markdown(f"`{p['sku_id']}` {p['product_name']} -- {tier}")
             if len(products) > 15:
                 st.caption(f"+ {len(products) - 15} more")
 
@@ -935,7 +935,7 @@ def _render_campaign_results(campaign_id: str):
                     cost = result.get("cost", {})
                     model = result.get("model_used", "N/A")
                     cost_val = cost.get("total_cost_usd", 0) if cost else 0
-                    st.caption(f"{model} — ${cost_val:.4f}")
+                    st.caption(f"{model} -- ${cost_val:.4f}")
 
                     if video_url:
                         st.link_button("Download", video_url, use_container_width=True)
@@ -953,7 +953,7 @@ def _render_campaign_results(campaign_id: str):
                         reason = result.get("rejection_reason", "")
                         st.markdown(
                             f'<span style="color:#ef4444;font-weight:600;">Rejected</span>'
-                            f'{f" — {reason}" if reason else ""}',
+                            f'{f" -- {reason}" if reason else ""}',
                             unsafe_allow_html=True,
                         )
                         if regen_count > 0:

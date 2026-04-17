@@ -1,5 +1,5 @@
 """
-Batch Generator — Campaign-scale video generation
+Batch Generator -- Campaign-scale video generation
 Orchestrates brief generation + pipeline execution for multiple products
 with semaphore-based concurrency and per-product error handling.
 """
@@ -111,7 +111,7 @@ async def _process_product(campaign: Campaign, product: Product):
     # Budget pre-check: skip product if budget exceeded
     if await _check_budget(campaign):
         logger.info(
-            "Budget exceeded for campaign %s — skipping product %s", campaign.id, product.sku_id
+            "Budget exceeded for campaign %s -- skipping product %s", campaign.id, product.sku_id
         )
         await db.update_product_status(product.id, ProductStatus.skipped)
         asyncio.create_task(
@@ -122,7 +122,7 @@ async def _process_product(campaign: Campaign, product: Product):
                     "campaign_name": campaign.name,
                     "skipped_sku": product.sku_id,
                     "budget_limit_usd": campaign.budget_limit_usd,
-                    "message": f"Budget limit ${campaign.budget_limit_usd:.2f} exceeded — skipping {product.sku_id}",
+                    "message": f"Budget limit ${campaign.budget_limit_usd:.2f} exceeded -- skipping {product.sku_id}",
                 },
             )
         )
@@ -205,7 +205,7 @@ async def _process_product(campaign: Campaign, product: Product):
                 result_updates["video_url"] = gcs_url  # Prefer permanent URL
                 logger.info("Video backed up for %s: %s", product.sku_id, gcs_url)
             except Exception:
-                logger.warning("GCS backup failed for %s — using CDN URL", product.sku_id)
+                logger.warning("GCS backup failed for %s -- using CDN URL", product.sku_id)
                 result_updates["gcs_backup_status"] = "failed"
 
             await db.update_video_result(result_id, result_updates)

@@ -1,5 +1,5 @@
 """
-Quality Evaluator — Video Script & Prompt Quality Assessment
+Quality Evaluator -- Video Script & Prompt Quality Assessment
 Step 6 of the Pipeline: evaluates generated ad scripts for quality across
 5 dimensions using Seed 1.8. Non-blocking: failure results in quality=null.
 """
@@ -122,7 +122,7 @@ async def evaluate_video_quality(
                 {
                     "name": dim,
                     "score": 0.5,
-                    "explanation": "Parse error — defaulting to fair",
+                    "explanation": "Parse error -- defaulting to fair",
                 }
                 for dim in QUALITY_DIMENSIONS
             ],

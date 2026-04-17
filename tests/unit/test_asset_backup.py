@@ -1,6 +1,6 @@
 """Tests for the video asset backup service.
 
-All tests mock httpx and GCS — no real network calls.
+All tests mock httpx and GCS -- no real network calls.
 Verifies: download + upload flow, error handling, URL generation.
 """
 
@@ -27,7 +27,7 @@ class TestBackupVideo:
         mock_client.__aexit__ = AsyncMock(return_value=False)
         mock_client_cls.return_value = mock_client
 
-        # Mock GCS — patch google.cloud.storage module in sys.modules
+        # Mock GCS -- patch google.cloud.storage module in sys.modules
         mock_blob = MagicMock()
         mock_blob.public_url = "https://storage.googleapis.com/bucket/videos/camp1/prod1/abc.mp4"
         mock_bucket = MagicMock()

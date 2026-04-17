@@ -1,8 +1,8 @@
-# SeedCamp Video Generation Pipeline — Logical Architecture
+# SeedCamp Video Generation Pipeline -- Logical Architecture
 
 ## Overview
 
-The logical architecture describes the **business logic flow** — what happens at each step, how data transforms, and the routing decisions that drive cost optimization.
+The logical architecture describes the **business logic flow** -- what happens at each step, how data transforms, and the routing decisions that drive cost optimization.
 
 ## Pipeline Flow
 
@@ -61,7 +61,7 @@ The logical architecture describes the **business logic flow** — what happens 
 
 | Step | Input | Output | Model / Tool |
 |------|-------|--------|-------------|
-| 1. Input | Campaign brief, product image, SKU tier, platforms | Validated request | — |
+| 1. Input | Campaign brief, product image, SKU tier, platforms | Validated request | -- |
 | 2. Script Writer | Campaign brief (text) | Ad copy, scene description, video prompt, camera direction | Seed 1.8 |
 | 3. Model Router | SKU tier (hero / catalog) | Model ID + cost rate | Business logic |
 | 4. Video Gen | Video prompt + optional image | Raw MP4 video (720p/1080p, 2-12s) | Seedance Pro or Pro Fast |
@@ -71,12 +71,12 @@ The logical architecture describes the **business logic flow** — what happens 
 
 ```
 if sku_tier == "hero":       # Top 20% high-value products
-    model = Seedance 2.0         # $4.30/M tokens — cinematic quality
+    model = Seedance 2.0         # $4.30/M tokens -- cinematic quality
 else:                         # Catalog 80%
-    model = Seedance 2.0 Fast    # $3.30/M tokens — 3x faster
+    model = Seedance 2.0 Fast    # $3.30/M tokens -- 3x faster
 ```
 
-**Business rationale:** Hero SKUs (flagship products, campaign heroes) justify higher spend for premium video quality. Catalog SKUs (long-tail products) need volume at low cost — Pro Fast delivers acceptable quality at 3x the speed and 72% lower cost.
+**Business rationale:** Hero SKUs (flagship products, campaign heroes) justify higher spend for premium video quality. Catalog SKUs (long-tail products) need volume at low cost -- Pro Fast delivers acceptable quality at 3x the speed and 72% lower cost.
 
 ## Platform Output Specs
 

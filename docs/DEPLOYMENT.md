@@ -51,7 +51,7 @@ docker push your-dockerhub-username/seedcamp:latest
 1. Log in to [BytePlus VKE Console](https://console.byteplus.com/vke)
 2. Click **Create Cluster**
 3. Configure cluster settings:
-   - **Region**: ap-southeast-1 (Singapore) — closest to ModelArk API
+   - **Region**: ap-southeast-1 (Singapore) -- closest to ModelArk API
    - **Cluster Type**: Standard
    - **Node Pool**: 
      - Instance Type: `ecs.g3i.xlarge` (4 vCPU, 16 GB RAM)
@@ -156,7 +156,7 @@ For quick local or VM deployment using Docker Compose:
 1. **Clone the repository**:
    ```bash
    git clone https://github.com/suboss87/SeedCamp2.0.git
-   cd seedcamp
+   cd SeedCamp2.0
    ```
 
 2. **Set environment variables**:
@@ -199,7 +199,7 @@ For quick local or VM deployment using Docker Compose:
 1. **Clone and navigate to the project**:
    ```bash
    git clone https://github.com/suboss87/SeedCamp2.0.git
-   cd seedcamp
+   cd SeedCamp2.0
    ```
 
 2. **Create virtual environment**:
@@ -261,9 +261,9 @@ For quick local or VM deployment using Docker Compose:
 
 For different environments, create separate config files:
 
-- `.env.production` — Production settings
-- `.env.staging` — Staging environment
-- `.env.development` — Local development
+- `.env.production` -- Production settings
+- `.env.staging` -- Staging environment
+- `.env.development` -- Local development
 
 ---
 
