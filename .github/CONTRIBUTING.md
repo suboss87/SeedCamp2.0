@@ -186,7 +186,7 @@ Look for issues tagged [`good first issue`](https://github.com/suboss87/SeedCamp
 ## Project Structure
 
 ```
-seedcamp/
+SeedCamp2.0/
 ├── app/                    # FastAPI backend
 │   ├── services/          # Core business logic
 │   ├── models/            # Pydantic schemas
@@ -194,7 +194,7 @@ seedcamp/
 ├── dashboard/             # Streamlit UI
 ├── deploy/                # Deployment configs by platform
 ├── docs/                  # Documentation
-├── examples/              # Usage examples
+│   └── examples/          # Usage examples
 └── tests/                 # Test suite
 ```
 

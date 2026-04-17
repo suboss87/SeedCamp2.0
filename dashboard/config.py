@@ -88,8 +88,8 @@ def step_indicator(status: str) -> str:
     return STEP_ICONS.get(status, "&#8211;")
 
 
-# Cost constants (must match app/config.py)
-_COST_PER_M = {"catalog": 1.00, "hero": 1.20}
+# Cost constants (must match app/config.py -- Seedance 2.0, April 2026)
+_COST_PER_M = {"catalog": 3.30, "hero": 4.30}
 _RES_MAP = {"480p": (854, 480), "720p": (1280, 720), "1080p": (1920, 1080)}
 _SCRIPT_COST_APPROX = 0.0005  # ~500 input + ~200 output tokens via Seed 1.8
 

@@ -22,7 +22,7 @@ help:
 	@echo ""
 	@echo "Deployment:"
 	@echo "  make deploy-gcp       Deploy to GCP Cloud Run"
-	@echo "  make deploy-aws       Deploy to AWS ECS (placeholder)"
+	@echo "  make deploy-aws       Deploy to AWS ECS (see deploy/aws/terraform/README.md)"
 	@echo "  make deploy-byteplus  Deploy to BytePlus VKE"
 	@echo ""
 	@echo "Utilities:"
