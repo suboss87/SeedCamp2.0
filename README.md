@@ -10,18 +10,19 @@
 
 ## What is SeedCamp?
 
-SeedCamp is a production-ready Python codebase that solves the hard parts of building an AI video generation pipeline. It is not a managed service or a SaaS product. It is a reference architecture: a working system you can study, fork, and adapt for your own use case.
+SeedCamp is an open-source Python codebase that handles the hard parts of generating AI videos at scale. You give it a product brief and a tier (premium or standard), and it handles the rest: writing the script, checking for unsafe content, picking the right model, generating the video, tracking the cost, and managing failures.
 
-**The problem it solves:** Calling a video generation API once is easy. Calling it 10,000 times requires:
+It is not a managed service or a SaaS product. It is a reference architecture: a working system you can study, fork, and adapt for your own use case.
 
-- Async polling with timeouts (the API is fire-and-forget)
-- Retry with exponential backoff and `Retry-After` honoring
-- Tiered model routing (premium model for your best 20%, fast model for the rest)
-- Per-request cost tracking and budget enforcement
-- Safety evaluation before generation (catch bad prompts before they burn credits)
-- Concurrency control (semaphore-based, not "launch 500 tasks and pray")
+**The problem:** Generating one AI video is simple. Generating thousands is an engineering project. You need to handle:
 
-Most teams spend 2-3 weeks building this from scratch. SeedCamp gives you a tested, documented starting point.
+- **Waiting and retrying** when the API is busy or fails
+- **Routing** your best products to a premium model and the rest to a cheaper one
+- **Tracking costs** so you know exactly what you are spending per video
+- **Blocking unsafe content** before it wastes your budget
+- **Running many jobs at once** without overwhelming the API or your budget
+
+Most teams spend 2-3 weeks building this infrastructure from scratch. SeedCamp gives you a tested, documented starting point.
 
 ```python
 from app.services.pipeline import run_pipeline
@@ -42,36 +43,36 @@ print(video.video_url, result["cost"].total_cost_usd)
 
 ## Who is this for?
 
-**Use SeedCamp if:**
+**Use SeedCamp if you:**
 
-- You are an engineering team building a custom video generation pipeline
-- You evaluated managed platforms (Shotstack, Oxolo, Creatify) but need more control
-- You want to see how production-grade async AI pipelines are structured
-- You need 100+ videos and want retry, routing, and cost tracking out of the box
-- You are migrating from Sora and need a working alternative on Seedance 2.0
+- Need to generate 100+ videos and want the infrastructure handled for you
+- Are building a custom video pipeline and want a head start instead of starting from scratch
+- Evaluated managed platforms (Shotstack, Oxolo, Creatify) but need more control or lower cost
+- Want to learn how production-grade AI pipelines are structured
+- Are migrating from Sora and need a working alternative on Seedance 2.0
 
-**Use something else if:**
+**Use something else if you:**
 
-- You need fewer than 50 videos. Just call the [ModelArk API](https://docs.byteplus.com/en/docs/ModelArk/1399008) directly.
-- You want a managed service with a UI. Try [Shotstack](https://shotstack.io), [Oxolo](https://oxolo.com), or [Creatify](https://creatify.ai).
-- You want multi-provider routing today. Try [Vercel AI Gateway](https://vercel.com/docs/ai-gateway/capabilities/video-generation). SeedCamp is BytePlus-native; provider abstraction is on the [v1.1 roadmap](https://github.com/suboss87/SeedCamp2.0/issues/1).
-- You need template-based video (swap product images into a template). That is a different problem.
+- Need fewer than 50 videos. Just call the [ModelArk API](https://docs.byteplus.com/en/docs/ModelArk/1399008) directly. SeedCamp would be overkill.
+- Want a managed service with a visual editor. Try [Shotstack](https://shotstack.io), [Oxolo](https://oxolo.com), or [Creatify](https://creatify.ai).
+- Want to use multiple AI providers (Runway, Kling, Veo) today. Try [Vercel AI Gateway](https://vercel.com/docs/ai-gateway/capabilities/video-generation). SeedCamp works with BytePlus only for now; multi-provider support is on the [v1.1 roadmap](https://github.com/suboss87/SeedCamp2.0/issues/1).
+- Need template-based video where you swap product images into a pre-made layout. That is a different problem.
 
 ---
 
 ## The 5 patterns
 
-Every pattern is extracted, tested, and documented. They transfer to any async AI workload, not just video.
+Every pattern is self-contained, tested, and reusable in any AI pipeline, not just video.
 
-| Pattern | What it does | File | Lines |
+| Pattern | What it does | Why it matters | Code |
 |---|---|---|---|
-| **Tiered Model Routing** | Route hero items to Seedance 2.0, catalog items to 2.0 Fast | [`model_router.py`](app/services/model_router.py) | ~37 |
-| **Async Task Pipeline** | Fire-and-forget video creation with polling, timeout, and SSE streaming | [`video_gen.py`](app/services/video_gen.py) | ~163 |
-| **Cost Tracking** | Per-request token counting, per-tier attribution, Prometheus metrics | [`cost_tracker.py`](app/services/cost_tracker.py) | ~91 |
-| **Batch Orchestration** | Semaphore-controlled concurrency with budget caps and error isolation | [`batch_generator.py`](app/services/batch_generator.py) | ~266 |
-| **Retry with Backoff** | Exponential backoff, `Retry-After` headers, structured error classification | [`retry.py`](app/utils/retry.py) | ~210 |
+| **Smart Routing** | Sends important items to the best model, everything else to a cheaper one | Saves 30-40% on blended cost without sacrificing quality where it counts | [`model_router.py`](app/services/model_router.py) |
+| **Async Pipeline** | Submits video jobs and waits for results with timeouts | The API does not return videos instantly; you need to poll and handle delays | [`video_gen.py`](app/services/video_gen.py) |
+| **Cost Tracking** | Logs the exact cost of every video, broken down by model and tier | Know what you are spending before the invoice arrives | [`cost_tracker.py`](app/services/cost_tracker.py) |
+| **Batch Processing** | Generates hundreds of videos concurrently with budget limits | Prevents runaway spending and handles individual failures gracefully | [`batch_generator.py`](app/services/batch_generator.py) |
+| **Retry Logic** | Automatically retries failed requests with increasing wait times | APIs fail sometimes; retrying correctly is the difference between 95% and 99.9% success | [`retry.py`](app/utils/retry.py) |
 
-Also included: safety evaluation (7-category content classifier with configurable block thresholds), quality gates (5-dimension scoring, non-blocking), a Streamlit dashboard, a FastAPI server with `/metrics` and `/health`, and deploy artifacts for 7 platforms.
+Also included: a **safety evaluator** that blocks inappropriate content before generation, **quality scoring** that rates every video on 5 dimensions, a **Streamlit dashboard** for visual management, a **FastAPI server** with health checks and metrics, and **deploy configs** for 7 platforms.
 
 ---
 
@@ -110,7 +111,7 @@ graph LR
     G --> H[Cost tracking + delivery]
 ```
 
-Safety evaluation is **blocking**: if content scores above the threshold, generation is rejected before spending credits. Quality evaluation is **non-blocking**: scores are delivered alongside the video.
+Safety evaluation is **blocking**: if content is flagged as unsafe, generation stops before spending any credits. Quality evaluation is **non-blocking**: every video gets a quality score, but generation is not stopped for low scores.
 
 | Step | Technology |
 |---|---|
@@ -196,13 +197,13 @@ Before deploying publicly, read the [Security Checklist](docs/QUICKSTART.md#secu
 
 ## Honest trade-offs
 
-SeedCamp is a reference architecture, not a managed service. Know what you are getting:
+SeedCamp is a reference architecture, not a managed service. Here is what you should know before using it:
 
-- **BytePlus ModelArk only, today.** Provider abstraction is planned for v1.1. Track it in [issue #1](https://github.com/suboss87/SeedCamp2.0/issues/1). Until then, this only works with Seedance models.
-- **Cost tracker is in-memory.** Running with multiple workers means `/api/cost-summary` returns partial data. Use a single worker or back it with Firestore. A startup warning fires when this is detected.
-- **Tests are mocked.** The 112-test suite verifies orchestration logic, not real API behavior. Run the examples with a real `ARK_API_KEY` for end-to-end validation.
-- **Safety evaluation uses an LLM as judge.** False positives happen. Thresholds are configurable via `SAFETY_THRESHOLD_*` environment variables.
-- **Seedance 2.0 API is in public beta.** Rate limits are currently 2 QPS and 3 concurrent tasks per account. This will improve but affects throughput today.
+- **Works with BytePlus only, for now.** SeedCamp currently supports Seedance models through BytePlus ModelArk. Support for other providers (Runway, Kling, Veo) is planned for v1.1. Track progress in [issue #1](https://github.com/suboss87/SeedCamp2.0/issues/1).
+- **Cost tracking resets if you restart the server.** The cost tracker stores data in memory by default. For persistent tracking across restarts, connect it to Firestore. A warning appears at startup if this could be a problem.
+- **Tests use simulated API responses.** The 112-test suite verifies that the orchestration logic works correctly, but does not call real APIs. To test with real video generation, run the examples with a real `ARK_API_KEY`.
+- **The safety filter can be too strict sometimes.** It uses an AI model to judge content safety, which means occasional false positives. You can adjust the sensitivity using `SAFETY_THRESHOLD_*` environment variables.
+- **Seedance 2.0 is new.** The API entered public beta on April 14, 2026. Current limits are 2 requests per second and 3 concurrent tasks per account. These limits will increase over time.
 
 ---
 
