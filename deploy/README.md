@@ -1,192 +1,165 @@
-# SeedCamp Deployment Options
+# Deployment Guide
 
-This directory contains deployment configurations for multiple cloud platforms and hosting services. Choose the option that best fits your needs.
+SeedCamp runs as a standard Python ASGI app. Pick the deployment target that matches your infrastructure and scale.
 
-## Quick Comparison
+> **Not here:** Configuration (see `.env.example`), troubleshooting (see `docs/TROUBLESHOOTING.md`).
 
-| Platform | Free Tier | Setup Time | Best For | Estimated Cost* | Guide |
-|----------|-----------|------------|----------|----------------|-------|
-| **BytePlus VKE** (recommended) | ❌ Pay-as-you-go | 30 min | Production -- co-located with ModelArk | ~$200/yr | [byteplus/](./byteplus/) |
-| **Docker Compose** | ✅ Yes | 5 min | Local dev & testing | $0 | [docker/](./docker/) |
-| **Railway** | ❌ No ($5/mo) | 10 min | Quick demos & prototypes | ~$60/yr | [railway/](./railway/) |
-| **Render** | ✅ Yes | 15 min | Side projects & MVPs | Free tier available | [render/](./render/) |
-| **GCP Cloud Run** | ✅ Yes (2M req/mo) | 20 min | GCP ecosystem | ~$50/yr | [gcp/](./gcp/) |
-| **AWS ECS/Fargate** | ✅ 12mo free tier | 30 min | AWS ecosystem | ~$100/yr | [aws/](./aws/) |
-| **Generic Kubernetes** | Varies | 25 min | Multi-cloud, on-prem | Varies | [kubernetes/](./kubernetes/) |
+---
 
-*Cost estimates based on 34,500 videos/year (95/day) + ModelArk API costs (~$2,760/yr). Infrastructure only.
+## Which Target Should I Use?
 
-## Decision Matrix
+| | Docker (local) | Cloud Run | AWS ECS | BytePlus VKE | Railway / Render |
+|---|---|---|---|---|---|
+| **Best for** | Dev, testing, on-prem | Most production use cases | AWS-native teams | BytePlus-native infra | Fast deploys, no DevOps |
+| **Scale to zero** | No | Yes | With Fargate | No | Yes (Render) |
+| **Cold start** | None | 1-3s | 2-5s | None | 1-5s |
+| **Concurrent requests** | Limited by local RAM | Configurable, managed | Configurable | Configurable | Limited (free tier) |
+| **Cost model** | Fixed (your hardware) | Per request + idle | Per task hour | Node pool (always-on) | Per GB-hour or flat |
+| **Setup complexity** | Lowest | Low | Medium | Medium | Lowest |
+| **Cost tracker accuracy** | Full (WORKERS=1) | Full (WORKERS=1) | Full (WORKERS=1) | Multi-worker — see note | Full (WORKERS=1) |
+| **Persistent output storage** | Local disk | GCS (recommended) | S3 | Object Storage | Ephemeral — use GCS/S3 |
 
-### For Development & Testing
-- **Local development**: Use [Docker Compose](./docker/)
-- **Team collaboration**: Deploy to [Railway](./railway/) or [Render](./render/) for shared staging environments
+**Rule of thumb:**
+- Starting out or testing: **Docker**
+- Shipping to production on GCP: **Cloud Run**
+- Shipping to production on AWS: **ECS with Fargate**
+- Already running BytePlus infrastructure: **VKE**
+- Just want it running fast without ops: **Railway or Render**
 
-### For Production
+---
 
-#### Choose **BytePlus VKE** (recommended) if you want:
-- ✅ Co-location with ModelArk APIs -- lowest latency, no cross-cloud egress
-- ✅ Single vendor for compute + AI inference + container registry
-- ✅ Enterprise Kubernetes with managed control plane, HPA, and VCI
-- ✅ Built-in monitoring and log collection
-- ⚠️ No free tier -- pay-as-you-go pricing
+## Cost Tracker Note for Multi-Worker Deployments
 
-#### Choose **GCP Cloud Run** if you want:
-- ✅ Generous free tier (2M requests/month)
-- ✅ Serverless auto-scaling (0 → 1000 instances)
-- ✅ Pay only for actual usage
-- ✅ Simple deployment (single command)
+The built-in cost tracker is in-memory and **per-worker**. If you run `WORKERS > 1`, each worker tracks its own costs independently — totals on `/metrics` will be incomplete.
 
-#### Choose **AWS ECS/Fargate** if you:
-- ✅ Already use AWS services
-- ✅ Need advanced VPC networking
-- ✅ Want deep integration with AWS ecosystem (ALB, RDS, etc.)
-- ✅ Have AWS credits or enterprise agreement
+Options:
+- Set `WORKERS=1` for accurate in-process cost totals (works for most production loads)
+- Use an external aggregator (Prometheus + Grafana) with the `/metrics` endpoint — this works regardless of worker count
+- Set `PERSISTENCE_BACKEND=postgres` to route cost records to a shared database (requires schema setup)
 
-#### Choose **Generic Kubernetes** if you:
-- ✅ Need multi-cloud portability
-- ✅ Already have a Kubernetes cluster (GKE, EKS, AKS, on-prem)
-- ✅ Want full control over infrastructure
-- ✅ Need advanced deployment patterns (canary, blue-green)
+---
 
-## Deployment Architecture
-
-All deployments share the same core components:
-
-```
-┌─────────────────┐
-│   FastAPI       │  Port 8000
-│   (Main API)    │  - Video generation
-└────────┬────────┘  - Script creation
-         │           - Cost tracking
-         │
-         ├──────────> ModelArk API
-         │           (Seed 1.8, Seedance)
-         │
-┌────────┴────────┐
-│   Streamlit     │  Port 8501
-│   (Dashboard)   │  - Campaign management
-└─────────────────┘  - Analytics
-```
-
-## Feature Comparison
-
-| Feature | Docker | Railway | Render | GCP | AWS | K8s | BytePlus |
-|---------|--------|---------|--------|-----|-----|-----|----------|
-| Auto-scaling | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Zero-downtime deploys | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Custom domains | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| SSL/HTTPS | ❌ | ✅ (auto) | ✅ (auto) | ✅ (auto) | ✅ (ACM) | ⚠️ (manual) | ✅ |
-| Monitoring built-in | ❌ | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ |
-| CI/CD integration | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Infrastructure as Code | N/A | ❌ | ❌ | ✅ (Terraform) | ✅ (Terraform) | ✅ | ✅ (Terraform) |
-
-## Environment Variables
-
-All deployments require these environment variables:
+## Docker (Local / On-Prem)
 
 ```bash
-# Required
-ARK_API_KEY=your_modelark_api_key_here
-ARK_BASE_URL=https://ark.ap-southeast.bytepluses.com/api/v3
+# Build
+docker build -t seedcamp .
 
-# Optional
-OUTPUT_DIR=/app/output              # Where to store generated videos
-LOG_LEVEL=INFO                      # DEBUG, INFO, WARNING, ERROR
-MAX_CONCURRENT_GENERATIONS=5        # Rate limiting
-HERO_SKU_THRESHOLD=0.20            # Top 20% = hero SKUs
+# Run
+docker run -p 8000:8000 \
+  -e ARK_API_KEY=your_key \
+  -e DRY_RUN=false \
+  -v $(pwd)/output:/app/output \
+  seedcamp
 ```
 
-### Platform-specific secrets management:
-- **GCP**: Use Secret Manager (automatic in Cloud Run)
-- **AWS**: Use AWS Secrets Manager or Parameter Store
-- **Kubernetes**: Use Kubernetes Secrets
-- **Railway/Render**: Use platform's environment variable UI
-- **Docker Compose**: Use `.env` file (never commit!)
+The API is available at `http://localhost:8000`. Dashboard at `http://localhost:8501` (run separately via `streamlit run dashboard/app.py`).
 
-## Cost Breakdown
+**Worker count:** Default is 1. Increase with `-e WORKERS=4` only if you need higher throughput — see cost tracker note above.
 
-### ModelArk API Costs (Shared across all platforms)
-- Script generation (Seed 1.8): $0.25 per 1M input tokens, $2.00 per 1M output tokens
-- Video generation (Seedance 2.0): $4.30 per 1M tokens (~$0.04–0.08/video at 5s 720p)
-- Video generation (Seedance 2.0 Fast): $3.30 per 1M tokens (~$0.03–0.04/video at 5s 720p)
+---
 
-**Blended average**: ~$0.09/video (20% hero SKUs, 80% catalog SKUs)
+## Cloud Run (GCP)
 
-### Infrastructure Costs (34,500 videos/year)
+Cloud Run is the recommended production target for most teams. It scales to zero, handles spikes, and integrates with GCS for video output storage.
 
-| Platform | Compute | Storage | Network | Total/Year |
-|----------|---------|---------|---------|-----------|
-| Docker Compose | $0 (your hardware) | $0 | $0 | **$0** |
-| Railway | $5/mo | Included | Included | **$60** |
-| Render | Free tier | Included | Included | **$0-75** |
-| GCP Cloud Run | ~$20/yr | ~$10/yr | ~$20/yr | **~$50** |
-| AWS ECS | ~$60/yr | ~$15/yr | ~$25/yr | **~$100** |
-| BytePlus VKE | ~$150/yr | ~$25/yr | ~$25/yr | **~$200** |
-
-**Total Cost of Ownership** = Infrastructure + ModelArk APIs (~$2,760/yr) + monitoring/logging
-
-## Getting Started
-
-1. Choose your platform from the table above
-2. Follow the platform-specific guide in its subdirectory
-3. Set environment variables (especially `ARK_API_KEY`)
-4. Deploy using the provided scripts or configurations
-5. Test your deployment: `curl https://your-domain/health`
-
-## Platform-Specific Guides
-
-- **[BytePlus VKE](./byteplus/)** - Production deployment co-located with ModelArk (recommended)
-- **[Docker Compose](./docker/)** - Local development and testing
-- **[Railway](./railway/)** - One-click deploy for quick prototypes
-- **[Render](./render/)** - Free tier hosting for side projects
-- **[GCP Cloud Run](./gcp/)** - Serverless production deployment
-- **[AWS ECS/Fargate](./aws/)** - AWS-native container deployment
-- **[Generic Kubernetes](./kubernetes/)** - Portable K8s manifests with Kustomize
-- **[Monitoring Stack](./monitoring/)** - Prometheus + Grafana observability
-
-## Monitoring & Observability
-
-A complete monitoring stack is provided in `deploy/monitoring/` with:
-- **Prometheus**: Metrics collection and storage
-- **Grafana**: Pre-configured dashboards for video generation, cost tracking, and performance
-- **AlertManager**: Alert routing with Slack/Email/PagerDuty integration
-- **Node Exporter + cAdvisor**: System and container metrics
-
-**Quick start**:
 ```bash
-cd deploy/monitoring
-docker-compose up -d
-# Access Grafana at http://localhost:3000 (admin/admin)
+# Build and push to Artifact Registry
+gcloud builds submit --tag gcr.io/YOUR_PROJECT/seedcamp
+
+# Deploy
+gcloud run deploy seedcamp \
+  --image gcr.io/YOUR_PROJECT/seedcamp \
+  --platform managed \
+  --region us-central1 \
+  --set-env-vars ARK_API_KEY=your_key \
+  --memory 2Gi \
+  --concurrency 10 \
+  --min-instances 0 \
+  --max-instances 5 \
+  --allow-unauthenticated
 ```
 
-See [deploy/monitoring/README.md](./monitoring/README.md) for full setup guide.
+**Storage:** Set `GCS_BUCKET=your-bucket` and ensure the Cloud Run service account has `roles/storage.objectCreator`.
 
-## Terraform Support
+**Secrets:** Use Secret Manager instead of env vars for `ARK_API_KEY` in production:
+```bash
+gcloud secrets create ark-api-key --data-file=- <<< "your_key"
+gcloud run services update seedcamp --update-secrets ARK_API_KEY=ark-api-key:latest
+```
 
-Enterprise users can use Infrastructure as Code (Terraform) for:
-- **GCP**: `deploy/gcp/terraform/` - Cloud Run + Secret Manager
-- **AWS**: `deploy/aws/terraform/` - ECS Fargate + ALB + Secrets Manager
-Each includes `main.tf`, `variables.tf`, `outputs.tf`, and comprehensive README with cost estimates and production best practices.
+---
 
-## CI/CD Integration
+## AWS ECS with Fargate
 
-A GitHub Actions workflow is provided in `.github/workflows/`:
-- `deploy.yml` - Build, test, and deploy on merge to main
+For AWS-native teams. Push to ECR, deploy via ECS.
 
-Adapt this for GitLab CI, CircleCI, Jenkins, or your preferred CI/CD platform. Add platform-specific deploy steps as needed (GCP Cloud Run, AWS ECS, BytePlus VKE).
+```bash
+# Push to ECR
+aws ecr get-login-password | docker login --username AWS --password-stdin ACCOUNT.dkr.ecr.REGION.amazonaws.com
+docker tag seedcamp ACCOUNT.dkr.ecr.REGION.amazonaws.com/seedcamp:latest
+docker push ACCOUNT.dkr.ecr.REGION.amazonaws.com/seedcamp:latest
+```
 
-## Support
+**Task definition:** Set CPU to 512, memory to 1024 (minimum). Store `ARK_API_KEY` in AWS Secrets Manager and reference it in the task definition — do not pass it as a plain env var.
 
-- **Documentation**: See [docs/](../docs/) for detailed guides
-- **Issues**: Report bugs at https://github.com/suboss87/SeedCamp2.0/issues
-- **Discussions**: Ask questions at https://github.com/suboss87/SeedCamp2.0/discussions
+**Output storage:** Mount an EFS volume or write directly to S3 via `boto3` (requires a small addition to `video_gen.py`).
 
-## Next Steps
+---
 
-1. Start with [Docker Compose](./docker/) for local development
-2. Deploy to [Railway](./railway/) or [Render](./render/) for staging
-3. Graduate to [BytePlus VKE](./byteplus/) for production (recommended -- co-located with ModelArk)
-4. Or use [GCP Cloud Run](./gcp/) / [AWS ECS](./aws/) if you prefer those clouds
-5. Add monitoring with [Prometheus + Grafana](./monitoring/)
-6. Set up CI/CD for automated deployments
+## BytePlus VKE (Kubernetes)
+
+For teams already running BytePlus infrastructure. VKE is managed Kubernetes on BytePlus Cloud.
+
+See `deploy/byteplus/vke/` for Kubernetes manifests. Key settings:
+
+```yaml
+# Recommended resource requests
+resources:
+  requests:
+    memory: "1Gi"
+    cpu: "500m"
+  limits:
+    memory: "2Gi"
+    cpu: "2000m"
+```
+
+Store `ARK_API_KEY` in a Kubernetes Secret, not in the manifest.
+
+**Advantage:** Lowest latency to BytePlus ModelArk API endpoints — useful for high-throughput batch jobs.
+
+---
+
+## Railway
+
+One-command deploy. Suited for prototypes and small production workloads.
+
+1. Connect your GitHub fork to Railway
+2. Add env vars in Railway dashboard: `ARK_API_KEY`, `DRY_RUN=false`
+3. Railway auto-deploys on push to main
+
+**Limitation:** Ephemeral filesystem — generated videos are lost on restart. Set `GCS_BUCKET` and write outputs to GCS, or mount a Railway volume.
+
+---
+
+## Render
+
+Similar to Railway. Use the `render.yaml` in `deploy/render/` if present, or configure manually:
+
+- **Environment:** Python
+- **Build command:** `pip install -r requirements.txt`
+- **Start command:** `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+- **Disk:** Mount a persistent disk at `/app/output` to retain generated videos
+
+---
+
+## Health and Metrics
+
+All deployments expose:
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /health` | Liveness check — returns `{"status": "ok"}` |
+| `GET /metrics` | Cost totals, request counts, pipeline stats |
+
+Configure your load balancer or uptime monitor to hit `/health` every 30s.
