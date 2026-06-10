@@ -10,6 +10,10 @@ services:
     envVars:
       - key: ARK_API_KEY
         sync: false
+      - key: API_KEY
+        sync: false
+      - key: PRODUCTION
+        value: "true"
       - key: ARK_BASE_URL
         value: https://ark.ap-southeast.bytepluses.com/api/v3
       - key: OUTPUT_DIR

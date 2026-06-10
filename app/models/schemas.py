@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import ipaddress
 from enum import Enum
+from urllib.parse import urlparse
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class SKUTier(str, Enum):
@@ -28,6 +30,32 @@ class GenerateRequest(BaseModel):
         description="Campaign brief, e.g. 'Summer collection, beach vibes, energetic'",
     )
     product_image_url: str | None = Field(None, description="Public URL of the product image")
+
+    @field_validator("product_image_url")
+    @classmethod
+    def block_ssrf(cls, v: str | None) -> str | None:
+        if v is None:
+            return v
+        parsed = urlparse(v)
+        if parsed.scheme not in ("http", "https"):
+            raise ValueError("product_image_url must use http or https")
+        host = (parsed.hostname or "").lower()
+        if not host:
+            raise ValueError("product_image_url must have a valid hostname")
+        # Block IP literals pointing to private/internal/loopback ranges
+        try:
+            addr = ipaddress.ip_address(host)
+            if addr.is_private or addr.is_loopback or addr.is_link_local or addr.is_reserved:
+                raise ValueError("product_image_url must not target private or internal addresses")
+        except ValueError as exc:
+            if "must not target" in str(exc):
+                raise
+            # Not a valid IP literal — it's a hostname; check well-known internal names
+        blocked = {"localhost", "metadata.google.internal"}
+        if host in blocked or host.endswith(".internal") or host.endswith(".local"):
+            raise ValueError("product_image_url must not target internal hostnames")
+        return v
+
     sku_tier: SKUTier = SKUTier.catalog
     sku_id: str = Field("SKU-001", description="Product SKU identifier")
     platforms: list[Platform] = Field(

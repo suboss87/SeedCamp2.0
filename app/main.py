@@ -5,9 +5,11 @@ Implements the 5-step pipeline: Input → Script Gen → Smart Router → Video 
 """
 
 import asyncio
+import hmac
 import json
 import logging
 import os
+import re
 import uuid
 from contextlib import asynccontextmanager
 
@@ -19,6 +21,8 @@ from fastapi.staticfiles import StaticFiles
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
+
+_TASK_ID_RE = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9\-]{0,63}$")
 
 from app.config import settings
 from app.models.schemas import (
@@ -88,6 +92,20 @@ async def lifespan(app: FastAPI):
                 "Use a single worker or back cost_tracker with Redis/Firestore for "
                 "accurate aggregate costs. See docs/DEPLOYMENT.md.",
                 workers,
+            )
+
+    # Security: warn if API key protection is missing
+    if not settings.dry_run and not settings.api_key:
+        if settings.production:
+            logger.error(
+                "PRODUCTION mode with no API_KEY set -- "
+                "all /api/* endpoints will return 503 until API_KEY is configured. "
+                "Set API_KEY environment variable to protect against unauthorized access."
+            )
+        else:
+            logger.warning(
+                "API_KEY not set -- /api/* endpoints are open (no authentication). "
+                "Set API_KEY before exposing this service to the internet."
             )
 
     # Validate API key (skip in dry-run mode)
@@ -162,14 +180,16 @@ app = FastAPI(
 )
 
 # Rate limiting: configurable via RATE_LIMIT env var (slowapi format, e.g. "60/minute").
+# Uses the actual TCP remote address by default to prevent X-Forwarded-For spoofing.
+# Behind a trusted reverse proxy, set RATE_LIMIT_BEHIND_PROXY=true and configure
+# the proxy to pass X-Real-IP (nginx: proxy_set_header X-Real-IP $remote_addr).
 
 
 def _get_client_ip(request: Request) -> str:
-    """Extract client IP, respecting X-Forwarded-For behind reverse proxies."""
-    forwarded = request.headers.get("X-Forwarded-For", "")
-    if forwarded:
-        # First IP in the chain is the original client
-        return forwarded.split(",")[0].strip()
+    if settings.rate_limit_behind_proxy:
+        real_ip = request.headers.get("X-Real-IP", "").strip()
+        if real_ip:
+            return real_ip
     return get_remote_address(request)
 
 
@@ -188,17 +208,41 @@ app.add_middleware(
 )
 
 # API key authentication middleware.
-# When API_KEY is set in env, all /api/* requests require Authorization: Bearer <key>.
-# Health, metrics, and docs endpoints remain open (they don't start with /api).
+# All /api/* requests require Authorization: Bearer <API_KEY>.
+# In production (PRODUCTION=true), endpoints return 503 if API_KEY is not set.
+# In development (PRODUCTION=false), endpoints are open when API_KEY is unset.
+# Health, metrics, and docs endpoints are always open (/health, /metrics, /docs).
 
 
 @app.middleware("http")
 async def api_key_auth(request: Request, call_next):
-    if settings.api_key and request.url.path.startswith("/api"):
-        auth = request.headers.get("Authorization", "")
-        if auth != f"Bearer {settings.api_key}":
-            return JSONResponse(status_code=401, content={"detail": "Invalid or missing API key"})
+    if request.url.path.startswith("/api"):
+        if not settings.api_key:
+            if settings.production:
+                return JSONResponse(
+                    status_code=503,
+                    content={"detail": "Service unavailable: API_KEY not configured"},
+                )
+        else:
+            auth = request.headers.get("Authorization", "")
+            expected = f"Bearer {settings.api_key}"
+            if not hmac.compare_digest(
+                auth.encode("utf-8"), expected.encode("utf-8")
+            ):
+                return JSONResponse(
+                    status_code=401, content={"detail": "Invalid or missing API key"}
+                )
     return await call_next(request)
+
+
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    return response
 
 
 @app.middleware("http")
@@ -426,6 +470,8 @@ async def generate_ad(request: Request, req: GenerateRequest):
 @app.get("/api/status/{task_id}", response_model=VideoTaskStatus)
 async def check_status(task_id: str):
     """Poll video generation status."""
+    if not _TASK_ID_RE.match(task_id):
+        raise HTTPException(status_code=400, detail="Invalid task_id format")
     try:
         return await video_gen.get_video_status(task_id)
     except httpx.TimeoutException:
@@ -438,6 +484,8 @@ async def check_status(task_id: str):
 @app.get("/api/wait/{task_id}", response_model=VideoTaskStatus)
 async def wait_for_result(task_id: str):
     """Block until video is ready (for demo/testing)."""
+    if not _TASK_ID_RE.match(task_id):
+        raise HTTPException(status_code=400, detail="Invalid task_id format")
     try:
         return await video_gen.wait_for_video(task_id)
     except httpx.TimeoutException:

@@ -244,6 +244,8 @@ For quick local or VM deployment using Docker Compose:
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `ARK_API_KEY` | BytePlus ModelArk API key | **(Required)** |
+| `API_KEY` | Protects all `/api/*` endpoints — generate with `openssl rand -hex 32` | **(Required in production)** |
+| `PRODUCTION` | Set `true` for all non-local deployments | **(Required in production)** |
 | `ARK_BASE_URL` | ModelArk API base URL | `https://ark.ap-southeast.bytepluses.com/api/v3` |
 | `OUTPUT_DIR` | Directory for generated videos | `./output` |
 

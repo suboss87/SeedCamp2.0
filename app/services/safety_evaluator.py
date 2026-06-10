@@ -122,19 +122,19 @@ async def evaluate_content_safety(
     try:
         data = json.loads(raw)
     except json.JSONDecodeError:
-        logger.error("Failed to parse safety eval output: %s", raw)
+        logger.error("Safety eval parse failed -- blocking as precaution: %s", raw)
         data = {
-            "overall_score": 0.0,
+            "overall_score": 1.0,
             "categories": [
                 {
                     "name": cat,
-                    "score": 0.0,
-                    "explanation": "Parse error -- defaulting to safe",
+                    "score": 1.0,
+                    "explanation": "Safety evaluation parsing failed -- blocked as precaution",
                 }
                 for cat in SAFETY_CATEGORIES
             ],
-            "flagged_issues": [],
-            "recommendation": "proceed",
+            "flagged_issues": ["Safety evaluation parsing failed -- content blocked"],
+            "recommendation": "block",
         }
 
     overall_score = float(data.get("overall_score", 0.0))
