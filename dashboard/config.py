@@ -4,7 +4,16 @@ Dashboard Configuration -- Design system, API base, and helpers.
 
 import os
 
+import requests
+
 API_BASE = os.getenv("API_URL", "http://localhost:8000")
+
+# Authenticated session for all API calls. When the backend enforces API_KEY,
+# the dashboard must present the same key on every request.
+api = requests.Session()
+_api_key = os.getenv("API_KEY", "")
+if _api_key:
+    api.headers["Authorization"] = f"Bearer {_api_key}"
 
 # ── Color System (Enterprise -- Blue→Violet) ──────────────────────
 ACCENT = "#3B82F6"

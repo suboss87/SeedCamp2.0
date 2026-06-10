@@ -7,6 +7,34 @@ from urllib.parse import urlparse
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
+def validate_public_http_url(v: str | None, field_name: str) -> str | None:
+    """Reject URLs that could be used for SSRF (internal hosts, private IPs, non-HTTP schemes).
+
+    Shared by every schema field whose URL is fetched server-side.
+    """
+    if v is None:
+        return v
+    parsed = urlparse(v)
+    if parsed.scheme not in ("http", "https"):
+        raise ValueError(f"{field_name} must use http or https")
+    host = (parsed.hostname or "").lower()
+    if not host:
+        raise ValueError(f"{field_name} must have a valid hostname")
+    # Block IP literals pointing to private/internal/loopback ranges
+    try:
+        addr = ipaddress.ip_address(host)
+        if addr.is_private or addr.is_loopback or addr.is_link_local or addr.is_reserved:
+            raise ValueError(f"{field_name} must not target private or internal addresses")
+    except ValueError as exc:
+        if "must not target" in str(exc):
+            raise
+        # Not a valid IP literal — it's a hostname; check well-known internal names
+    blocked = {"localhost", "metadata.google.internal"}
+    if host in blocked or host.endswith(".internal") or host.endswith(".local"):
+        raise ValueError(f"{field_name} must not target internal hostnames")
+    return v
+
+
 class SKUTier(str, Enum):
     hero = "hero"  # Top 20% -- Seedance 2.0
     catalog = "catalog"  # 80% -- Seedance 2.0 Fast
@@ -34,27 +62,7 @@ class GenerateRequest(BaseModel):
     @field_validator("product_image_url")
     @classmethod
     def block_ssrf(cls, v: str | None) -> str | None:
-        if v is None:
-            return v
-        parsed = urlparse(v)
-        if parsed.scheme not in ("http", "https"):
-            raise ValueError("product_image_url must use http or https")
-        host = (parsed.hostname or "").lower()
-        if not host:
-            raise ValueError("product_image_url must have a valid hostname")
-        # Block IP literals pointing to private/internal/loopback ranges
-        try:
-            addr = ipaddress.ip_address(host)
-            if addr.is_private or addr.is_loopback or addr.is_link_local or addr.is_reserved:
-                raise ValueError("product_image_url must not target private or internal addresses")
-        except ValueError as exc:
-            if "must not target" in str(exc):
-                raise
-            # Not a valid IP literal — it's a hostname; check well-known internal names
-        blocked = {"localhost", "metadata.google.internal"}
-        if host in blocked or host.endswith(".internal") or host.endswith(".local"):
-            raise ValueError("product_image_url must not target internal hostnames")
-        return v
+        return validate_public_http_url(v, "product_image_url")
 
     sku_tier: SKUTier = SKUTier.catalog
     sku_id: str = Field("SKU-001", description="Product SKU identifier")
