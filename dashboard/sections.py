@@ -13,6 +13,7 @@ from PIL import Image
 from config import (
     API_BASE,
     COST_TARGET_PER_VIDEO,
+    api,
     cost_label,
     platform_pills_html,
     status_badge,
@@ -32,7 +33,7 @@ def _fetch_analytics() -> dict:
         st.session_state["_refresh_analytics"] = False
     if "analytics_data" not in st.session_state:
         try:
-            resp = requests.get(f"{API_BASE}/api/cost-summary", timeout=10)
+            resp = api.get(f"{API_BASE}/api/cost-summary", timeout=10)
             resp.raise_for_status()
             st.session_state["analytics_data"] = resp.json()
         except Exception:
@@ -45,7 +46,7 @@ def _fetch_safety_summary() -> dict:
         st.session_state.pop("safety_data", None)
     if "safety_data" not in st.session_state:
         try:
-            resp = requests.get(f"{API_BASE}/api/safety-summary", timeout=10)
+            resp = api.get(f"{API_BASE}/api/safety-summary", timeout=10)
             resp.raise_for_status()
             st.session_state["safety_data"] = resp.json()
         except Exception:
@@ -59,7 +60,7 @@ def _fetch_campaigns() -> list:
         st.session_state["_refresh_campaigns"] = False
     if "campaigns_list" not in st.session_state:
         try:
-            resp = requests.get(f"{API_BASE}/api/campaigns", timeout=10)
+            resp = api.get(f"{API_BASE}/api/campaigns", timeout=10)
             resp.raise_for_status()
             st.session_state["campaigns_list"] = resp.json()
         except Exception:
@@ -227,7 +228,7 @@ def _run_sse_generation(
         step_placeholders = {i: st.empty() for i in range(1, 6)}
 
         try:
-            response = requests.post(
+            response = api.post(
                 f"{API_BASE}/api/generate-stream",
                 json=payload,
                 stream=True,
@@ -586,7 +587,7 @@ def render_quick_video():
                             uploaded_file.type,
                         )
                     }
-                    upload_resp = requests.post(
+                    upload_resp = api.post(
                         f"{API_BASE}/api/upload-image",
                         files=files,
                         timeout=30,
@@ -736,7 +737,7 @@ def render_campaign_batch():
                 }
                 if budget_limit > 0:
                     payload["budget_limit_usd"] = budget_limit
-                resp = requests.post(
+                resp = api.post(
                     f"{API_BASE}/api/campaigns",
                     json=payload,
                     timeout=10,
@@ -809,7 +810,7 @@ def render_campaign_batch():
         with st.spinner("Parsing..."):
             try:
                 files = {"file": (uploaded_csv.name, uploaded_csv.getvalue(), "text/csv")}
-                resp = requests.post(
+                resp = api.post(
                     f"{API_BASE}/api/campaigns/{active_id}/products",
                     files=files,
                     timeout=30,
@@ -828,7 +829,7 @@ def render_campaign_batch():
                 st.error(f"Upload failed: {e}")
 
     try:
-        products = requests.get(f"{API_BASE}/api/campaigns/{active_id}/products", timeout=10).json()
+        products = api.get(f"{API_BASE}/api/campaigns/{active_id}/products", timeout=10).json()
     except Exception:
         products = []
 
@@ -865,7 +866,7 @@ def render_campaign_batch():
                 key="cb_generate",
             ):
                 try:
-                    requests.post(
+                    api.post(
                         f"{API_BASE}/api/campaigns/{active_id}/generate",
                         json={"concurrency": concurrency},
                         timeout=10,
@@ -886,7 +887,7 @@ def render_campaign_batch():
 
 def _render_campaign_results(campaign_id: str):
     try:
-        results_resp = requests.get(f"{API_BASE}/api/campaigns/{campaign_id}/results", timeout=10)
+        results_resp = api.get(f"{API_BASE}/api/campaigns/{campaign_id}/results", timeout=10)
         results_resp.raise_for_status()
         results = results_resp.json()
     except Exception:
@@ -970,7 +971,7 @@ def _render_campaign_results(campaign_id: str):
                                 use_container_width=True,
                             ):
                                 try:
-                                    requests.post(
+                                    api.post(
                                         f"{API_BASE}/api/campaigns/{result['campaign_id']}/results/{result['id']}/approve",
                                         timeout=10,
                                     ).raise_for_status()
@@ -985,7 +986,7 @@ def _render_campaign_results(campaign_id: str):
                                 use_container_width=True,
                             ):
                                 try:
-                                    requests.post(
+                                    api.post(
                                         f"{API_BASE}/api/campaigns/{result['campaign_id']}/results/{result['id']}/reject",
                                         json={"regenerate": True},
                                         timeout=10,
@@ -1011,7 +1012,7 @@ def _poll_batch_progress(campaign_id: str):
     st.markdown("#### Generation Progress")
 
     try:
-        p = requests.get(f"{API_BASE}/api/campaigns/{campaign_id}/progress", timeout=10).json()
+        p = api.get(f"{API_BASE}/api/campaigns/{campaign_id}/progress", timeout=10).json()
     except Exception:
         st.caption("Waiting for progress data...")
         return
@@ -1060,9 +1061,7 @@ def _confirm_delete(campaign_id: str, campaign_name: str):
     with c2:
         if st.button("Delete", type="primary", use_container_width=True, key="del_confirm"):
             try:
-                requests.delete(
-                    f"{API_BASE}/api/campaigns/{campaign_id}", timeout=10
-                ).raise_for_status()
+                api.delete(f"{API_BASE}/api/campaigns/{campaign_id}", timeout=10).raise_for_status()
                 st.session_state["_refresh_campaigns"] = True
                 st.session_state["_refresh_analytics"] = True
                 if st.session_state.get("active_campaign_id") == campaign_id:

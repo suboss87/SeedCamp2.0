@@ -191,3 +191,110 @@ class TestUploadValidation:
             )
             assert resp.status_code == 413
             assert "too large" in resp.json()["detail"]
+
+
+class TestSSRFValidation:
+    """Verify the shared SSRF validator guards both single and CSV batch paths."""
+
+    @pytest.mark.parametrize(
+        "url",
+        [
+            "http://169.254.169.254/latest/meta-data/",
+            "http://127.0.0.1:8500/secrets",
+            "http://10.0.0.5/internal",
+            "http://localhost/admin",
+            "http://metadata.google.internal/computeMetadata/v1/",
+            "http://svc.cluster.local/api",
+            "file:///etc/passwd",
+            "gopher://example.com/x",
+        ],
+    )
+    def test_generate_request_blocks_internal_urls(self, url):
+        from app.models.schemas import GenerateRequest
+
+        with pytest.raises(ValueError):
+            GenerateRequest(brief="test", product_image_url=url)
+
+    @pytest.mark.parametrize(
+        "url",
+        [
+            "http://169.254.169.254/latest/meta-data/",
+            "http://localhost/admin",
+            "file:///etc/passwd",
+        ],
+    )
+    def test_product_create_blocks_internal_urls(self, url):
+        """CSV batch path (ProductCreate.image_url) enforces the same SSRF policy."""
+        from app.models.campaign_schemas import ProductCreate
+
+        with pytest.raises(ValueError):
+            ProductCreate(sku_id="S1", product_name="p", description="d", image_url=url)
+
+    def test_public_urls_accepted_on_both_paths(self):
+        from app.models.campaign_schemas import ProductCreate
+        from app.models.schemas import GenerateRequest
+
+        url = "https://cdn.example.com/product.jpg"
+        assert GenerateRequest(brief="test", product_image_url=url).product_image_url == url
+        product = ProductCreate(sku_id="S1", product_name="p", description="d", image_url=url)
+        assert product.image_url == url
+
+    def test_none_image_url_accepted(self):
+        from app.models.campaign_schemas import ProductCreate
+
+        product = ProductCreate(sku_id="S1", product_name="p", description="d", image_url=None)
+        assert product.image_url is None
+
+
+class TestTaskIdValidation:
+    """Verify the task-id pattern accepts vendor formats but rejects injection shapes."""
+
+    @pytest.mark.parametrize(
+        "task_id",
+        [
+            "cgt-20260610-abc123",
+            "dry-run-deadbeef",
+            "task_with_underscores",
+            "v1.2.3-task.id",
+            "a" * 128,
+        ],
+    )
+    def test_valid_task_ids_accepted(self, task_id):
+        from app.main import _TASK_ID_RE
+
+        assert _TASK_ID_RE.match(task_id)
+
+    @pytest.mark.parametrize(
+        "task_id",
+        ["", "../etc/passwd", "id/with/slash", "id with space", "-leading-dash", "a" * 129],
+    )
+    def test_invalid_task_ids_rejected(self, task_id):
+        from app.main import _TASK_ID_RE
+
+        assert not _TASK_ID_RE.match(task_id)
+
+
+class TestDashboardAuthSession:
+    """Verify the dashboard session attaches the API key when configured."""
+
+    def _load_dash_config(self, monkeypatch, api_key):
+        import importlib
+        from pathlib import Path
+
+        if api_key is None:
+            monkeypatch.delenv("API_KEY", raising=False)
+        else:
+            monkeypatch.setenv("API_KEY", api_key)
+        dash_dir = str(Path(__file__).resolve().parents[2] / "dashboard")
+        monkeypatch.syspath_prepend(dash_dir)
+        import config as dash_config
+
+        return importlib.reload(dash_config)
+
+    def test_session_sends_bearer_header_when_key_set(self, monkeypatch):
+        cfg = self._load_dash_config(monkeypatch, "dash-secret")
+        assert cfg.api.headers["Authorization"] == "Bearer dash-secret"
+
+    def test_session_has_no_auth_header_without_key(self, monkeypatch):
+        cfg = self._load_dash_config(monkeypatch, None)
+        assert "Authorization" not in cfg.api.headers

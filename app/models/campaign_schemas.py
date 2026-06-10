@@ -8,7 +8,9 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from enum import Enum
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+
+from app.models.schemas import validate_public_http_url
 
 # ─── Enums ───────────────────────────────────────────────────────────────────────
 
@@ -83,6 +85,11 @@ class ProductCreate(BaseModel):
     image_url: str | None = None
     sku_tier: str = "catalog"  # "hero" or "catalog"
     category: str | None = None
+
+    @field_validator("image_url")
+    @classmethod
+    def block_ssrf(cls, v: str | None) -> str | None:
+        return validate_public_http_url(v, "image_url")
 
 
 class Product(BaseModel):

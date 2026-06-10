@@ -43,7 +43,7 @@ from app.routes.campaigns import router as campaigns_router
 from app.services.pipeline import ContentBlockedError, run_pipeline
 from app.utils.retry import InvalidAPIKeyError, QuotaExceededError, RateLimitError, validate_api_key
 
-_TASK_ID_RE = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9\-]{0,63}$")
+_TASK_ID_RE = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9._\-]{0,127}$")
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
