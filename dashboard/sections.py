@@ -922,7 +922,9 @@ def _render_campaign_results(campaign_id: str):
                         backup_badge = (
                             ' <span style="color:#f59e0b;font-size:0.7rem;">CDN only</span>'
                         )
-                    st.markdown(f"SKU: <code>{product_id}</code>{backup_badge}", unsafe_allow_html=True)
+                    st.markdown(
+                        f"SKU: <code>{product_id}</code>{backup_badge}", unsafe_allow_html=True
+                    )
 
                     script = result.get("script", {})
                     if script:

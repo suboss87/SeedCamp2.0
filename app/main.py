@@ -22,8 +22,6 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
-_TASK_ID_RE = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9\-]{0,63}$")
-
 from app.config import settings
 from app.models.schemas import (
     CostSummary,
@@ -44,6 +42,8 @@ from app import monitoring
 from app.routes.campaigns import router as campaigns_router
 from app.services.pipeline import ContentBlockedError, run_pipeline
 from app.utils.retry import InvalidAPIKeyError, QuotaExceededError, RateLimitError, validate_api_key
+
+_TASK_ID_RE = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9\-]{0,63}$")
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -226,9 +226,7 @@ async def api_key_auth(request: Request, call_next):
         else:
             auth = request.headers.get("Authorization", "")
             expected = f"Bearer {settings.api_key}"
-            if not hmac.compare_digest(
-                auth.encode("utf-8"), expected.encode("utf-8")
-            ):
+            if not hmac.compare_digest(auth.encode("utf-8"), expected.encode("utf-8")):
                 return JSONResponse(
                     status_code=401, content={"detail": "Invalid or missing API key"}
                 )
