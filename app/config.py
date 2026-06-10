@@ -71,11 +71,17 @@ class Settings(BaseSettings):
 
     # --- Security ---
     cors_origins: str = (
-        "*"  # Comma-separated origins, e.g. "https://example.com,https://app.example.com"
+        "*"  # Dev default. Set to your app origin in production, e.g. "https://example.com"
     )
-    api_key: str = ""  # Optional API key to protect endpoints; leave empty to disable
+    # Required in production. Generate with: openssl rand -hex 32
+    # When PRODUCTION=true and empty: all /api/* return 503.
+    # When PRODUCTION=false and empty: endpoints open (local dev only).
+    api_key: str = ""
     rate_limit: str = "60/minute"  # Rate limit per client (slowapi format)
     max_upload_size_mb: int = 10  # Max image upload size in MB
+    # Set true when behind a reverse proxy that injects X-Real-IP (nginx, Render, Railway).
+    # When false (default), rate limiting uses the actual TCP remote address.
+    rate_limit_behind_proxy: bool = False
 
     # --- Storage ---
     output_dir: Path = Path("output")

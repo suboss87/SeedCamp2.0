@@ -21,9 +21,11 @@ This guide gets SeedCamp running in production **TODAY** using platforms that wo
    railway init
    ```
 
-3. **Add your API key**:
+3. **Add required keys** (both are required — without `API_KEY`, the API will reject all requests in production):
    ```bash
-   railway variables set ARK_API_KEY=your-api-key-here
+   railway variables set ARK_API_KEY=your-modelark-api-key-here
+   railway variables set API_KEY=$(openssl rand -hex 32)
+   railway variables set PRODUCTION=true
    ```
 
 4. **Deploy**:
@@ -61,10 +63,12 @@ That's it! Your API is live at `https://seedcamp-production.up.railway.app`
    - Runtime: `Docker`
    - Health Check Path: `/health`
 
-5. **Add Environment Variable**:
+5. **Add Environment Variables** (both required — `render.yaml` prompts for them at deploy time):
    ```
-   ARK_API_KEY = your-api-key-here
+   ARK_API_KEY = your-modelark-api-key-here
+   API_KEY      = generate-with: openssl rand -hex 32
    ```
+   `PRODUCTION=true` is already set in `render.yaml`.
 
 6. **Deploy** -- Render auto-deploys from `render.yaml`
 

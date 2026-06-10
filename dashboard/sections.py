@@ -3,6 +3,7 @@ Dashboard sections -- rendering functions for sidebar, quick video,
 campaign batch, and campaign history.
 """
 
+import html
 import json
 
 import requests
@@ -912,7 +913,7 @@ def _render_campaign_results(campaign_id: str):
                     if video_url:
                         st.video(video_url)
 
-                    product_id = result.get("product_id", "N/A")
+                    product_id = html.escape(str(result.get("product_id", "N/A")))
                     backup_status = result.get("gcs_backup_status", "pending")
                     backup_badge = ""
                     if backup_status == "completed":
@@ -921,7 +922,9 @@ def _render_campaign_results(campaign_id: str):
                         backup_badge = (
                             ' <span style="color:#f59e0b;font-size:0.7rem;">CDN only</span>'
                         )
-                    st.markdown(f"SKU: `{product_id}`{backup_badge}", unsafe_allow_html=True)
+                    st.markdown(
+                        f"SKU: <code>{product_id}</code>{backup_badge}", unsafe_allow_html=True
+                    )
 
                     script = result.get("script", {})
                     if script:
@@ -950,7 +953,7 @@ def _render_campaign_results(campaign_id: str):
                             unsafe_allow_html=True,
                         )
                     elif approval == "rejected":
-                        reason = result.get("rejection_reason", "")
+                        reason = html.escape(str(result.get("rejection_reason", "") or ""))
                         st.markdown(
                             f'<span style="color:#ef4444;font-weight:600;">Rejected</span>'
                             f'{f" -- {reason}" if reason else ""}',

@@ -89,7 +89,11 @@ async def upload_products_csv(campaign_id: str, file: UploadFile = File(...)):
     if not file.filename.endswith(".csv"):
         raise HTTPException(status_code=400, detail="Only CSV files are accepted")
 
-    content = await file.read()
+    _MAX_CSV_BYTES = 5 * 1024 * 1024  # 5 MB
+    content = await file.read(_MAX_CSV_BYTES + 1)
+    if len(content) > _MAX_CSV_BYTES:
+        raise HTTPException(status_code=413, detail="CSV too large (max 5 MB)")
+
     try:
         text = content.decode("utf-8")
     except UnicodeDecodeError:

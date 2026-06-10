@@ -167,8 +167,8 @@ class TestEvaluateContentSafety:
         assert out_tok == 150
 
     @patch("app.services.safety_evaluator._client")
-    async def test_malformed_response_defaults_safe(self, mock_client, safe_script):
-        """If LLM returns unparseable JSON, default to safe."""
+    async def test_malformed_response_blocks(self, mock_client, safe_script):
+        """If LLM returns unparseable JSON, fail closed and block."""
         mock_response = MagicMock()
         mock_response.choices = [MagicMock()]
         mock_response.choices[0].message.content = "not valid json"
@@ -179,8 +179,8 @@ class TestEvaluateContentSafety:
         mock_client.chat.completions.create = AsyncMock(return_value=mock_response)
         result, _, _ = await evaluate_content_safety(safe_script)
 
-        assert result.risk_level == "safe"
-        assert result.overall_score == 0.0
+        assert result.risk_level == "blocked"
+        assert result.overall_score == 1.0
 
     @patch("app.services.safety_evaluator._client")
     async def test_categories_properly_scored(self, mock_client, safe_script):
