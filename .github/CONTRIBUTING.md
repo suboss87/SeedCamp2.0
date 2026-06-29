@@ -8,6 +8,8 @@ Be respectful, inclusive, and professional in all interactions.
 
 ## Getting Started
 
+For an easy entry point, check [ROADMAP.md](../ROADMAP.md) for current good first issues and launch-prep priorities.
+
 1. **Fork the repository** on GitHub
 2. **Clone your fork**:
    ```bash

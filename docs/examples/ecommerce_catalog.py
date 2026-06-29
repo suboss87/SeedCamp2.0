@@ -13,6 +13,7 @@ Usage:
     python3 docs/examples/ecommerce_catalog.py
 """
 import asyncio
+
 import httpx
 
 API_URL = "http://localhost:8000"
@@ -115,13 +116,13 @@ async def main():
     catalog_cost = sum(r["cost"] for r in results if r["tier"] == "catalog")
 
     print(f"\n{'='*60}")
-    print(f"E-Commerce Catalog Batch Complete")
+    print("E-Commerce Catalog Batch Complete")
     print(f"{'='*60}")
     print(f"  Hero products (premium model):  {hero_count}  (${hero_cost:.4f})")
     print(f"  Catalog items (fast model):     {catalog_count}  (${catalog_cost:.4f})")
     print(f"  Total cost:                     ${total_cost:.4f}")
     print(f"  Avg cost/SKU:                   ${total_cost/len(results):.4f}")
-    print(f"\nAt scale (5,000 SKUs, 20% hero, quarterly refresh):")
+    print("\nAt scale (5,000 SKUs, 20% hero, quarterly refresh):")
     annual_videos = 5000 * 4
     hero_annual = annual_videos * 0.20 * 0.13
     catalog_annual = annual_videos * 0.80 * 0.08

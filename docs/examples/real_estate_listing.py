@@ -17,6 +17,7 @@ Usage:
     python3 docs/examples/real_estate_listing.py
 """
 import asyncio
+
 import httpx
 
 API_URL = "http://localhost:8000"
@@ -110,20 +111,20 @@ async def main():
     standard_count = sum(1 for r in results if r["tier"] == "catalog")
 
     print(f"\n{'='*60}")
-    print(f"Real Estate Listing Batch Complete")
+    print("Real Estate Listing Batch Complete")
     print(f"{'='*60}")
     print(f"  Luxury listings (premium model):   {luxury_count}")
     print(f"  Standard listings (fast model):    {standard_count}")
     print(f"  Total cost:                        ${total_cost:.4f}")
     print(f"  Avg cost/listing:                  ${total_cost/len(results):.4f}")
-    print(f"\nAt agency scale (200 active listings, 15% luxury):")
+    print("\nAt agency scale (200 active listings, 15% luxury):")
     luxury_cost = 200 * 0.15 * 0.13
     standard_cost = 200 * 0.85 * 0.08
     print(f"  Cost per refresh:   ${luxury_cost + standard_cost:.2f}")
     print(f"  vs. traditional:    ${200 * 300:.0f} - ${200 * 500:.0f}")
-    print(f"\n  Listings with video get 403% more inquiries.")
-    print(f"  Only 9% of agents currently make listing videos.")
-    print(f"  SeedCamp makes full-inventory video coverage economical.")
+    print("\n  Listings with video get 403% more inquiries.")
+    print("  Only 9% of agents currently make listing videos.")
+    print("  SeedCamp makes full-inventory video coverage economical.")
 
 
 if __name__ == "__main__":

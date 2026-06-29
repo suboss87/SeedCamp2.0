@@ -2,10 +2,10 @@
 
 **Open-source reference architecture for AI video generation at scale.** Fork it, adapt it, ship it.
 
-[![CI](https://github.com/suboss87/SeedCamp2.0/actions/workflows/ci.yml/badge.svg)](https://github.com/suboss87/SeedCamp2.0/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/) [![Seedance 2.0](https://img.shields.io/badge/Seedance-2.0-ff7a59)](https://seed.bytedance.com/en/seedance2_0) [![Deploy](https://img.shields.io/badge/deploy-7%20platforms-orange)](#deploy-anywhere)
+[![CI](https://github.com/suboss87/SeedCamp2.0/actions/workflows/ci.yml/badge.svg)](https://github.com/suboss87/SeedCamp2.0/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/) [![Seedance 2.0](https://img.shields.io/badge/Seedance-2.0-ff7a59)](https://seed.bytedance.com/en/seedance2_0) [![Deploy](https://img.shields.io/badge/deploy-Docker%20%7C%20VKE%20%7C%20cloud-orange)](#deploy-anywhere)
 
-> **April 2026:** [Seedance 2.0](https://seed.bytedance.com/en/seedance2_0) is now in public beta, ranked #2 on Artificial Analysis with native audio and 15s multi-shot.
-> [Sora shuts down April 26.](docs/MIGRATE_FROM_SORA.md) SeedCamp ships with Seedance 2.0 model IDs and a migration path from Sora.
+> ### Migrating off Sora? Start here.
+> [**OpenAI is shutting Sora down**](docs/MIGRATE_FROM_SORA.md) — the app was discontinued April 26, 2026 and the **API shuts down September 24, 2026** ([OpenAI](https://help.openai.com/en/articles/12912962), [NYT](https://www.nytimes.com/2026/03/24/technology/openai-shutting-down-sora.html)). If you have a Sora integration, you need a working alternative before then. SeedCamp ships with [Seedance 2.0](https://seed.bytedance.com/en/seedance2_0) model IDs and a drop-in migration path — roughly 10x cheaper per second, native audio, and ranked at the top of Artificial Analysis' audio video board. **[Migration guide →](docs/MIGRATE_FROM_SORA.md)**
 
 ---
 
@@ -14,6 +14,8 @@
 SeedCamp is an open-source Python reference architecture that handles the hard parts of generating AI videos at scale. You give it a product brief and a tier (premium or standard), and it handles the rest: writing the script, checking for unsafe content, picking the right model, generating the video, tracking the cost, and managing failures.
 
 It is not a managed service or a SaaS product. It is a working system you can study, fork, and adapt for your own use case.
+
+> **Scope, honestly.** The default setup is a **single process**: it generates **up to a few hundred videos per run** reliably, with cost tracking in memory and batches running in the API process. That's the right starting point for most people and it's fully tested. For inventory-scale workloads (thousands of SKUs) you need a durable queue and shared state — the exact path is documented in **[docs/SCALING.md](docs/SCALING.md)**. We'd rather tell you the ceiling than pretend it isn't there.
 
 **The problem:** Generating one AI video is simple. Generating thousands is an engineering project. You need to handle:
 
@@ -170,15 +172,15 @@ Full migration guide: [docs/MIGRATE_FROM_SORA.md](docs/MIGRATE_FROM_SORA.md)
 
 ## Deploy anywhere
 
+**Supported** (tested paths we keep green):
+
 | Platform | Guide | Setup |
 |---|---|---|
 | **Local** | `make dev` | No Docker needed |
 | **Docker** | [`deploy/docker/`](deploy/docker/) | `make docker-up` |
-| **GCP Cloud Run** | [`deploy/gcp/`](deploy/gcp/) | Terraform |
-| **AWS ECS Fargate** | [`deploy/aws/`](deploy/aws/) | Terraform |
-| **BytePlus VKE** | [`deploy/byteplus/`](deploy/byteplus/) | K8s manifests |
-| **Railway** | [`deploy/railway/`](deploy/railway/) | One-click |
-| **Render** | [`deploy/render/`](deploy/render/) | One-click |
+| **BytePlus VKE** | [`deploy/byteplus/`](deploy/byteplus/) | K8s manifests (native ModelArk region) |
+
+**Community / experimental** (configs provided, not continuously tested — PRs welcome): GCP Cloud Run ([`deploy/gcp/`](deploy/gcp/)), AWS ECS Fargate ([`deploy/aws/`](deploy/aws/)), Railway ([`deploy/railway/`](deploy/railway/)), Render ([`deploy/render/`](deploy/render/)). Treat these as starting points and verify before production use.
 
 Before deploying publicly, read the [Security Checklist](docs/QUICKSTART.md#security-checklist-read-before-going-public). Set `API_KEY`, restrict `CORS_ORIGINS`, and put the Streamlit dashboard behind auth.
 
@@ -186,7 +188,7 @@ Before deploying publicly, read the [Security Checklist](docs/QUICKSTART.md#secu
 
 ## Links
 
-- [Quick Start](docs/QUICKSTART.md) - Railway, Render, Docker in 30 minutes
+- [Quick Start](docs/QUICKSTART.md) - Docker and local setup in minutes
 - [Deployment Guide](docs/DEPLOYMENT.md) - All platforms, step by step
 - [Migrating from Sora](docs/MIGRATE_FROM_SORA.md) - Code diffs, pricing, timeline
 - [Market Research](docs/market-research.md) - Data behind the positioning
@@ -202,9 +204,11 @@ SeedCamp is a reference architecture, not a managed service. Here is what you sh
 
 - **Works with BytePlus only, for now.** SeedCamp currently supports Seedance models through BytePlus ModelArk. Support for other providers (Runway, Kling, Veo) is planned for v1.1. Track progress in [issue #1](https://github.com/suboss87/SeedCamp2.0/issues/1).
 - **Cost tracking resets if you restart the server.** The cost tracker stores data in memory by default. For persistent tracking across restarts, connect it to Firestore. A warning appears at startup if this could be a problem.
-- **Tests use simulated API responses.** The 112-test suite verifies that the orchestration logic works correctly, but does not call real APIs. To test with real video generation, run the examples with a real `ARK_API_KEY`.
+- **Tests use simulated API responses.** The 139-test suite verifies that the orchestration logic works correctly, but does not call real APIs. For a real end-to-end check, run [`scripts/smoke_test.py`](scripts/smoke_test.py) with a real `ARK_API_KEY` — it generates one hero and one catalog video, confirms the model IDs resolve, and prints the real cost. Treat a green smoke test as the gate for production.
+- **Cost figures must be reconciled against a real invoice.** SeedCamp computes cost from the token formula and price constants in [`app/config.py`](app/config.py). Run [`scripts/reconcile_cost.py`](scripts/reconcile_cost.py) and confirm the output matches an actual ModelArk bill before you rely on or publish any per-video number.
+- **Scale is your homework past a few hundred videos.** The default is single-process and in-memory. See [docs/SCALING.md](docs/SCALING.md) for the durable-queue + shared-state path to inventory scale.
 - **The safety filter can be too strict sometimes.** It uses an AI model to judge content safety, which means occasional false positives. You can adjust the sensitivity using `SAFETY_THRESHOLD_*` environment variables.
-- **Seedance 2.0 is new.** The API entered public beta on April 14, 2026. Current limits are 2 requests per second and 3 concurrent tasks per account. These limits will increase over time.
+- **Seedance 2.0 is new.** It is live on ModelArk in 2026; verify the exact model IDs and current rate limits against the [ModelArk docs](https://docs.byteplus.com/en/docs/ModelArk/1399008) for your account (early limits were ~2 requests/sec and 3 concurrent tasks). Confirm IDs with `scripts/smoke_test.py` before launch.
 
 ---
 

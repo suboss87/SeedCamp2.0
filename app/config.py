@@ -34,8 +34,6 @@ class Settings(BaseSettings):
     video_resolution: str = "720p"  # Seedance 2.0 Standard supports up to 1080p
     video_sound: bool = True  # Seedance 2.0 native audio (dialogue + music + foley).
     # Used by video_gen.create_video_task() and batch_generator.
-    video_audio_enabled: bool = True  # Reserved for future use (e.g. separate audio
-    # post-processing). Currently unused by any service -- video_sound controls audio.
     video_offline: bool = False  # Async batch mode = 50% cheaper, slower turnaround
     poll_interval: int = 5
     poll_timeout: int = 300

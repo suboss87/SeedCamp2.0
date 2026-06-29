@@ -9,6 +9,7 @@ Usage:
     python3 docs/examples/batch_campaign.py
 """
 import asyncio
+
 import httpx
 
 API_URL = "http://localhost:8000"
