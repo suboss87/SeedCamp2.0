@@ -32,7 +32,7 @@ Traditional video production costs $500–$5,000 per video. At inventory scale:
 
 > "For a brand managing 500 SKUs, producing video for each one through traditional methods would require coordinating hundreds of shoots. By the time the last video is finished, the first ones need updating. The cycle never closes, so most brands simply don't attempt full coverage." -- WinSavvy
 
-AI video drops cost to $0.08–$0.13 per video, but existing tools lack the operational layer for bulk.
+AI video drops cost to $0.08–$0.13 per video (list-price estimate to reconcile against a real ModelArk invoice; see `scripts/reconcile_cost.py`), but existing tools lack the operational layer for bulk.
 
 ---
 
@@ -42,8 +42,8 @@ AI video drops cost to $0.08–$0.13 per video, but existing tools lack the oper
 
 | Model | Cost | AA Rank (T2V) | Status |
 |-------|------|---------------|--------|
-| **Seedance 2.0 Fast (SeedCamp)** | **~$0.03–0.04** | Top 10 | Public beta (Apr 14) |
-| **Seedance 2.0 Standard (SeedCamp)** | **~$0.04–0.08** | **#2** | Public beta (Apr 14) |
+| **Seedance 2.0 Fast (SeedCamp)** | **~$0.03–0.04** (list-price estimate to reconcile against a real ModelArk invoice; see `scripts/reconcile_cost.py`) | Top 10 | Public beta (Apr 14) |
+| **Seedance 2.0 Standard (SeedCamp)** | **~$0.04–0.08** (list-price estimate to reconcile against a real ModelArk invoice; see `scripts/reconcile_cost.py`) | **#2** | Public beta (Apr 14) |
 | HappyHorse-1.0 (Alibaba) | TBD | **#1** | New entrant (Apr 7) |
 | Kling 3.0 Pro | ~$0.15 | #3 | GA |
 | Runway Gen-4.5 | ~$0.50 | #10 | GA |
@@ -80,6 +80,8 @@ From G2 analysis of 1,236 verified reviews (Oct 2024 – Apr 2025):
 ---
 
 ## 4. Target Verticals (Ranked by Signal Strength)
+
+Launch positioning focuses on Tier 1–2 verticals, where the strongest funded signal lives; Tier 3–5 remain future or secondary opportunities.
 
 ### Tier 1: Automotive Dealerships
 
@@ -148,7 +150,7 @@ From G2 analysis of 1,236 verified reviews (Oct 2024 – Apr 2025):
 
 - BytePlus is ByteDance's B2B enterprise arm (launched 2021)
 - Revenue estimated $25–50M -- growth mode, receptive to partnerships
-- **Seedance 2.0 ranks #2 on Artificial Analysis** (Apr 2026) -- behind only HappyHorse-1.0 (Alibaba, new Apr 7)
+- **Seedance 2.0 leads the native-audio board on Artificial Analysis** in mid-2026, while HappyHorse-1.0 leads image-to-video.
 - Seedance 2.0 public beta opened **April 14, 2026** on ModelArk
 - Native joint audio-video generation, lip-sync (8+ languages), up to 15s multi-shot
 - **TikTok USDS JV** (Oracle + Silver Lake + MGX) took control of TikTok US on Jan 22, 2026 -- this de-risks BytePlus US enterprise sales (ByteDance retains minority, data under American control)

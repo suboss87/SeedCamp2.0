@@ -13,6 +13,7 @@ Usage:
     python3 docs/examples/automotive_dealer.py
 """
 import asyncio
+
 import httpx
 
 API_URL = "http://localhost:8000"
@@ -104,13 +105,13 @@ async def main():
     catalog_count = sum(1 for r in results if r["tier"] == "catalog")
 
     print(f"\n{'='*60}")
-    print(f"Dealership Video Batch Complete")
+    print("Dealership Video Batch Complete")
     print(f"{'='*60}")
     print(f"  Featured vehicles (premium model): {hero_count}")
     print(f"  Standard inventory (fast model):   {catalog_count}")
     print(f"  Total cost:                        ${total_cost:.4f}")
     print(f"  Avg cost/vehicle:                  ${total_cost/len(results):.4f}")
-    print(f"\nAt 300 vehicles/lot with 20% featured:")
+    print("\nAt 300 vehicles/lot with 20% featured:")
     projected = (300 * 0.20 * 0.13) + (300 * 0.80 * 0.08)
     print(f"  Projected lot cost: ${projected:.2f}")
     print(f"  vs. studio video:   ${300 * 500:.0f} - ${300 * 2000:.0f}")

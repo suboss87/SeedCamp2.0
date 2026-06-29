@@ -9,6 +9,7 @@ Usage:
     python3 docs/examples/generate_single_video.py
 """
 import asyncio
+
 import httpx
 
 API_URL = "http://localhost:8000"
