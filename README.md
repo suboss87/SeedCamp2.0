@@ -5,7 +5,7 @@
 [![CI](https://github.com/suboss87/SeedCamp2.0/actions/workflows/ci.yml/badge.svg)](https://github.com/suboss87/SeedCamp2.0/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/) [![Seedance 2.0](https://img.shields.io/badge/Seedance-2.0-ff7a59)](https://seed.bytedance.com/en/seedance2_0) [![Deploy](https://img.shields.io/badge/deploy-Docker%20%7C%20VKE%20%7C%20cloud-orange)](#deploy-anywhere)
 
 > ### Migrating off Sora? Start here.
-> [**OpenAI is shutting Sora down**](docs/MIGRATE_FROM_SORA.md) — the app was discontinued April 26, 2026 and the **API shuts down September 24, 2026** ([OpenAI](https://help.openai.com/en/articles/12912962), [NYT](https://www.nytimes.com/2026/03/24/technology/openai-shutting-down-sora.html)). If you have a Sora integration, you need a working alternative before then. SeedCamp ships with [Seedance 2.0](https://seed.bytedance.com/en/seedance2_0) model IDs and a drop-in migration path — roughly 10x cheaper per second, native audio, and ranked at the top of Artificial Analysis' audio video board. **[Migration guide →](docs/MIGRATE_FROM_SORA.md)**
+> [**OpenAI has shut Sora down**](docs/MIGRATE_FROM_SORA.md) — the app was discontinued April 26, 2026 and the **API shut down September 24, 2026** ([OpenAI](https://help.openai.com/en/articles/12912962), [NYT](https://www.nytimes.com/2026/03/24/technology/openai-shutting-down-sora.html)). If you still have a Sora integration, it needs a replacement. SeedCamp ships with [Seedance 2.0](https://seed.bytedance.com/en/seedance2_0) model IDs and a drop-in migration path — roughly 10x cheaper per second, native audio, and ranked at the top of Artificial Analysis' audio video board. **[Migration guide →](docs/MIGRATE_FROM_SORA.md)**
 
 ---
 
@@ -154,7 +154,7 @@ class ProductTier(str, Enum):
 
 ## Migrating from Sora?
 
-Sora shuts down April 26 (app) and September 24 (API). If you have a Sora integration, SeedCamp is a drop-in path to Seedance 2.0.
+Sora shut down on April 26, 2026 (app) and September 24, 2026 (API). If you had a Sora integration, SeedCamp is a drop-in path to Seedance 2.0.
 
 ```python
 # Before: Sora (deprecated)

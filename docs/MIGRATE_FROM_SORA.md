@@ -1,8 +1,8 @@
 # Migrating from Sora to SeedCamp (Seedance 2.0)
 
 OpenAI announced the Sora shutdown in March 2026:
-- **App/web** closes **April 26, 2026**
-- **API** closes **September 24, 2026**
+- **App/web** closed **April 26, 2026**
+- **API** closed **September 24, 2026**
 - Export your data before the deadlines -- [OpenAI help article](https://help.openai.com/en/articles/20001152-what-to-know-about-the-sora-discontinuation)
 
 This guide walks you through migrating a Sora integration to SeedCamp on Seedance 2.0.
@@ -18,7 +18,7 @@ This guide walks you through migrating a Sora integration to SeedCamp on Seedanc
 | **Native audio** | Added late, basic | Joint audio-video gen, lip-sync, foley |
 | **Max duration** | 20s (single shot) | 15s (multi-shot with scene control) |
 | **Resolution** | 1080p | Up to 1080p (Standard), 720p (Fast) |
-| **API status** | Shutting down Sep 2026 | Public beta, actively developed |
+| **API status** | Shut down Sep 24, 2026 | Public beta, actively developed |
 | **Retry / orchestration** | DIY | Built into SeedCamp |
 | **Batch generation** | DIY | Built into SeedCamp |
 | **Cost tracking** | None | Per-request, per-tier |

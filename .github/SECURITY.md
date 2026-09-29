@@ -4,7 +4,7 @@
 
 If you discover a security vulnerability in SeedCamp, please report it privately:
 
-**Email**: suboss87@users.noreply.github.com
+Use GitHub's private vulnerability reporting: [open a private report](https://github.com/suboss87/SeedCamp2.0/security/advisories/new). If you cannot use GitHub, email suboss87@gmail.com.
 
 Please include:
 - Description of the vulnerability
